@@ -86,9 +86,7 @@ app.get('/', (req, res) => {
           font-weight: 700; 
           cursor: pointer; 
           font-size: 13px; 
-          transition: background 0.2s; 
         }
-        .btn-order:active { background: #d97706; }
 
         /* Modal Popup Order Form */
         .modal {
@@ -120,6 +118,11 @@ app.get('/', (req, res) => {
         .modal-actions { display: flex; gap: 8px; margin-top: 16px; }
         .btn-cancel { background: #e2e8f0; color: #475569; border: none; padding: 10px; border-radius: 8px; font-weight: 700; flex: 1; cursor: pointer; }
         .btn-submit { background: #f59e0b; color: white; border: none; padding: 10px; border-radius: 8px; font-weight: 700; flex: 2; cursor: pointer; }
+
+        /* Success Popup */
+        .success-icon { font-size: 48px; text-align: center; margin-bottom: 10px; }
+        .success-details { background: #fef8ee; padding: 12px; border-radius: 10px; font-size: 13px; margin: 12px 0; line-height: 1.6; }
+        .btn-close-app { background: #10b981; color: white; border: none; padding: 12px; border-radius: 10px; font-weight: 700; width: 100%; cursor: pointer; font-size: 14px; }
       </style>
     </head>
     <body>
@@ -158,6 +161,7 @@ app.get('/', (req, res) => {
         </div>
       </div>
 
+      <!-- Modal Ordering Form -->
       <div class="modal" id="orderModal">
         <div class="modal-content">
           <div class="modal-title" id="modalProductName">បញ្ជាទិញទំនិញ</div>
@@ -181,6 +185,21 @@ app.get('/', (req, res) => {
             <button class="btn-cancel" onclick="closeOrderModal()">បោះបង់</button>
             <button class="btn-submit" onclick="submitOrder()">បញ្ជូនការកុម្មង់ 🚀</button>
           </div>
+        </div>
+      </div>
+
+      <!-- Modal Success View -->
+      <div class="modal" id="successModal">
+        <div class="modal-content" style="text-align: center;">
+          <div class="success-icon">🎉</div>
+          <div class="modal-title" style="color: #10b981;">ការកុម្មង់បានជោគជ័យ!</div>
+          <p style="font-size: 13px; color: #64748b;">ក្រុមការងារនឹងទាក់ទងទៅបងក្នុងពេលឆាប់ៗនេះ!</p>
+          
+          <div class="success-details" id="successSummary" style="text-align: left;">
+            <!-- Summary will be injected here -->
+          </div>
+
+          <button class="btn-close-app" onclick="finishOrder()">រួចរាល់ (បិទ)</button>
         </div>
       </div>
 
@@ -224,11 +243,26 @@ app.get('/', (req, res) => {
           };
 
           if (tg && tg.sendData) {
-            tg.sendData(JSON.stringify(orderData));
+            try { tg.sendData(JSON.stringify(orderData)); } catch(e){}
+          }
+
+          // បង្ហាញផ្ទាំង Success ដោយមិនបិទភ្លាមៗ
+          closeOrderModal();
+          document.getElementById('successSummary').innerHTML = \`
+            <p><strong>ទំនិញ៖</strong> \${selectedProduct.name}</p>
+            <p><strong>ចំនួន៖</strong> \${qty} កញ្ចប់</p>
+            <p><strong>តម្លៃសរុប៖</strong> $\${totalPrice}</p>
+            <p><strong>លេខទូរស័ព្ទ៖</strong> \${phone}</p>
+            \${note ? \`<p><strong>ចំណាំ៖</strong> \${note}</p>\` : ''}
+          \`;
+          document.getElementById('successModal').classList.add('active');
+        }
+
+        function finishOrder() {
+          if (tg) {
             tg.close();
           } else {
-            alert('ការកុម្មង់ត្រូវបានបញ្ជូនជោគជ័យ!\\n\\nទំនិញ៖ ' + selectedProduct.name + '\\nចំនួន៖ ' + qty + ' កញ្ចប់\\nសរុប៖ $' + totalPrice + '\\nលេខទូរស័ព្ទ៖ ' + phone);
-            closeOrderModal();
+            document.getElementById('successModal').classList.remove('active');
           }
         }
       </script>
