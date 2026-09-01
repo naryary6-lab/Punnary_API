@@ -16,33 +16,7 @@ app.post('/api/order', async (req, res) => {
     const { product, quantity, totalPrice, phone, note, userName } = req.body;
 
     try {
-        // ១. បង្កើត Dynamic KHQR តាម Bakong Standard
-        const optionalData = {
-            currency: khqrData.currency.usd,
-            amount: parseFloat(totalPrice),
-            mobileNumber: phone || "85500000000",
-            storeLabel: "Nary Banana Snack",
-            terminalLabel: "MiniApp"
-        };
-
-        const merchantInfo = {
-            bakongAccountId: "15198798@acleda",
-            accountInformation: "15198798",
-            acquiringBank: "ACLEDA Bank",
-            currency: khqrData.currency.usd,
-            amount: parseFloat(totalPrice),
-            merchantName: "Sorm Sourpunary"
-        };
-
-        const khqr = new BakongKHQR();
-        const khqrResponse = khqr.generateMerchant(merchantInfo, optionalData);
-        
-        let qrDataURL = "";
-        if (khqrResponse && khqrResponse.data && khqrResponse.data.qr) {
-            qrDataURL = await QRCode.toDataURL(khqrResponse.data.qr);
-        }
-
-        // ២. ផ្ញើសារជូនដំណឹងចូល Telegram Group
+        // ១. ផ្ញើសារជូនដំណឹងចូល Telegram Group ជាមុន
         const message = `🚨 **មានការកុម្ម៉ង់ថ្មី! (NEW ORDER)**\n` +
                         `📦 **ទំនិញ:** ${product}\n` +
                         `🔢 **ចំនួន:** ${quantity} កញ្ចប់/ប្រអប់\n` +
@@ -61,7 +35,51 @@ app.post('/api/order', async (req, res) => {
             })
         });
 
-        res.json({ success: true, qrImage: qrDataURL, md5: khqrResponse?.data?.md5 });
+        // ២. បង្កើត Dynamic KHQR តាមស្តង់ដារ Bakong
+        const optionalData = {
+            currency: khqrData.currency.usd,
+            amount: parseFloat(totalPrice),
+            mobileNumber: phone || "85500000000",
+            storeLabel: "Nary Banana Snack",
+            terminalLabel: "MiniApp"
+        };
+
+        const merchantInfo = {
+            bakongAccountId: "15198798@acleda",
+            accountInformation: "15198798",
+            acquiringBank: "ACLEDA Bank",
+            currency: khqrData.currency.usd,
+            amount: parseFloat(totalPrice),
+            merchantName: "Sorm Sourpunary",
+            merchantCity: "Phnom Penh" // បន្ថែមទីក្រុងតាមស្តង់ដារ Bakong
+        };
+
+        const khqr = new BakongKHQR();
+        let khqrResponse = khqr.generateMerchant(merchantInfo, optionalData);
+
+        // ប្រសិនបើ Merchant QR មានបញ្ហា ប្រព័ន្ធនឹងជំនួសដោយ Individual QR ស្វ័យប្រវត្តិ
+        if (!khqrResponse?.data?.qr) {
+            khqrResponse = khqr.generateIndividual({
+                bakongAccountId: "15198798@acleda",
+                accountInformation: "15198798",
+                acquiringBank: "ACLEDA Bank",
+                currency: khqrData.currency.usd,
+                amount: parseFloat(totalPrice),
+                merchantName: "Sorm Sourpunary"
+            }, optionalData);
+        }
+
+        let qrDataURL = "";
+        if (khqrResponse && khqrResponse.data && khqrResponse.data.qr) {
+            qrDataURL = await QRCode.toDataURL(khqrResponse.data.qr);
+        }
+
+        if (qrDataURL) {
+            res.json({ success: true, qrImage: qrDataURL });
+        } else {
+            res.json({ success: false, error: 'មិនអាចបង្កើត QR Code បានទេ' });
+        }
+
     } catch (error) {
         console.error('Error handling order:', error);
         res.json({ success: false, error: error.message });
@@ -79,7 +97,7 @@ app.get('/', (req, res) => {
         <title>Nary Banana Snack</title>
         <script src="https://telegram.org/js/telegram-web-app.js"></script>
         <style>
-            body { font-family: 'Kantumruy Pro', sans-serif; background: #fffdf5; padding: 15px; margin: 0; color: #333; }
+            body { font-family: sans-serif; background: #fffdf5; padding: 15px; margin: 0; color: #333; }
             .header { text-align: center; background: #e67e22; color: white; padding: 15px; border-radius: 12px; font-weight: bold; margin-bottom: 15px; }
             .promo-banner { background: #d35400; color: white; text-align: center; padding: 8px; border-radius: 8px; font-size: 13px; margin-bottom: 15px; }
             .card { background: white; border-radius: 12px; padding: 15px; margin-bottom: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); display: flex; justify-content: space-between; align-items: center; }
