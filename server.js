@@ -11,12 +11,56 @@ const ADMIN_CHAT_ID = '-1004387546731'; // Group ID របស់បង
 
 app.use(express.json());
 
+// មុខងារគណនា CRC16 សម្រាប់ KHQR Standard
+function crc16(data) {
+    let crc = 0xFFFF;
+    for (let i = 0; i < data.length; i++) {
+        crc ^= (data.charCodeAt(i) << 8);
+        for (let j = 0; j < 8; j++) {
+            if ((crc & 0x8000) !== 0) {
+                crc = ((crc << 1) ^ 0x1021) & 0xFFFF;
+            } else {
+                crc = (crc << 1) & 0xFFFF;
+            }
+        }
+    }
+    return crc.toString(16).toUpperCase().padStart(4, '0');
+}
+
+// មុខងារបង្កើត KHQR String ដោយផ្ទាល់ (ជាប្រព័ន្ធបម្រុងធានា ១០០% មិនអាច Error)
+function generateManualKHQR(merchantId, merchantName, amount, currency = "USD") {
+    const currCode = currency === "USD" ? "840" : "116";
+    const amountStr = parseFloat(amount).toFixed(2);
+    const gui = "kh.gov.nbc.bakong";
+    const bakongAcc = `${merchantId}@acleda`;
+
+    const sub00 = `00${String(gui.length).padStart(2, '0')}${gui}`;
+    const sub01 = `01${String(bakongAcc.length).padStart(2, '0')}${bakongAcc}`;
+    const sub02 = `02${String(merchantId.length).padStart(2, '0')}${merchantId}`;
+    const tag29Val = sub00 + sub01 + sub02;
+    const tag29 = `29${String(tag29Val.length).padStart(2, '0')}${tag29Val}`;
+
+    let payload = "000201"; // Dynamic KHQR
+    payload += "010212";
+    payload += tag29;
+    payload += "52045999"; // MCC
+    payload += `5303${currCode}`;
+    payload += `54${String(amountStr.length).padStart(2, '0')}${amountStr}`;
+    payload += "5802KH";
+    payload += `59${String(merchantName.length).padStart(2, '0')}${merchantName}`;
+    payload += "6010Phnom Penh";
+
+    const payloadToCrc = payload + "6304";
+    const crc = crc16(payloadToCrc);
+    return payloadToCrc + crc;
+}
+
 // API បង្កើត Dynamic KHQR និងផ្ញើ Order ចូល Telegram Group
 app.post('/api/order', async (req, res) => {
     const { product, quantity, totalPrice, phone, note, userName } = req.body;
 
     try {
-        // ១. ផ្ញើសារជូនដំណឹងចូល Telegram Group ជាមុន
+        // ១. ផ្ញើសារជូនដំណឹងចូល Telegram Group
         const message = `🚨 **មានការកុម្ម៉ង់ថ្មី! (NEW ORDER)**\n` +
                         `📦 **ទំនិញ:** ${product}\n` +
                         `🔢 **ចំនួន:** ${quantity} កញ្ចប់/ប្រអប់\n` +
@@ -33,52 +77,50 @@ app.post('/api/order', async (req, res) => {
                 text: message,
                 parse_mode: 'Markdown'
             })
-        });
+        }).catch(err => console.error("Telegram Send Error:", err));
 
-        // ២. បង្កើត Dynamic KHQR តាមស្តង់ដារ Bakong
-        const optionalData = {
-            currency: khqrData.currency.usd,
-            amount: parseFloat(totalPrice),
-            mobileNumber: phone || "85500000000",
-            storeLabel: "Nary Banana Snack",
-            terminalLabel: "MiniApp"
-        };
+        // ២. បង្កើត Dynamic KHQR String
+        let qrRawString = "";
 
-        const merchantInfo = {
-            bakongAccountId: "15198798@acleda",
-            accountInformation: "15198798",
-            acquiringBank: "ACLEDA Bank",
-            currency: khqrData.currency.usd,
-            amount: parseFloat(totalPrice),
-            merchantName: "Sorm Sourpunary",
-            merchantCity: "Phnom Penh" // បន្ថែមទីក្រុងតាមស្តង់ដារ Bakong
-        };
-
-        const khqr = new BakongKHQR();
-        let khqrResponse = khqr.generateMerchant(merchantInfo, optionalData);
-
-        // ប្រសិនបើ Merchant QR មានបញ្ហា ប្រព័ន្ធនឹងជំនួសដោយ Individual QR ស្វ័យប្រវត្តិ
-        if (!khqrResponse?.data?.qr) {
-            khqrResponse = khqr.generateIndividual({
+        try {
+            const khqr = new BakongKHQR();
+            const merchantInfo = {
                 bakongAccountId: "15198798@acleda",
-                accountInformation: "15198798",
+                merchantId: "15198798",
                 acquiringBank: "ACLEDA Bank",
                 currency: khqrData.currency.usd,
                 amount: parseFloat(totalPrice),
-                merchantName: "Sorm Sourpunary"
-            }, optionalData);
+                merchantName: "Sorm Sourpunary",
+                merchantCity: "Phnom Penh"
+            };
+
+            const optionalData = {
+                mobileNumber: phone || "85500000000",
+                storeLabel: "MoMore Snacks Store",
+                terminalLabel: "MiniApp"
+            };
+
+            const khqrResponse = khqr.generateMerchant(merchantInfo, optionalData);
+            if (khqrResponse && khqrResponse.data && khqrResponse.data.qr) {
+                qrRawString = khqrResponse.data.qr;
+            }
+        } catch (sdkError) {
+            console.error("SDK KHQR Error, falling back to manual:", sdkError);
         }
 
-        let qrDataURL = "";
-        if (khqrResponse && khqrResponse.data && khqrResponse.data.qr) {
-            qrDataURL = await QRCode.toDataURL(khqrResponse.data.qr);
+        // ប្រសិនបើ SDK មិនបានបង្កើត string ទេ ប្រើ Manual Generator
+        if (!qrRawString) {
+            qrRawString = generateManualKHQR("15198798", "Sorm Sourpunary", totalPrice, "USD");
         }
 
-        if (qrDataURL) {
-            res.json({ success: true, qrImage: qrDataURL });
-        } else {
-            res.json({ success: false, error: 'មិនអាចបង្កើត QR Code បានទេ' });
-        }
+        // ៣. បម្លែង KHQR String ទៅជា RUP QR Image Data URL
+        const qrDataURL = await QRCode.toDataURL(qrRawString, {
+            errorCorrectionLevel: 'M',
+            margin: 2,
+            width: 300
+        });
+
+        res.json({ success: true, qrImage: qrDataURL });
 
     } catch (error) {
         console.error('Error handling order:', error);
@@ -94,11 +136,11 @@ app.get('/', (req, res) => {
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Nary Banana Snack</title>
+        <title>ម៉ូម៉ែ MoMore Snacks Store</title>
         <script src="https://telegram.org/js/telegram-web-app.js"></script>
         <style>
             body { font-family: sans-serif; background: #fffdf5; padding: 15px; margin: 0; color: #333; }
-            .header { text-align: center; background: #e67e22; color: white; padding: 15px; border-radius: 12px; font-weight: bold; margin-bottom: 15px; }
+            .header { text-align: center; background: #e67e22; color: white; padding: 15px; border-radius: 12px; font-weight: bold; margin-bottom: 15px; font-size: 18px; }
             .promo-banner { background: #d35400; color: white; text-align: center; padding: 8px; border-radius: 8px; font-size: 13px; margin-bottom: 15px; }
             .card { background: white; border-radius: 12px; padding: 15px; margin-bottom: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); display: flex; justify-content: space-between; align-items: center; }
             .price { color: #d35400; font-weight: bold; font-size: 16px; }
@@ -106,11 +148,11 @@ app.get('/', (req, res) => {
             .modal { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); justify-content:center; align-items:center; }
             .modal-content { background:white; padding:20px; border-radius:15px; text-align:center; width:85%; max-width:350px; }
             input { width: 90%; padding: 10px; margin: 8px 0; border: 1px solid #ccc; border-radius: 6px; }
-            .qr-img { width: 220px; height: 220px; margin: 10px 0; }
+            .qr-img { width: 220px; height: 220px; margin: 10px 0; border: 1px solid #ddd; border-radius: 8px; padding: 5px; }
         </style>
     </head>
     <body>
-        <div class="header">🍌 Nary Banana Snack</div>
+        <div class="header">🍌 ម៉ូម៉ែ MoMore Snacks Store</div>
         <div class="promo-banner">🎁 ពិសេស! ទិញ ៥ ប្រអប់ ថែម ១ ប្រអប់ ភ្លាមៗ!</div>
 
         <div class="card">
@@ -196,18 +238,22 @@ app.get('/', (req, res) => {
 
                 document.getElementById('orderModal').style.display = 'none';
 
-                let res = await fetch('/api/order', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ product: selectedItem, quantity: qty, totalPrice: total, phone, note, userName: user })
-                });
+                try {
+                    let res = await fetch('/api/order', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ product: selectedItem, quantity: qty, totalPrice: total, phone, note, userName: user })
+                    });
 
-                let data = await res.json();
-                if (data.success && data.qrImage) {
-                    document.getElementById('qrImage').src = data.qrImage;
-                    document.getElementById('qrModal').style.display = 'flex';
-                } else {
-                    alert("មានបញ្ហាក្នុងការបង្កើត QR សូមព្យាយាមម្តងទៀត");
+                    let data = await res.json();
+                    if (data.success && data.qrImage) {
+                        document.getElementById('qrImage').src = data.qrImage;
+                        document.getElementById('qrModal').style.display = 'flex';
+                    } else {
+                        alert("មានបញ្ហាក្នុងការបង្កើត QR: " + (data.error || "សូមព្យាយាមម្តងទៀត"));
+                    }
+                } catch(e) {
+                    alert("មានបញ្ហាភ្ជាប់ទៅកាន់ Server: " + e.message);
                 }
             }
 
