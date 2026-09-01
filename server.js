@@ -96,16 +96,16 @@ app.get('/', (req, res) => {
     </head>
     <body>
       <div class="header">
-        <h1>🍌 NARY BANANA SNACK 🍌</h1>
-        <p>ចេកបំពងស្រួយឆ្ងាញ់ អនាម័យខ្ពស់ រសជាតិដើម</p>
+        <h1>🍌 MOMORE BANANA SNACK 🍌</h1>
+        <p>ដំណាប់ចេកខ្មែរ ចេកឆាបបំពងស្រួយឆ្ងាញ់ ច្រើនរសជាតិ</p>
       </div>
 
       <div class="product-list">
         <div class="product-card">
           <div class="product-img">🍌</div>
           <div class="product-info">
-            <div class="product-name">ចេកបំពងស្រួយ (កញ្ចប់ធំ)</div>
-            <div class="product-price">$2.00</div>
+            <div class="product-name">ដំណាប់ចេកខ្មែរ (200g)</div>
+            <div class="product-price">10000៛</div>
           </div>
           <button class="btn-order" onclick="openOrderModal('ចេកបំពងស្រួយ (កញ្ចប់ធំ)', 2.00)">កុំម៉ង់</button>
         </div>
@@ -113,8 +113,8 @@ app.get('/', (req, res) => {
         <div class="product-card">
           <div class="product-img">🍌</div>
           <div class="product-info">
-            <div class="product-name">ចេកបំពងស្រួយ (កញ្ចប់តូច)</div>
-            <div class="product-price">$1.00</div>
+            <div class="product-name">ចេកបំពងស្រួយ (100g)</div>
+            <div class="product-price">7000៛ </div>
           </div>
           <button class="btn-order" onclick="openOrderModal('ចេកបំពងស្រួយ (កញ្ចប់តូច)', 1.00)">កុំម៉ង់</button>
         </div>
