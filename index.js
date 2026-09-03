@@ -1,349 +1,264 @@
+const TelegramBot = require('node-telegram-bot-api');
+const express = require('express');
+const { GoogleGenerativeAI } = require('@google/generative-ai');
+
+// ១. Configuration
+const token = '8679348511:AAEMMhddjhxN6zuX2d2fMSvBxg0CcBGNBg0';
+const bot = new TelegramBot(token, { polling: true });
+
+// ដាក់ Link រូបភាព ABA KHQR ពិតប្រាកដរបស់បងត្រង់នេះ (ជំនួស Link ខាងក្រោម)
+សួស្តី! នេះជា KHQR របស់ខ្ញុំឈ្មោះ  "SORM SOURPUNARY" 
+សូមចុចតំណភ្ជាប់នេះដើម្បីទូទាត់ៈ
+https://acledabank.com.kh/acleda?payment_data=qWY5B2SAUfIhLblxzOtfu5ckLzMHjaSki6Ru0bsOyNK+ylPBgZ0sHH6BeGUscKoEGb6QgufwUu6yMqn6HT4Eeca24px5MrMJRdBkaYr1RiIKZ6atFD7qirkscOus5envQw5ClFg0yZX6gGE4qCBZfu42/X3B4VODrcoMRGLy6QoSYeB+OECqwnIVZ1T0FCQjYsC36qrYOeaYG9XByWRxYrLXvKOdUab8QkQw2KFRhyE=&key=khqr
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+
+const app = express();
+app.use(express.json());
+
+// ២. Gemini AI Auto-reply
+async function askGeminiAI(userMessage) {
+  try {
+    const model = genAI.getGenerativeModel({ 
+      model: "gemini-1.5-flash",
+      systemInstruction: `អ្នកគឺជា AI ជំនួយការលក់ស្វ័យប្រវត្តិប្រចាំ "ម៉ូម័រ MoMore Snack Store"។
+តួនាទី៖ ឆ្លើយតបសំណួរអតិថិជនជាភាសាខ្មែរ ឱ្យមានភាពរួសរាយ រហ័ស ទាក់ទាញ និងច្បាស់លាស់។
+
+ព័ត៌មានផលិតផល និងតម្លៃ៖
+១. ដំណាប់ចេក ណាំវ៉ាខ្មែរ (បន្ទះសំប៉ែត ទន់ស្វិត)
+២. ចេកបំពងស្រួយ ម៉ូម័រ
+សូមណែនាំអតិថិជនឱ្យចុចប៊ូតុង "🛍️ បើកហាង MoMore Mini App" ដើម្បីជ្រើសរើសទំនិញ និងធ្វើការកុម្ម៉ង់។`
+    });
+
+    const result = await model.generateContent(userMessage);
+    return result.response.text();
+  } catch (error) {
+    return "ចាសបង! តើបងចង់សួរព័ត៌មានបន្ថែមអំពីដំណាប់ចេក ឬចេកបំពង ម៉ូម័រ ដែរឬទេចាស? 🍌";
+  }
+}
+
+// ៣. Logic គណនាប្រូម៉ូសិន
+function calculatePromotion(cartItems) {
+  let subtotal = 0;
+  let bigPackCount = 0;
+  let smallPackCount = 0;
+
+  cartItems.forEach(item => {
+    subtotal += item.price;
+    if (item.name.includes('100g')) {
+      smallPackCount += 1;
+    } else {
+      bigPackCount += 1;
+    }
+  });
+
+  let shippingFee = 8000;
+  let promoMessage = "";
+
+  if (bigPackCount >= 10 || smallPackCount >= 20) {
+    shippingFee = 0;
+    promoMessage = "🎁 ថែមជូនពិសេស៖ FREE ថ្លៃដឹក + ថែម ១ កញ្ចប់ធំ!";
+  } else if (smallPackCount >= 10) {
+    shippingFee = 0;
+    promoMessage = "🚀 ថែមជូនពិសេស៖ FREE ថ្លៃដឹក!";
+  }
+
+  const grandTotal = subtotal + shippingFee;
+  return { subtotal, shippingFee, grandTotal, promoMessage };
+}
+
+// ៤. ទំព័រ Web App (HTML + CSS មានរូបភាពទំនិញ)
+const htmlContent = `
 <!DOCTYPE html>
 <html lang="km">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ម៉ូម័រ MOMORE - Food & Snack Store</title>
-  <link href="https://fonts.googleapis.com/css2?family=Koulen&family=Siemreap:wght@400;700&display=swap" rel="stylesheet">
-  
-  <style>
-    :root {
-      --bg-gradient: linear-gradient(180deg, #991b1b 0%, #450a0a 100%);
-      --accent-yellow: #facc15;
-      --card-bg: #fffbeb;
-      --text-dark: #450a0a;
-    }
-
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: 'Siemreap', sans-serif;
-    }
-
-    body {
-      background: var(--bg-gradient);
-      color: #ffffff;
-      min-height: 100vh;
-      padding-bottom: 40px;
-    }
-
-    header {
-      text-align: center;
-      padding: 30px 15px 20px;
-      background: radial-gradient(circle, #b91c1c 0%, #7f1d1d 100%);
-      border-bottom: 4px solid var(--accent-yellow);
-      box-shadow: 0 4px 15px rgba(0,0,0,0.5);
-    }
-
-    .brand-title {
-      font-family: 'Koulen', cursive;
-      font-size: 3.2rem;
-      color: #ffffff;
-      -webkit-text-stroke: 2px #7f1d1d;
-      filter: drop-shadow(0px 4px 0px #facc15);
-      line-height: 1.1;
-      letter-spacing: 1px;
-    }
-
-    .brand-subtitle {
-      font-family: 'Koulen', cursive;
-      font-size: 1.2rem;
-      color: #facc15;
-      text-shadow: 1px 1px 2px #000;
-      margin-top: 8px;
-    }
-
-    .promo-banner {
-      background: linear-gradient(90deg, #facc15, #f59e0b);
-      color: #7f1d1d;
-      text-align: center;
-      padding: 10px;
-      font-weight: bold;
-      font-size: 0.95rem;
-      margin: 15px;
-      border-radius: 30px;
-      border: 2px solid #ffffff;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.3);
-    }
-
-    .container {
-      padding: 0 12px;
-    }
-
-    .product-grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 12px;
-    }
-
-    .product-card {
-      background-color: var(--card-bg);
-      border-radius: 16px;
-      padding: 10px;
-      text-align: center;
-      border: 2px solid var(--accent-yellow);
-      box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-    }
-
-    .product-img {
-      width: 100%;
-      aspect-ratio: 1 / 1;
-      object-fit: cover;
-      border-radius: 12px;
-      border: 1px solid #fde68a;
-      background-color: #fef08a;
-    }
-
-    .product-title {
-      color: var(--text-dark);
-      font-size: 0.95rem;
-      margin: 8px 0 2px;
-      font-weight: bold;
-    }
-
-    .product-price {
-      color: #dc2626;
-      font-family: 'Koulen', cursive;
-      font-size: 1.1rem;
-      margin-bottom: 8px;
-    }
-
-    .add-btn {
-      width: 100%;
-      background: linear-gradient(180deg, #dc2626 0%, #991b1b 100%);
-      color: #facc15;
-      border: 1px solid #facc15;
-      padding: 8px 0;
-      border-radius: 8px;
-      font-family: 'Koulen', cursive;
-      font-size: 1rem;
-      cursor: pointer;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-    }
-
-    .add-btn:active {
-      transform: scale(0.96);
-    }
-
-    /* ផ្នែករ៉េស៊ីបកន្ត្រកទំនិញ & Payment */
-    .cart-section {
-      margin-top: 25px;
-      background: var(--card-bg);
-      border: 2px solid var(--accent-yellow);
-      border-radius: 16px;
-      padding: 20px 15px;
-      text-align: center;
-      color: var(--text-dark);
-      box-shadow: 0 4px 10px rgba(0,0,0,0.4);
-    }
-
-    .cart-title {
-      font-family: 'Koulen', cursive;
-      font-size: 1.5rem;
-      color: #b91c1c;
-      margin-bottom: 10px;
-    }
-
-    .cart-items-list {
-      list-style: none;
-      text-align: left;
-      margin-bottom: 15px;
-      font-size: 0.95rem;
-    }
-
-    .cart-item {
-      display: flex;
-      justify-content: space-between;
-      border-bottom: 1px dashed #cbd5e1;
-      padding: 6px 0;
-      color: #1e293b;
-    }
-
-    .total-box {
-      font-family: 'Koulen', cursive;
-      font-size: 1.6rem;
-      color: #dc2626;
-      background: #fef08a;
-      padding: 8px 0;
-      border-radius: 10px;
-      margin-bottom: 15px;
-      border: 1px dashed #eab308;
-    }
-
-    .account-name {
-      font-weight: bold;
-      font-size: 1rem;
-      color: #1e293b;
-      margin-bottom: 10px;
-    }
-
-    /* ប៊ូតុង Telegram & KHQR */
-    .btn-group {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      margin-top: 10px;
-    }
-
-    .telegram-btn {
-      display: block;
-      width: 100%;
-      background: linear-gradient(135deg, #0284c7, #0369a1);
-      color: #ffffff;
-      text-decoration: none;
-      padding: 12px 15px;
-      border-radius: 10px;
-      font-family: 'Koulen', cursive;
-      font-size: 1.1rem;
-      box-shadow: 0 4px 10px rgba(3, 105, 161, 0.4);
-      border: 1px solid #7dd3fc;
-      cursor: pointer;
-    }
-
-    .khqr-btn {
-      display: block;
-      width: 100%;
-      background: linear-gradient(135deg, #15803d, #16a34a);
-      color: #ffffff;
-      text-decoration: none;
-      padding: 12px 15px;
-      border-radius: 10px;
-      font-family: 'Koulen', cursive;
-      font-size: 1.1rem;
-      box-shadow: 0 4px 10px rgba(22, 163, 74, 0.4);
-      border: 1px solid #86efac;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ម៉ូម័រ MoMore Snack Store</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Kantumruy+Pro:wght@400;600;700&family=Koulen&display=swap" rel="stylesheet">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Kantumruy Pro', sans-serif; }
+        body { background: #0d0d11; color: #FFFFFF; padding: 16px; padding-bottom: 110px; }
+        header { text-align: center; padding: 20px 10px; background: linear-gradient(135deg, #1f1c2c, #928dab); border-radius: 16px; margin-bottom: 15px; }
+        header h1 { font-family: 'Koulen', cursive; color: #FFD700; font-size: 2.2rem; }
+        header p { color: #e0e0e0; font-size: 0.85rem; font-weight: 600; }
+        .promo-banner { background: linear-gradient(90deg, #FF416C, #FF4B2B); color: #fff; padding: 12px; border-radius: 12px; margin-bottom: 20px; text-align: center; font-weight: 700; font-size: 0.8rem; line-height: 1.5; }
+        .section-title { color: #FFD700; font-size: 1.1rem; margin: 25px 0 12px; font-weight: 700; display: flex; align-items: center; gap: 8px; }
+        .section-title::before { content: ''; width: 4px; height: 18px; background: #FFD700; border-radius: 2px; }
+        .product-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; }
+        .product-card { background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 14px; padding: 10px; text-align: center; display: flex; flex-direction: column; justify-content: space-between; }
+        .product-img { width: 100%; height: 110px; object-fit: cover; border-radius: 10px; margin-bottom: 8px; background: #222; }
+        .product-title { font-size: 0.82rem; font-weight: 600; margin-bottom: 4px; color: #f0f0f0; }
+        .product-price { color: #FFD700; font-size: 0.95rem; font-weight: 700; margin: 4px 0; }
+        .add-btn { background: linear-gradient(135deg, #FF416C, #FF4B2B); color: white; border: none; padding: 8px; border-radius: 8px; font-weight: 700; font-size: 0.8rem; cursor: pointer; width: 100%; }
+        .footer-cart { position: fixed; bottom: 15px; left: 15px; right: 15px; background: rgba(20, 20, 28, 0.95); border: 1px solid rgba(255, 215, 0, 0.3); padding: 12px 20px; border-radius: 16px; display: flex; justify-content: space-between; align-items: center; z-index: 999; }
+        .checkout-btn { background: linear-gradient(135deg, #FFD700, #FFA500); color: #000; border: none; padding: 10px 18px; border-radius: 10px; font-weight: 700; font-size: 0.85rem; }
+    </style>
 </head>
 <body>
+    <header>
+        <h1>ម៉ូម័រ MOMORE</h1>
+        <p>PREMIUM SNACK STORE</p>
+    </header>
+    
+    <div class="promo-banner">
+        🔥 ទិញកញ្ចប់ធំ ១០ = FREE ដឹក + ថែម ១ កញ្ចប់ធំ!<br>
+        ✨ ទិញកញ្ចប់តូច ២០ = FREE ដឹក + ថែម ១ កញ្ចប់ធំ | ទិញ ១០ = FREE ដឹក!
+    </div>
 
-  <header>
-    <div class="brand-title">ម៉ូម័រ MOMORE</div>
-    <div class="brand-subtitle">🍌 ដំណាប់ចេកណាំវ៉ាខ្មែរ 🍌</div>
-  </header>
-
-  <div class="promo-banner">
-    🔥 កម្មវិធីពិសេស៖ ទិញ ៥ ថែម ១ (BUY 5 GET 1) 🔥
-  </div>
-
-  <div class="container">
+    <div class="section-title">🍌 ចេកបំពងស្រួយ ម៉ូម័រ</div>
     <div class="product-grid">
-
-      <!-- Menu ទី១ -->
-      <div class="product-card">
-        <img src="images/banana-original.jpg" alt="ដំណាប់ចេកខ្មែរ សាច់ទន់ រស់ជាតិដើម" class="product-img">
-        <div class="product-title">ដំណាប់ចេកខ្មែរ សាច់ទន់ រស់ជាតិដើម</div>
-        <div class="product-price">10,000 ៛</div>
-        <button class="add-btn" onclick="addToCart('ដំណាប់ចេកខ្មែរ សាច់ទន់', 10000)">+ កុម្ម៉ង់ទិញ</button>
-      </div>
-
-      <!-- Menu ទី២ -->
-      <div class="product-card">
-        <img src="images/banana-grains.jpg" alt="ដំណាប់ចេក រោយធញ្ញជាតិគ្រប់មុខ" class="product-img">
-        <div class="product-title">ដំណាប់ចេក រោយធញ្ញជាតិគ្រប់មុខ</div>
-        <div class="product-price">12,000 ៛</div>
-        <button class="add-btn" onclick="addToCart('ដំណាប់ចេក រោយធញ្ញជាតិ', 12000)">+ កុម្ម៉ង់ទិញ</button>
-      </div>
-
-      <!-- Menu ទី៣ -->
-      <div class="product-card">
-        <img src="images/banana-almond.jpg" alt="ដំណាប់ចេករោយគ្រាប់ អាល់ម៉ុន" class="product-img">
-        <div class="product-title">ដំណាប់ចេករោយគ្រាប់ អាល់ម៉ុន</div>
-        <div class="product-price">12,000 ៛</div>
-        <button class="add-btn" onclick="addToCart('ដំណាប់ចេករោយ អាល់ម៉ុន', 12000)">+ កុម្ម៉ង់ទិញ</button>
-      </div>
-
-      <!-- Menu ទី៤ -->
-      <div class="product-card">
-        <img src="images/banana-coconut.jpg" alt="ដំណាប់ចេករោយដូង" class="product-img">
-        <div class="product-title">ដំណាប់ចេករោយដូង</div>
-        <div class="product-price">12,000 ៛</div>
-        <button class="add-btn" onclick="addToCart('ដំណាប់ចេករោយដូង', 12000)">+ កុម្ម៉ង់ទិញ</button>
-      </div>
-
+        <div class="product-card">
+            <div>
+                <img class="product-img" src="https://placehold.co/200x200/222/FFD700?text=Banana+Chips" alt="Original">
+                <div class="product-title">Original (500g)</div>
+                <div class="product-price">15,000 ៛</div>
+            </div>
+            <button class="add-btn" onclick="addToCart('ចេកបំពង Original 500g', 15000)">+ បន្ថែម</button>
+        </div>
+        <div class="product-card">
+            <div>
+                <img class="product-img" src="https://placehold.co/200x200/222/FFD700?text=Chocolate" alt="Chocolate">
+                <div class="product-title">Milk Chocolate (200g)</div>
+                <div class="product-price">14,000 ៛</div>
+            </div>
+            <button class="add-btn" onclick="addToCart('ចេកបំពង Chocolate 200g', 14000)">+ បន្ថែម</button>
+        </div>
+        <div class="product-card">
+            <div>
+                <img class="product-img" src="https://placehold.co/200x200/222/FFD700?text=Cheese" alt="Cheese">
+                <div class="product-title">Milk Cheese (200g)</div>
+                <div class="product-price">14,000 ៛</div>
+            </div>
+            <button class="add-btn" onclick="addToCart('ចេកបំពង Cheese 200g', 14000)">+ បន្ថែម</button>
+        </div>
+        <div class="product-card">
+            <div>
+                <img class="product-img" src="https://placehold.co/200x200/222/FFD700?text=Spicy+Garlic" alt="Garlic">
+                <div class="product-title">Spicy Garlic 🧄 (200g)</div>
+                <div class="product-price">14,000 ៛</div>
+            </div>
+            <button class="add-btn" onclick="addToCart('ចេកបំពង Spicy Garlic 200g', 14000)">+ បន្ថែម</button>
+        </div>
     </div>
 
-    <!-- ផ្នែករ៉េស៊ីបកន្ត្រកទំនិញ & ទូទាត់ប្រាក់ -->
-    <div class="cart-section">
-      <div class="cart-title">🛒 រ៉េស៊ីបបញ្ជាទិញរបស់អ្នក</div>
-      <ul id="cart-list" class="cart-items-list">
-        <li style="text-align: center; color: #64748b;">មិនទាន់មានទំនិញក្នុងកន្ត្រកនៅឡើយ</li>
-      </ul>
-
-      <div class="total-box">
-        សរុប៖ <span id="total-price">0</span> ៛
-      </div>
-
-      <div class="account-name">💳 ឈ្មោះគណនី៖ SORM SOURPUNARY</div>
-      
-      <div class="btn-group">
-        <!-- ប៊ូតុងផ្ញើរ៉េស៊ីបចូល Telegram លេខ 067 6789 56 -->
-        <button onclick="sendToTelegram()" class="telegram-btn">
-          ✈️ ផ្ញើកុម្ម៉ង់ចូល Telegram (067 6789 56)
-        </button>
-
-        <!-- ប៊ូតុងទូទាត់ KHQR -->
-        <a href="https://acledabank.com.kh/acleda?payment_data=qWY5B2SAUfIhLblxzOtfu5ckLzMHjaSki6Ru0bsOyNK+ylPBgZ0sHH6BeGUscKoEGb6QgufwUu6yMqn6HT4Eeca24px5MrMJRdBkaYr1RiIKZ6atFD7qirkscOus5envQw5ClFg0yZX6gGE4qCBZfu42/X3B4VODrcoMRGLy6QoSYeB+OECqwnIVZ1T0FCQjYsC36qrYOeaYG9XByWRxYrLXvKOdUab8QkQw2KFRhyE=&key=khqr" target="_blank" class="khqr-btn">
-          📲 ទូទាត់ប្រាក់តាម KHQR
-        </a>
-      </div>
+    <div class="section-title">🍌 ដំណាប់ចេក ណាំវ៉ាខ្មែរ</div>
+    <div class="product-grid">
+        <div class="product-card">
+            <div>
+                <img class="product-img" src="https://placehold.co/200x200/222/FFD700?text=Original+Jam" alt="ដំណាប់ចេក">
+                <div class="product-title">រសជាតិដើម (200g)</div>
+                <div class="product-price">10,000 ៛</div>
+            </div>
+            <button class="add-btn" onclick="addToCart('ដំណាប់ចេក រសជាតិដើម 200g', 10000)">+ បន្ថែម</button>
+        </div>
+        <div class="product-card">
+            <div>
+                <img class="product-img" src="https://placehold.co/200x200/222/FFD700?text=Sesame" alt="រោយល្ង">
+                <div class="product-title">រោយល្ង ស/ខ្មៅ (200g)</div>
+                <div class="product-price">10,000 ៛</div>
+            </div>
+            <button class="add-btn" onclick="addToCart('ដំណាប់ចេក រោយល្ង 200g', 10000)">+ បន្ថែម</button>
+        </div>
+        <div class="product-card">
+            <div>
+                <img class="product-img" src="https://placehold.co/200x200/222/FFD700?text=Almond" alt="អាល់ម៉ុន">
+                <div class="product-title">រោយអាល់ម៉ុន (200g)</div>
+                <div class="product-price">12,000 ៛</div>
+            </div>
+            <button class="add-btn" onclick="addToCart('ដំណាប់ចេក អាល់ម៉ុន 200g', 12000)">+ បន្ថែម</button>
+        </div>
     </div>
 
-  </div>
+    <div class="footer-cart">
+        <div style="font-weight: 700; font-size: 0.9rem;">សរុប: <span id="total-price" style="color:#FFD700; font-size: 1.05rem;">0</span> ៛</div>
+        <button class="checkout-btn" onclick="sendOrder()">កម៉្មង់ឥឡូវនេះ 🛒</button>
+    </div>
 
-  <script>
-    let cart = [];
-    let totalPrice = 0;
+    <script>
+        let tg = window.Telegram.WebApp;
+        tg.expand();
+        let totalPrice = 0;
+        let cart = [];
 
-    function addToCart(name, price) {
-      cart.push({ name, price });
-      totalPrice += price;
-      updateCartUI();
-    }
+        function addToCart(name, price) {
+            cart.push({ name, price });
+            totalPrice += price;
+            document.getElementById('total-price').innerText = totalPrice.toLocaleString();
+        }
 
-    function updateCartUI() {
-      const cartList = document.getElementById('cart-list');
-      const totalPriceEl = document.getElementById('total-price');
-
-      if (cart.length === 0) {
-        cartList.innerHTML = '<li style="text-align: center; color: #64748b;">មិនទាន់មានទំនិញក្នុងកន្ត្រកនៅឡើយ</li>';
-      } else {
-        cartList.innerHTML = '';
-        cart.forEach((item, index) => {
-          cartList.innerHTML += `
-            <li class="cart-item">
-              <span>${index + 1}. ${item.name}</span>
-              <b>${item.price.toLocaleString()} ៛</b>
-            </li>
-          `;
-        });
-      }
-
-      totalPriceEl.innerText = totalPrice.toLocaleString();
-    }
-
-    // មុខងារផ្ញើសារចូល Telegram លេខ 067 6789 56 (+85567678956)
-    function sendToTelegram() {
-      if (cart.length === 0) {
-        alert('សូមជ្រើសរើសទំនិញមុននឹងផ្ញើ!');
-        return;
-      }
-
-      let orderText = "សួស្តី! ខ្ញុំចង់កុម្ម៉ង់ទិញ៖\n";
-      cart.forEach((item, i) => {
-        orderText += `${i + 1}. ${item.name} - ${item.price.toLocaleString()} ៛\n`;
-      });
-      orderText += `\n💰 សរុបទាំងអស់៖ ${totalPrice.toLocaleString()} ៛`;
-
-      // ភ្ជាប់ជាមួយ Telegram phone +85567678956
-      const telegramUrl = `https://t.me/+85567678956?text=${encodeURIComponent(orderText)}`;
-      window.open(telegramUrl, '_blank');
-    }
-  </script>
-
+        function sendOrder() {
+            if (cart.length === 0) return alert("សូមជ្រើសរើសទំនិញ!");
+            tg.sendData(JSON.stringify({ items: cart }));
+        }
+    </script>
 </body>
 </html>
+`;
+
+app.get('/', (req, res) => {
+  res.send(htmlContent);
+});
+
+// ៥. Telegram Bot Message Handler
+bot.on('message', async (msg) => {
+  const chatId = msg.chat.id;
+
+  if (msg.web_app_data) {
+    try {
+      const data = JSON.parse(msg.web_app_data.data);
+      const promoResult = calculatePromotion(data.items);
+      
+      let orderList = data.items.map((i, index) => `${index + 1}. ${i.name} - ${i.price.toLocaleString()} ៛`).join('\n');
+      
+      let receiptMessage = 
+`🧾 **វិក្កយបត្របញ្ជាទិញ / ORDER RECEIPT**
+----------------------------------------
+🏷️ **ហាង ម៉ូម័រ MOMORE SNACK STORE**
+----------------------------------------
+
+📦 **មុខទំនិញដែលបានជ្រើសរើស ៖**
+${orderList}
+
+----------------------------------------
+💵 **សរុបទំនិញ (Subtotal) ៖** ${promoResult.subtotal.toLocaleString()} ៛
+🚚 **ថ្លៃដឹកជញ្ជូន (Shipping) ៖** ${promoResult.shippingFee.toLocaleString()} ៛
+${promoResult.promoMessage ? `\n${promoResult.promoMessage}\n` : ''}----------------------------------------
+💰 **ទឹកប្រាក់ត្រូវទូទាត់ (Total) ៖** **${promoResult.grandTotal.toLocaleString()} ៛**
+========================================
+
+📲 **សូមស្កែន QR Code ខាងក្រោម ដើម្បីទូទាត់ប្រាក់ ៖**
+(បន្ទាប់ពីទូទាត់រួច សូមផ្ញើ **Slip ធនាគារ** និង **ទីតាំង/លេខទូរស័ព្ទ** មកកាន់ទីនេះ)`;
+
+      // ផ្ញើវិក្កយបត្រ
+      await bot.sendMessage(chatId, receiptMessage, { parse_mode: 'Markdown' });
+
+      // ផ្ញើរូបភាព ABA KHQR Code ពិតប្រាកដ
+      await bot.sendPhoto(chatId, ABA_QR_IMAGE_URL, {
+        caption: `📌 ស្កែន ABA KHQR ដើម្បីទូទាត់ចំនួន ៖ ${promoResult.grandTotal.toLocaleString()} ៛`
+      });
+
+    } catch (e) {
+      bot.sendMessage(chatId, "មានបញ្ហាក្នុងការរៀបចំវិក្កយបត្រ!");
+    }
+  } 
+  else if (msg.text === '/start') {
+    const appUrl = process.env.RENDER_EXTERNAL_URL || 'https://momore-bot.onrender.com';
+    bot.sendMessage(chatId, "ស្វាគមន៍មកកាន់ ម៉ូម័រ MoMore Snack Store! 🍌\nសូមចុចប៊ូតុងខាងក្រោមដើម្បីចូលមើលមុខហាង ឬសួរនាំព័ត៌មានបន្ថែមបានចាស៖", {
+      reply_markup: {
+        keyboard: [
+          [{ text: "🛍️ បើកហាង MoMore Mini App", web_app: { url: appUrl } }]
+        ],
+        resize_keyboard: true
+      }
+    });
+  } 
+  else if (msg.text) {
+    bot.sendChatAction(chatId, 'typing');
+    const aiResponse = await askGeminiAI(msg.text);
+    bot.sendMessage(chatId, aiResponse);
+  }
+});
+
+const PORT = process.env.PORT || 10000;
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
