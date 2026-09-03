@@ -1,320 +1,211 @@
+const TelegramBot = require('node-telegram-bot-api');
 const express = require('express');
-const axios = require('axios');
-const qrcode = require('qrcode');
+
+const token = '8679348511:AAEMMhddjhxN6zuX2d2fMSvBxg0CcBGNBg0';
+const bot = new TelegramBot(token, { polling: true });
 
 const app = express();
 app.use(express.json());
 
-// Telegram Bot Token & Chat ID
-const TELEGRAM_BOT_TOKEN = process.env.BOT_TOKEN || 'YOUR_TELEGRAM_BOT_TOKEN';
-const ADMIN_CHAT_ID = process.env.ADMIN_CHAT_ID || 'YOUR_ADMIN_CHAT_ID';
+// ១. អនុវត្ត Logic គណនាប្រូម៉ូសិន និងថ្លៃដឹក
+function calculatePromotion(cartItems) {
+  let subtotal = 0;
+  let bigPackCount = 0;
+  let smallPackCount = 0;
 
-// ====================================================
-// 1. FUNCTION គណនា CRC16-CCITT តាមស្តង់ដារ KHQR
-// ====================================================
-function crc16(data) {
-    let crc = 0xFFFF;
-    for (let i = 0; i < data.length; i++) {
-        crc ^= data.charCodeAt(i) << 8;
-        for (let j = 0; j < 8; j++) {
-            if ((crc & 0x8000) !== 0) {
-                crc = ((crc << 1) ^ 0x1021) & 0xFFFF;
-            } else {
-                crc = (crc << 1) & 0xFFFF;
-            }
-        }
+  cartItems.forEach(item => {
+    subtotal += item.price;
+    // ឆែកមើលទំហំកញ្ចប់តាមឈ្មោះទំនិញ
+    if (item.name.includes('100g')) {
+      smallPackCount += 1;
+    } else {
+      bigPackCount += 1; // 200g, 300g, 500g ចាត់ទុកជាកញ្ចប់ធំ
     }
-    return crc.toString(16).toUpperCase().padStart(4, '0');
+  });
+
+  let shippingFee = 8000;
+  let hasFreeGift = false;
+  let promoMessage = "";
+
+  // លក្ខខណ្ឌ ១: ទិញកញ្ចប់ធំ ១០ កញ្ចប់ => Free ដឹក + ថែម ១ កញ្ចប់ធំ
+  if (bigPackCount >= 10) {
+    shippingFee = 0;
+    hasFreeGift = true;
+    promoMessage = "🎁 PROMO: ទទួលបានសេវាដឹក FREE + ថែមជូនកញ្ចប់ធំ ១ (ជ្រើសរើសរសជាតិ)!";
+  } 
+  // លក្ខខណ្ឌ ២: ទិញកញ្ចប់តូច ២០ កញ្ចប់ => Free ដឹក + ថែម ១ កញ្ចប់ធំ
+  else if (smallPackCount >= 20) {
+    shippingFee = 0;
+    hasFreeGift = true;
+    promoMessage = "🎁 PROMO: ទទួលបានសេវាដឹក FREE + ថែមជូនកញ្ចប់ធំ ១ (ជ្រើសរើសរសជាតិ)!";
+  } 
+  // លក្ខខណ្ឌ ៣: ទិញកញ្ចប់តូច ១០ កញ្ចប់ => Free ដឹក
+  else if (smallPackCount >= 10) {
+    shippingFee = 0;
+    promoMessage = "🚀 PROMO: ទទួលបានសេវាដឹក FREE!";
+  }
+
+  const grandTotal = subtotal + shippingFee;
+
+  return {
+    subtotal,
+    shippingFee,
+    grandTotal,
+    hasFreeGift,
+    promoMessage
+  };
 }
 
-// ====================================================
-// 2. FUNCTION បង្កើត ACLEDA MERCHANT KHQR
-// ====================================================
-function generateAcledaMerchantKHQR(amount, currency = "USD") {
-    const currCode = currency === "USD" ? "840" : "116";
-    const amtStr = parseFloat(amount).toFixed(2);
+// ២. ទំព័រមុខហាង Mini App
+const htmlContent = `
+<!DOCTYPE html>
+<html lang="km">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ម៉ូម័រ MoMore Snack Store</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Kantumruy+Pro:wght@400;600;700&family=Koulen&display=swap" rel="stylesheet">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Kantumruy Pro', sans-serif; }
+        body { background: #0d0d11; color: #FFFFFF; padding: 16px; padding-bottom: 110px; }
+        
+        header { text-align: center; padding: 20px 10px; background: linear-gradient(135deg, #1f1c2c, #928dab); border-radius: 16px; box-shadow: 0 8px 20px rgba(0,0,0,0.5); margin-bottom: 15px; border: 1px solid rgba(255, 255, 255, 0.1); }
+        header h1 { font-family: 'Koulen', cursive; color: #FFD700; font-size: 2.2rem; letter-spacing: 1.5px; text-shadow: 0 2px 10px rgba(255,215,0,0.4); }
+        header p { color: #e0e0e0; font-size: 0.85rem; font-weight: 600; letter-spacing: 2px; }
+        
+        .promo-banner { background: linear-gradient(90deg, #FF416C, #FF4B2B); color: #fff; padding: 12px; border-radius: 12px; margin-bottom: 20px; text-align: center; font-weight: 700; font-size: 0.8rem; line-height: 1.5; box-shadow: 0 4px 15px rgba(255,65,108,0.3); }
+        
+        .section-title { color: #FFD700; font-size: 1.1rem; margin: 25px 0 12px; font-weight: 700; display: flex; align-items: center; gap: 8px; }
+        .section-title::before { content: ''; width: 4px; height: 18px; background: #FFD700; border-radius: 2px; }
+        
+        .product-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; }
+        .product-card { background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 14px; padding: 12px; text-align: center; display: flex; flex-direction: column; justify-content: space-between; }
+        .product-title { font-size: 0.82rem; font-weight: 600; margin-bottom: 6px; color: #f0f0f0; line-height: 1.3; }
+        .product-price { color: #FFD700; font-size: 1rem; font-weight: 700; margin: 6px 0; }
+        
+        .add-btn { background: linear-gradient(135deg, #FF416C, #FF4B2B); color: white; border: none; padding: 8px; border-radius: 8px; font-weight: 700; font-size: 0.8rem; cursor: pointer; width: 100%; box-shadow: 0 3px 10px rgba(255,65,108,0.2); }
+        .footer-cart { position: fixed; bottom: 15px; left: 15px; right: 15px; background: rgba(20, 20, 28, 0.95); backdrop-filter: blur(15px); border: 1px solid rgba(255, 215, 0, 0.3); padding: 12px 20px; border-radius: 16px; display: flex; justify-content: space-between; align-items: center; z-index: 999; box-shadow: 0 10px 30px rgba(0,0,0,0.8); }
+        .checkout-btn { background: linear-gradient(135deg, #FFD700, #FFA500); color: #000; border: none; padding: 10px 18px; border-radius: 10px; font-weight: 700; font-size: 0.85rem; }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>ម៉ូម័រ MOMORE</h1>
+        <p>PREMIUM SNACK STORE</p>
+    </header>
+    
+    <div class="promo-banner">
+        🔥 ទិញកញ្ចប់ធំ ១០ = FREE ដឹក + ថែម ១ កញ្ចប់ធំ!<br>
+        ✨ ទិញកញ្ចប់តូច ២០ = FREE ដឹក + ថែម ១ កញ្ចប់ធំ | ទិញ ១០ = FREE ដឹក!
+    </div>
 
-    // Structure ដើមដែលទាញចេញពីរូបភាពប័ណ្ណ KHQR ផ្លូវការ (Merchant ID: 15198798)
-    let payload = "000201"; // Format Indicator
-    payload += "010212";   // Dynamic Initiation Method
-    payload += "30380009khqr@aclb0111855151987980206ACLEDA"; // Merchant Tag 30
-    payload += "391300042CCY01011"; // Acleda Specific Tag
-    payload += "52045399"; // Category Code
-    payload += `5303${currCode}`; // Currency
-    payload += `54${String(amtStr.length).padStart(2, '0')}${amtStr}`; // Amount
-    payload += "5802KH";
-    payload += "5915Sorm Sourpunary"; // Merchant Name
-    payload += "6010Phnom Penh"; // City
+    <div class="section-title">🍌 ចេកបំពងស្រួយ ម៉ូម័រ</div>
+    <div class="product-grid">
+        <div class="product-card"><div><div class="product-title">Original (500g)</div><div class="product-price">15,000 ៛</div></div><button class="add-btn" onclick="addToCart('ចេកបំពង Original 500g', 15000)">+ បន្ថែម</button></div>
+        <div class="product-card"><div><div class="product-title">Milk Chocolate (200g)</div><div class="product-price">14,000 ៛</div></div><button class="add-btn" onclick="addToCart('ចេកបំពង Chocolate 200g', 14000)">+ បន្ថែម</button></div>
+        <div class="product-card"><div><div class="product-title">Milk Chocolate (100g)</div><div class="product-price">7,000 ៛</div></div><button class="add-btn" onclick="addToCart('ចេកបំពង Chocolate 100g', 7000)">+ បន្ថែម</button></div>
+        <div class="product-card"><div><div class="product-title">Milk Cheese (200g)</div><div class="product-price">14,000 ៛</div></div><button class="add-btn" onclick="addToCart('ចេកបំពង Cheese 200g', 14000)">+ បន្ថែម</button></div>
+        <div class="product-card"><div><div class="product-title">Milk Cheese (100g)</div><div class="product-price">7,000 ៛</div></div><button class="add-btn" onclick="addToCart('ចេកបំពង Cheese 100g', 7000)">+ បន្ថែម</button></div>
+        <div class="product-card"><div><div class="product-title">Spicy Garlic 🧄 (200g)</div><div class="product-price">14,000 ៛</div></div><button class="add-btn" onclick="addToCart('ចេកបំពង Spicy Garlic 200g', 14000)">+ បន្ថែម</button></div>
+        <div class="product-card"><div><div class="product-title">Spicy Garlic 🧄 (100g)</div><div class="product-price">7,000 ៛</div></div><button class="add-btn" onclick="addToCart('ចេកបំពង Spicy Garlic 100g', 7000)">+ បន្ថែម</button></div>
+        <div class="product-card"><div><div class="product-title">BBQ 🍖 (200g)</div><div class="product-price">14,000 ៛</div></div><button class="add-btn" onclick="addToCart('ចេកបំពង BBQ 200g', 14000)">+ បន្ថែម</button></div>
+        <div class="product-card"><div><div class="product-title">BBQ 🍖 (100g)</div><div class="product-price">7,000 ៛</div></div><button class="add-btn" onclick="addToCart('ចេកបំពង BBQ 100g', 7000)">+ បន្ថែម</button></div>
+    </div>
 
-    payload += "6304";
-    const crcVal = crc16(payload);
-    return payload + crcVal;
-}
+    <div class="section-title">🍌 ដំណាប់ចេក ណាំវ៉ាខ្មែរ (៩ មុខ)</div>
+    <div class="product-grid">
+        <div class="product-card"><div><div class="product-title">រសជាតិដើម (200g)</div><div class="product-price">10,000 ៛</div></div><button class="add-btn" onclick="addToCart('ដំណាប់ចេក រសជាតិដើម 200g', 10000)">+ បន្ថែម</button></div>
+        <div class="product-card"><div><div class="product-title">រោយល្ង ស/ខ្មៅ (200g)</div><div class="product-price">10,000 ៛</div></div><button class="add-btn" onclick="addToCart('ដំណាប់ចេក រោយល្ង 200g', 10000)">+ បន្ថែម</button></div>
+        <div class="product-card"><div><div class="product-title">រោយអាល់ម៉ុន (200g)</div><div class="product-price">12,000 ៛</div></div><button class="add-btn" onclick="addToCart('ដំណាប់ចេក អាល់ម៉ុន 200g', 12000)">+ បន្ថែម</button></div>
+        <div class="product-card"><div><div class="product-title">ធញ្ញជាតិគ្រប់មុខ (200g)</div><div class="product-price">12,000 ៛</div></div><button class="add-btn" onclick="addToCart('ដំណាប់ចេក ធញ្ញជាតិ 200g', 12000)">+ បន្ថែម</button></div>
+        <div class="product-card"><div><div class="product-title">រោយដូង (200g)</div><div class="product-price">12,000 ៛</div></div><button class="add-btn" onclick="addToCart('ដំណាប់ចេក រោយដូង 200g', 12000)">+ បន្ថែម</button></div>
+        <div class="product-card"><div><div class="product-title">ដំណាប់ចេកមូល (200g)</div><div class="product-price">10,000 ៛</div></div><button class="add-btn" onclick="addToCart('ដំណាប់ចេកមូល 200g', 10000)">+ បន្ថែម</button></div>
+        <div class="product-card"><div><div class="product-title">ស្នូលសូកូឡាដូង លាយល្ង (300g)</div><div class="product-price">20,000 ៛</div></div><button class="add-btn" onclick="addToCart('ដំណាប់ចេក ស្នូលសូកូឡាដូងល្ង 300g', 20000)">+ បន្ថែម</button></div>
+        <div class="product-card"><div><div class="product-title">ស្នូលសូកូឡាចន្ទី (300g)</div><div class="product-price">20,000 ៛</div></div><button class="add-btn" onclick="addToCart('ដំណាប់ចេក ស្នូលសូកូឡាចន្ទី 300g', 20000)">+ បន្ថែម</button></div>
+        <div class="product-card"><div><div class="product-title">ស្នូលសូកូឡាដូង (300g)</div><div class="product-price">20,000 ៛</div></div><button class="add-btn" onclick="addToCart('ដំណាប់ចេក ស្នូលសូកូឡាដូង 300g', 20000)">+ បន្ថែម</button></div>
+    </div>
 
-// ====================================================
-// 3. API ទទួលការកុម្ម៉ង់ (ORDER API)
-// ====================================================
-app.post('/api/order', async (req, res) => {
-    try {
-        const { product, quantity, totalPrice, phone, note, userName } = req.body;
+    <div class="footer-cart">
+        <div style="font-weight: 700; font-size: 0.9rem;">សរុប: <span id="total-price" style="color:#FFD700; font-size: 1.05rem;">0</span> ៛</div>
+        <button class="checkout-btn" onclick="sendOrder()">កម៉្មង់ឥឡូវនេះ 🛒</button>
+    </div>
 
-        // បង្កើត KHQR String ដោយប្រើ Structure ផ្លូវការ
-        const khqrString = generateAcledaMerchantKHQR(totalPrice, "USD");
+    <script>
+        let tg = window.Telegram.WebApp;
+        tg.expand();
+        let totalPrice = 0;
+        let cart = [];
 
-        // បង្កើតរូបភាព QR Code ច្បាស់កម្រិតខ្ពស់
-        const qrImageDataUrl = await qrcode.toDataURL(khqrString, {
-            errorCorrectionLevel: 'M',
-            margin: 2,
-            width: 380,
-            color: {
-                dark: '#000000',
-                light: '#FFFFFF'
-            }
-        });
-
-        // ផ្ញើសារដំណឹងទៅ Telegram Admin
-        const messageText = `
-🛍️ **ការកុម្ម៉ង់ថ្មីពី MoMore Snacks!**
------------------------------
-👤 **អតិថិជន:** ${userName || 'មិនបានបញ្ជាក់'}
-📞 **លេខទូរស័ព្ទ:** ${phone}
-📦 **មុខទំនិញ:** ${product}
-🔢 **ចំនួនសរុប:** ${quantity}
-💰 **ទឹកប្រាក់សរុប:** $${totalPrice}
-📍 **ទីតាំង/ចំណាំ:** ${note || 'គ្មាន'}
------------------------------
-⏰ ម៉ោង៖ ${new Date().toLocaleString('km-KH', { timeZone: 'Asia/Phnom_Penh' })}
-        `;
-
-        if (TELEGRAM_BOT_TOKEN !== 'YOUR_TELEGRAM_BOT_TOKEN') {
-            await axios.post(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
-                chat_id: ADMIN_CHAT_ID,
-                text: messageText,
-                parse_mode: 'Markdown'
-            });
+        function addToCart(name, price) {
+            cart.push({ name, price });
+            totalPrice += price;
+            document.getElementById('total-price').innerText = totalPrice.toLocaleString();
         }
 
-        res.json({
-            success: true,
-            qrImage: qrImageDataUrl
-        });
+        function sendOrder() {
+            if (cart.length === 0) return alert("សូមជ្រើសរើសទំនិញ!");
+            tg.sendData(JSON.stringify({ items: cart }));
+        }
+    </script>
+</body>
+</html>
+`;
 
-    } catch (error) {
-        console.error("Order processing error:", error);
-        res.status(500).json({ success: false, error: error.message });
-    }
-});
-
-// ====================================================
-// 4. FRONTEND MINI APP (HTML)
-// ====================================================
 app.get('/', (req, res) => {
-    res.send(`
-    <!DOCTYPE html>
-    <html lang="km">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>ម៉ូម៉ែ MoMore Snacks Store</title>
-        <script src="https://telegram.org/js/telegram-web-app.js"></script>
-        <link href="https://fonts.googleapis.com/css2?family=Kantumruy+Pro:wght@400;600;700&display=swap" rel="stylesheet">
-        <style>
-            * { box-sizing: border-box; font-family: 'Kantumruy Pro', sans-serif; margin: 0; padding: 0; }
-            body { background-color: #FAFAFA; color: #1F2937; padding-bottom: 90px; }
-            .header { background: linear-gradient(135deg, #D97706 0%, #B45309 100%); color: white; padding: 20px 16px; border-radius: 0 0 20px 20px; }
-            .header h1 { font-size: 20px; font-weight: 700; margin-bottom: 4px; }
-            .header p { font-size: 12px; opacity: 0.9; }
-            .promo-container { padding: 12px 16px; }
-            .promo-card { background: #FEF3C7; border: 1px dashed #F59E0B; padding: 10px 14px; border-radius: 12px; color: #92400E; font-size: 13px; font-weight: 600; }
-            .section-title { font-size: 15px; font-weight: 700; margin: 10px 16px; color: #374151; }
-            .product-grid { padding: 0 16px; display: flex; flex-direction: column; gap: 12px; }
-            .product-card { background: white; border-radius: 16px; padding: 14px; box-shadow: 0 2px 10px rgba(0,0,0,0.04); border: 1px solid #F3F4F6; display: flex; gap: 12px; align-items: center; }
-            .product-img-box { width: 70px; height: 70px; background: #FFFBEB; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 30px; flex-shrink: 0; }
-            .product-info { flex-grow: 1; }
-            .product-title { font-size: 14px; font-weight: 700; color: #111827; }
-            .product-desc { font-size: 11px; color: #6B7280; margin-bottom: 6px; }
-            .product-price { font-size: 15px; font-weight: 700; color: #D97706; }
-            .qty-control { display: flex; align-items: center; background: #F3F4F6; border-radius: 8px; padding: 2px; }
-            .qty-btn { width: 28px; height: 28px; border: none; background: white; border-radius: 6px; font-weight: bold; font-size: 16px; color: #D97706; cursor: pointer; }
-            .qty-num { width: 26px; text-align: center; font-size: 13px; font-weight: 700; }
-            .bottom-bar { position: fixed; bottom: 0; left: 0; right: 0; background: white; padding: 12px 16px; box-shadow: 0 -4px 20px rgba(0,0,0,0.08); display: flex; justify-content: space-between; align-items: center; border-radius: 16px 16px 0 0; }
-            .cart-total-price { font-size: 18px; font-weight: 700; color: #D97706; }
-            .btn-checkout { background: linear-gradient(135deg, #D97706, #B45309); color: white; border: none; padding: 12px 24px; border-radius: 12px; font-weight: 700; font-size: 14px; cursor: pointer; }
-            .modal { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); backdrop-filter: blur(4px); justify-content:center; align-items:center; z-index: 999; }
-            .modal-content { background:white; padding:20px; border-radius:20px; width:88%; max-width:360px; text-align:center; }
-            .input-group { text-align: left; margin-bottom: 12px; }
-            .input-group label { font-size: 12px; font-weight: 600; color: #374151; display: block; margin-bottom: 4px; }
-            .input-field { width: 100%; padding: 10px 12px; border: 1px solid #D1D5DB; border-radius: 8px; font-size: 13px; outline: none; }
-            .qr-img { width: 230px; height: 230px; margin: 12px auto; border: 2px solid #FEF3C7; border-radius: 12px; padding: 6px; display: block; }
-        </style>
-    </head>
-    <body>
-
-        <div class="header">
-            <h1>🍌 MoMore Snacks Store</h1>
-            <p>សម្រស់ធម្មជាតិ និងរសជាតិឈ្ងុយឆ្ងាញ់ពិតៗពីចេក</p>
-        </div>
-
-        <div class="promo-container">
-            <div class="promo-card">
-                🎁 ប្រូម៉ូសិនពិសេស៖ ទិញ ៥ កញ្ចប់/ប្រអប់ ថែម ១ ភ្លាមៗ!
-            </div>
-        </div>
-
-        <div class="section-title">ជ្រើសរើសទំនិញកុម្ម៉ង់</div>
-        <div class="product-grid">
-            <div class="product-card">
-                <div class="product-img-box">🍌</div>
-                <div class="product-info">
-                    <div class="product-title">ដំណាប់ចេកទន់ (កញ្ចប់ធំ)</div>
-                    <div class="product-desc">សាច់ទន់ល្មើយ ផ្អែមឆ្ងាញ់ធម្មជាតិ គ្មានសារធាតុគីមី</div>
-                    <div class="product-price">$2.00</div>
-                </div>
-                <div class="qty-control">
-                    <button class="qty-btn" onclick="updateQty('item1', -1)">-</button>
-                    <span class="qty-num" id="item1-qty">0</span>
-                    <button class="qty-btn" onclick="updateQty('item1', 1)">+</button>
-                </div>
-            </div>
-
-            <div class="product-card">
-                <div class="product-img-box">🍌</div>
-                <div class="product-info">
-                    <div class="product-title">ដំណាប់ចេកទន់ (កញ្ចប់តូច)</div>
-                    <div class="product-desc">ទំហំល្មមញ៉ាំ រសជាតិផ្អែមប្រឡាក់ស្ករធម្មជាតិ</div>
-                    <div class="product-price">$1.00</div>
-                </div>
-                <div class="qty-control">
-                    <button class="qty-btn" onclick="updateQty('item2', -1)">-</button>
-                    <span class="qty-num" id="item2-qty">0</span>
-                    <button class="qty-btn" onclick="updateQty('item2', 1)">+</button>
-                </div>
-            </div>
-
-            <div class="product-card">
-                <div class="product-img-box">✨</div>
-                <div class="product-info">
-                    <div class="product-title">ចេកក្រៀមបន្ទះស្តើង (ប្រអប់)</div>
-                    <div class="product-desc">បន្ទះស្តើងល្មើយ សម្ងួតស្អាត ស្លាយស្តើងៗ ស្រួយឆ្ងាញ់</div>
-                    <div class="product-price">$2.00</div>
-                </div>
-                <div class="qty-control">
-                    <button class="qty-btn" onclick="updateQty('item3', -1)">-</button>
-                    <span class="qty-num" id="item3-qty">0</span>
-                    <button class="qty-btn" onclick="updateQty('item3', 1)">+</button>
-                </div>
-            </div>
-        </div>
-
-        <div class="bottom-bar">
-            <div>
-                <div style="font-size: 12px; color: #6B7280;">តម្លៃសរុប</div>
-                <div class="cart-total-price" id="totalCartPrice">$0.00</div>
-            </div>
-            <button class="btn-checkout" onclick="openCheckout()">បន្តទៅការទូទាត់ ➔</button>
-        </div>
-
-        <div id="orderModal" class="modal">
-            <div class="modal-content">
-                <h3 style="margin-bottom:15px; font-size:16px;">ព័ត៌មានដឹកជញ្ជូន</h3>
-                <div class="input-group">
-                    <label>លេខទូរស័ព្ទទំនាក់ទំនង *</label>
-                    <input type="tel" id="phone" class="input-field" placeholder="ឧទាហរណ៍៖ 012 345 678">
-                </div>
-                <div class="input-group">
-                    <label>ទីតាំងប្រគល់ទំនិញ / ចំណាំ</label>
-                    <input type="text" id="note" class="input-field" placeholder="ផ្ទះលេខ, ផ្លូវ, ឬខណ្ឌ...">
-                </div>
-                <button class="btn-checkout" style="width:100%; border-radius:8px;" onclick="submitOrder()">ទូទាត់ប្រាក់តាម KHQR</button>
-                <button onclick="closeModal('orderModal')" style="width:100%; margin-top:8px; background:none; border:none; color:#6B7280; font-size:12px;">បោះបង់</button>
-            </div>
-        </div>
-
-        <div id="qrModal" class="modal">
-            <div class="modal-content">
-                <h3 style="font-size:16px; color:#111827;">ស្កែនដើម្បធ្វើការទូទាត់ (KHQR)</h3>
-                <p style="font-size:11px; color:#6B7280; margin-top:2px;">ACLEDA / ABA / គ្រប់ធនាគារ</p>
-                <img id="qrImage" class="qr-img" src="" alt="KHQR Code">
-                <div style="font-weight:700; font-size:15px; color:#111827;">Sorm Sourpunary</div>
-                <div style="font-size:12px; color:#6B7280; margin-bottom:15px;">Merchant ID: 15198798</div>
-                <button class="btn-checkout" style="width:100%; background:#059669;" onclick="finishOrder()">រួចរាល់ / Done</button>
-            </div>
-        </div>
-
-        <script>
-            let tg = window.Telegram.WebApp;
-            tg.expand();
-
-            const products = {
-                'item1': { name: 'ដំណាប់ចេកទន់ (កញ្ចប់ធំ)', price: 2.00, qty: 0 },
-                'item2': { name: 'ដំណាប់ចេកទន់ (កញ្ចប់តូច)', price: 1.00, qty: 0 },
-                'item3': { name: 'ចេកក្រៀមបន្ទះស្តើង (ប្រអប់)', price: 2.00, qty: 0 }
-            };
-
-            function updateQty(id, delta) {
-                if (products[id].qty + delta >= 0) {
-                    products[id].qty += delta;
-                    document.getElementById(id + '-qty').innerText = products[id].qty;
-                    calculateTotal();
-                }
-            }
-
-            function calculateTotal() {
-                let total = 0;
-                for (let key in products) { total += products[key].qty * products[key].price; }
-                document.getElementById('totalCartPrice').innerText = '$' + total.toFixed(2);
-                return total;
-            }
-
-            function openCheckout() {
-                if (calculateTotal() <= 0) { alert("សូមជ្រើសរើសទំនិញយ៉ាងហោចណាស់ ១ មុខ!"); return; }
-                document.getElementById('orderModal').style.display = 'flex';
-            }
-
-            function closeModal(id) { document.getElementById(id).style.display = 'none'; }
-
-            async function submitOrder() {
-                let phone = document.getElementById('phone').value;
-                let note = document.getElementById('note').value;
-                let total = calculateTotal().toFixed(2);
-                let user = tg.initDataUnsafe?.user?.first_name || "អតិថិជន";
-
-                if (!phone) { alert("សូមបញ្ចូលលេខទូរស័ព្ទ!"); return; }
-
-                let itemsSummary = [];
-                let totalQty = 0;
-                for (let key in products) {
-                    if (products[key].qty > 0) {
-                        itemsSummary.push(products[key].name + " (" + products[key].qty + ")");
-                        totalQty += products[key].qty;
-                    }
-                }
-
-                closeModal('orderModal');
-
-                try {
-                    let res = await fetch('/api/order', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ product: itemsSummary.join(' + '), quantity: totalQty, totalPrice: total, phone, note, userName: user })
-                    });
-                    let data = await res.json();
-                    if (data.success) {
-                        document.getElementById('qrImage').src = data.qrImage;
-                        document.getElementById('qrModal').style.display = 'flex';
-                    }
-                } catch(e) { alert("មានបញ្ហា៖ " + e.message); }
-            }
-
-            function finishOrder() { closeModal('qrModal'); tg.close(); }
-        </script>
-    </body>
-    </html>
-    `);
+  res.send(htmlContent);
 });
 
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}`);
+// ៣. ប្រព័ន្ធទទួល Order និងចេញវិក្កយបត្រ Receipt
+bot.on('message', async (msg) => {
+  const chatId = msg.chat.id;
+
+  if (msg.web_app_data) {
+    try {
+      const data = JSON.parse(msg.web_app_data.data);
+      const promoResult = calculatePromotion(data.items);
+
+      let orderList = data.items.map(i => `• ${i.name} - ${i.price.toLocaleString()} ៛`).join('\n');
+      
+      let receiptMessage = 
+`==========================
+🏷️ **ម៉ូម័រ MOMORE SNACK STORE**
+==========================
+🧾 **វិក្កយបត្របញ្ជាទិញ / RECEIPT**
+
+📦 **មុខទំនិញដែលបានជ្រើសរើស៖**
+${orderList}
+
+--------------------------
+💵 **តម្លៃទំនិញ (Subtotal):** ${promoResult.subtotal.toLocaleString()} ៛
+🚚 **ថ្លៃដឹកជញ្ជូន (Shipping):** ${promoResult.shippingFee.toLocaleString()} ៛
+${promoResult.promoMessage ? `\n${promoResult.promoMessage}\n` : ''}--------------------------
+💰 **សរុបត្រូវទូទាត់ (Grand Total):** ${promoResult.grandTotal.toLocaleString()} ៛
+==========================
+
+📲 **សូមស្កែន QR Code ខាងក្រោមដើម្បីទូទាត់ប្រាក់ ៖**`;
+
+      await bot.sendMessage(chatId, receiptMessage, { parse_mode: 'Markdown' });
+      
+      // បញ្ជូន ABA KHQR Code
+      await bot.sendMessage(chatId, `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=MoMore_ABA_Payment_${promoResult.grandTotal}`);
+
+    } catch (e) {
+      bot.sendMessage(chatId, "មានបញ្ហាក្នុងការរៀបចំវិក្កយបត្រ!");
+    }
+  } else if (msg.text === '/start') {
+    const appUrl = process.env.RENDER_EXTERNAL_URL || 'https://momore-bot.onrender.com';
+    
+    bot.sendMessage(chatId, "ស្វាគមន៍មកកាន់ ម៉ូម័រ MoMore Snack Store! 🍌\nសូមចុចប៊ូតុងខាងក្រោមដើម្បីចូលមើលមុខហាង និងកុម្ម៉ង់ទំនិញ៖", {
+      reply_markup: {
+        keyboard: [
+          [{ text: "🛍️ បើកហាង MoMore Mini App", web_app: { url: appUrl } }]
+        ],
+        resize_keyboard: true
+      }
+    });
+  }
 });
 
+const PORT = process.env.PORT || 10000;
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
