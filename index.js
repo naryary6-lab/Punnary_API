@@ -33,7 +33,7 @@
     /* HEADER */
     header {
       background: linear-gradient(135deg, #800000 0%, #b30000 100%);
-      text-align: center;
+      text-align: center; 
       padding: 20px 15px;
       border-bottom: 5px solid var(--accent-yellow);
       box-shadow: 0 4px 15px rgba(0,0,0,0.2);
@@ -91,7 +91,7 @@
     /* ---------------------------------------------------- */
     /* 🎬 ផ្នែកវីដេអូទំហំ 9:16 (Vertical Video Section) */
     /* ---------------------------------------------------- */
-    .video-section-title {
+    .https://photos.app.goo.gl/hHLv7kD5SzGWB5CL6-section-title {
       font-family: 'Dangrek', cursive;
       font-size: 1.3rem;
       color: var(--primary-red);
@@ -111,11 +111,11 @@
       margin-bottom: 20px;
     }
 
-    .video-slider::-webkit-scrollbar {
+    .https://photos.app.goo.gl/hHLv7kD5SzGWB5CL6-slider::-webkit-scrollbar {
       display: none;
     }
 
-    .video-card {
+    .https://photos.app.goo.gl/m9aVTLMu9xb9r9eQ7-card {
       flex: 0 0 200px;
       aspect-ratio: 9 / 16;
       background: #000;
