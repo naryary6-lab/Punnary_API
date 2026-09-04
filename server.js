@@ -19,7 +19,7 @@ const token = process.env.BOT_TOKEN || '8679348511:AAEWMhddjhxN6zuX2d2FW5vBxg0Cc
 const bot = new TelegramBot(token, { polling: true });
 
 // ២. Gemini AI Config
-const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
 // ៣. System Instruction សម្រាប់ Gemini AI
 const SYSTEM_INSTRUCTION = `
