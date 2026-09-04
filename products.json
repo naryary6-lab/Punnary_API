@@ -1,33 +1,107 @@
 [
   {
-    "category": "dried_banana",
-    "category_name_kh": "ក្រុមដំណាប់ចេក (៩ មុខ)",
-    "items": [
-      { "id": "D-ORIG200", "name_kh": "ដំណាប់ចេក រសជាតិដើម", "size": "200g", "price": 10000 },
-      { "id": "D-SESM200", "name_kh": "ដំណាប់ចេក រោយល្ង ស/ខ្មៅ", "size": "200g", "price": 10000 },
-      { "id": "D-ALMD200", "name_kh": "ដំណាប់ចេក រោយអាល់ម៉ុន", "size": "200g", "price": 12000 },
-      { "id": "D-MIXG200", "name_kh": "ដំណាប់ចេក ធញ្ញជាតិគ្រប់មុខ", "size": "200g", "price": 12000 },
-      { "id": "D-COCO200", "name_kh": "ដំណាប់ចេក រោយដូង", "size": "200g", "price": 12000 },
-      { "id": "D-BALL200", "name_kh": "ដំណាប់ចេកមូល", "size": "200g", "price": 10000 },
-      { "id": "D-RCHCS300", "name_kh": "ដំណាប់ចេក ស្នូលសូកូឡាដូង លាយល្ងសខ្មៅ", "size": "300g", "price": 20000 },
-      { "id": "D-RCHCC300", "name_kh": "ដំណាប់ចេក ស្នូលសូកូឡាចន្ទី", "size": "300g", "price": 20000 },
-      { "id": "D-RCHCD300", "name_kh": "ដំណាប់ចេក ស្នូលសូកូឡាដូង", "size": "300g", "price": 20000 }
-    ]
+    "id": "J-01",
+    "name": "ដំណាប់ចេកទន់ - 200g (កញ្ចប់តូច)",
+    "category": "jam",
+    "price": 10000,
+    "weight": "200g",
+    "description": "ដំណាប់ចេកបន្ទះស្តើងៗ សាច់ទន់ល្មើយ រសជាតិផ្អែមឆ្ងាញ់ធម្មជាតិ"
   },
   {
-    "category": "crispy_banana",
-    "category_name_kh": "ក្រុមចេកបំពងស្រួយ ម៉ូម័រ",
-    "items": [
-      { "id": "C-ORIG500", "name_kh": "Original (រសជាតិដើម)", "size": "500g", "price": 15000, "is_big_pack": true },
-      { "id": "C-CHOC200", "name_kh": "Milk Chocolate", "size": "200g (ធំ)", "price": 14000, "is_big_pack": true },
-      { "id": "C-CHOC100", "name_kh": "Milk Chocolate", "size": "100g (តូច)", "price": 7000, "is_big_pack": false },
-      { "id": "C-CHES200", "name_kh": "Milk Cheese", "size": "200g (ធំ)", "price": 14000, "is_big_pack": true },
-      { "id": "C-CHES100", "name_kh": "Milk Cheese", "size": "100g (តូច)", "price": 7000, "is_big_pack": false },
-      { "id": "C-SPIC200", "name_kh": "Spicy Garlic 🧄", "size": "200g (ធំ)", "price": 14000, "is_big_pack": true },
-      { "id": "C-SPIC100", "name_kh": "Spicy Garlic 🧄", "size": "100g (តូច)", "price": 7000, "is_big_pack": false },
-      { "id": "C-BBQ200", "name_kh": "BBQ 🍖", "size": "200g (ធំ)", "price": 14000, "is_big_pack": true },
-      { "id": "C-BBQ100", "name_kh": "BBQ 🍖", "size": "100g (តូច)", "price": 7000, "is_big_pack": false }
-    ]
+    "id": "J-02",
+    "name": "ដំណាប់ចេកទន់ - 200g (ប្រអប់)",
+    "category": "jam",
+    "price": 12000,
+    "weight": "200g",
+    "description": "ដំណាប់ចេកបន្ទះស្តើងៗ សាច់ទន់ល្មើយ រៀបចំក្នុងប្រអប់ស្អាតបាត"
+  },
+  {
+    "id": "J-03",
+    "name": "ដំណាប់ចេកទន់ស្នូលសូកូឡា - 300g",
+    "category": "jam",
+    "price": 20000,
+    "weight": "300g",
+    "description": "ដំណាប់ចេកទន់ ខ្ចប់ស្នូលសូកូឡា រសជាតិឈ្ងុយឆ្ងាញ់ប្លែក"
+  },
+  {
+    "id": "C-01",
+    "name": "ចេកបំពង រសជាតិដើម (Original) - 500g",
+    "category": "crispy",
+    "price": 15000,
+    "weight": "500g",
+    "is_big_pack": true,
+    "description": "ចេកបំពងស្រួយស្រេប រសជាតិដើម កញ្ចប់ធំ 500g"
+  },
+  {
+    "id": "C-02",
+    "name": "ចេកបំពង រសជាតិដើម (Original) - 200g",
+    "category": "crispy",
+    "price": 14000,
+    "weight": "200g",
+    "is_big_pack": false,
+    "description": "ចេកបំពងស្រួយ រសជាតិដើម កញ្ចប់តូច 200g"
+  },
+  {
+    "id": "C-03",
+    "name": "ចេកបំពង រសជាតិដើម (Original) - 100g",
+    "category": "crispy",
+    "price": 7000,
+    "weight": "100g",
+    "is_big_pack": false,
+    "description": "ចេកបំពងស្រួយ រសជាតិដើម កញ្ចប់តូច 100g"
+  },
+  {
+    "id": "C-04",
+    "name": "ចេកបំពង រសជាតិតុងយ៉ាំ - 200g",
+    "category": "crispy",
+    "price": 14000,
+    "weight": "200g",
+    "is_big_pack": false,
+    "description": "ចេកបំពងស្រួយ រសជាតិតុងយ៉ាំ ហិរជូរអែម កញ្ចប់តូច"
+  },
+  {
+    "id": "C-05",
+    "name": "ចេកបំពង រសជាតិតុងយ៉ាំ - 100g",
+    "category": "crispy",
+    "price": 7000,
+    "weight": "100g",
+    "is_big_pack": false,
+    "description": "ចេកបំពងស្រួយ រសជាតិតុងយ៉ាំ ហិរជូរអែម"
+  },
+  {
+    "id": "C-06",
+    "name": "ចេកបំពង រសជាតិប៉ាប៊ិកការ (Paprika) - 200g",
+    "category": "crispy",
+    "price": 14000,
+    "weight": "200g",
+    "is_big_pack": false,
+    "description": "ចេកបំពងស្រួយ រសជាតិប៉ាប៊ិកការ ឈ្ងុយហិរតិចៗ"
+  },
+  {
+    "id": "C-07",
+    "name": "ចេកបំពង រសជាតិប៉ាប៊ិកការ (Paprika) - 100g",
+    "category": "crispy",
+    "price": 7000,
+    "weight": "100g",
+    "is_big_pack": false,
+    "description": "ចេកបំពងស្រួយ រសជាតិប៉ាប៊ិកការ"
+  },
+  {
+    "id": "C-08",
+    "name": "ចេកបំពង រសជាតិឈីស (Cheese) - 200g",
+    "category": "crispy",
+    "price": 14000,
+    "weight": "200g",
+    "is_big_pack": false,
+    "description": "ចេកបំពងស្រួយ រសជាតិឈីស ឈ្ងុយឆ្ងាញ់"
+  },
+  {
+    "id": "C-09",
+    "name": "ចេកបំពង រសជាតិឈីស (Cheese) - 100g",
+    "category": "crispy",
+    "price": 7000,
+    "weight": "100g",
+    "is_big_pack": false,
+    "description": "ចេកបំពងស្រួយ រសជាតិឈីស"
   }
 ]
-
