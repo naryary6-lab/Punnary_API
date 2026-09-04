@@ -412,7 +412,7 @@
       <div class="qr-container">
         <img src="https://upload.wikimedia.org/wikipedia/commons/f/f5/KHQR_Logo.svg" alt="KHQR Logo" style="height: 30px; margin-bottom: 5px;"><br>
         <div style="font-weight: bold; font-size: 0.95rem; color: #1e293b;">💳 ស្កែនទូទាត់ប្រាក់ (SORM SOURPUNARY)</div>
-        <img src="images/khqr.jpg" alt="KHQR Code" class="qr-image" onerror="this.src='https://via.placeholder.com/190x190?text=KHQR+Code'">
+        <img src="https://drive.google.com/file/d/1vmVJGZqj-DaQvuQTRrMmVoU_prKfC0g0/view?usp=drivesdk/khqr.jpg" alt="KHQR Code" class="qr-image" onerror="this.src='https://via.placeholder.com/190x190?text=KHQR+Code'">
         <div class="thank-you-text">អរគុណច្រើនសម្រាប់ការគាំទ្រ!</div>
       </div>
 
