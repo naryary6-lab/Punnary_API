@@ -342,7 +342,7 @@
 <body>
 
   <header>
-    <img src="images/logo.jpg" alt="MOMORE Logo" class="brand-logo" onerror="this.src='https://via.placeholder.com/90?text=MOMORE'">
+    <img src="https://photos.app.goo.gl/BmfmBqCQxMJm7XUe8/logo.jpg" alt="MOMORE Logo" class="brand-logo" onerror="this.src='https://via.placeholder.com/90?text=MOMORE'">
     <div class="brand-title">ម៉ូម័រ MOMORE</div>
     <div class="brand-subtitle">🍌 ហាងទំនិញសម្រន់ & ដំណាប់ចេក 🍌</div>
   </header>
