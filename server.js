@@ -1,7 +1,7 @@
-
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
+import TelegramBot from 'node-telegram-bot-api';
 import { GoogleGenAI } from '@google/genai';
 
 dotenv.config();
@@ -10,10 +10,14 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// ១. Initialize Gemini AI
+// ១. កូដ Telegram Bot ចាស់
+const token = process.env.BOT_TOKEN || '8679348511:AAEWMhddjhxN6zuX2d2FW5vBxg0CcBGNBg0';
+const bot = new TelegramBot(token, { polling: true });
+
+// ២. Initialize Gemini AI ថ្មី
 const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 
-// ២. System Instruction សម្រាប់ Gemini AI
+// ៣. System Instruction សម្រាប់ Gemini AI
 const SYSTEM_INSTRUCTION = `
 អ្នកគឺជា AI ជំនួយការផ្នែកលក់ស្វ័យប្រវត្តិរបស់ "ម៉ូម័រ MoMore Snack Store" (ដំណាប់ចេកទន់ៗ និងចេកបំពងស្រួយ)។
 
@@ -30,7 +34,7 @@ const SYSTEM_INSTRUCTION = `
 ភារកិច្ចរបស់អ្នក៖ ឆ្លើយតបសំណួរអតិថិជនយ៉ាងរួសរាយ គណនាលុយ និងចេញវិក្កយបត្រជាភាសាខ្មែរជូនអតិថិជនដោយស្វ័យប្រវត្តិ។
 `;
 
-// ៣. API Endpoint សម្រាប់ AI Chat
+// ៤. API Endpoint សម្រាប់ AI Chat
 app.post('/api/chat', async (req, res) => {
   try {
     const { message } = req.body;
@@ -45,8 +49,8 @@ app.post('/api/chat', async (req, res) => {
   }
 });
 
-// ៤. Function គណនាប្រម៉ូសិន & ថ្លៃដឹក
-function calculateOrderTotal(cartItems) {
+// ៥. Function គណនាប្រម៉ូសិន & ថ្លៃដឹក
+function calculatePromotion(cartItems) {
   let subtotal = 0;
   let bigPackCount = 0;
   let smallPackCount = 0;
@@ -54,7 +58,7 @@ function calculateOrderTotal(cartItems) {
   cartItems.forEach(item => {
     subtotal += item.price * item.quantity;
     
-    if (item.id.startsWith('C-')) {
+    if (item.id && item.id.startsWith('C-')) {
       if (item.is_big_pack) {
         bigPackCount += item.quantity;
       } else {
