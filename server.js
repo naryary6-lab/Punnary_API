@@ -17,7 +17,7 @@ const bot = new TelegramBot(token, { polling: true });
 // ២. Initialize Gemini AI ថ្មី
 const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 
-// ៣. System Instruction សម្រាប់ Gemini AI
+// ៣. System Instruction សម្រាប់ Gemini AI (ម៉ូម័រ MoMore)
 const SYSTEM_INSTRUCTION = `
 អ្នកគឺជា AI ជំនួយការផ្នែកលក់ស្វ័យប្រវត្តិរបស់ "ម៉ូម័រ MoMore Snack Store" (ដំណាប់ចេកទន់ៗ និងចេកបំពងស្រួយ)។
 
