@@ -305,7 +305,7 @@
       border-radius: 12px;
     }
 
-    .qr-image {
+    .qr-https://drive.google.com/file/d/1vmVJGZqj-DaQvuQTRrMmVoU_prKfC0g0/view?usp=drivesdk {
       width: 190px;
       height: 190px;
       object-fit: contain;
