@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="km">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MOMORE Retail Store</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+        body { background-color: #f8f9fa; padding: 12px; color: #333; padding-bottom: 120px; }
+        
+        .banner { background: linear-gradient(135deg, #d9381e, #ff6b4a); color: white; padding: 18px; border-radius: 16px; text-align: center; margin-bottom: 15px; box-shadow: 0 4px 10px rgba(217, 56, 30, 0.2); }
+        .banner h1 { font-size: 22px; font-weight: 800; }
+        .banner p { font-size: 13px; opacity: 0.9; margin-top: 4px; }
+
+        .section-title { font-size: 15px; font-weight: bold; margin: 15px 0 10px 4px; color: #444; }
+
+        .product-card { background: white; border-radius: 14px; padding: 12px; margin-bottom: 12px; display: flex; gap: 12px; align-items: center; box-shadow: 0 2px 6px rgba(0,0,0,0.04); }
+        .product-img { width: 70px; height: 70px; background: #fff3e0; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 30px; flex-shrink: 0; }
+        .product-info { flex: 1; }
+        .product-info h3 { font-size: 15px; color: #222; margin-bottom: 4px; }
+        .product-info .price { font-size: 15px; color: #d9381e; font-weight: bold; }
+
+        .qty-controls { display: flex; align-items: center; background: #f1f3f5; border-radius: 8px; padding: 3px; }
+        .btn-qty { width: 28px; height: 28px; background: white; border: none; border-radius: 6px; font-size: 16px; font-weight: bold; color: #d9381e; cursor: pointer; box-shadow: 0 1px 2px rgba(0,0,0,0.1); }
+        .qty-num { width: 24px; text-align: center; font-weight: bold; font-size: 13px; }
+
+        .form-card { background: white; border-radius: 14px; padding: 14px; margin-top: 15px; box-shadow: 0 2px 6px rgba(0,0,0,0.04); }
+        .form-group { margin-bottom: 10px; }
+        .form-group label { display: block; font-size: 12px; font-weight: bold; color: #555; margin-bottom: 4px; }
+        .form-group input, .form-group textarea { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 8px; font-size: 13px; outline: none; }
+
+        .footer-bar { position: fixed; bottom: 0; left: 0; right: 0; background: white; padding: 12px 16px; box-shadow: 0 -4px 12px rgba(0,0,0,0.08); display: flex; justify-content: space-between; align-items: center; border-top-left-radius: 16px; border-top-right-radius: 16px; }
+        .footer-total { font-size: 18px; color: #d9381e; font-weight: bold; }
+        .btn-submit { background: #d9381e; color: white; border: none; padding: 12px 22px; border-radius: 10px; font-weight: bold; font-size: 15px; cursor: pointer; }
+    </style>
+</head>
+<body>
+
+    <div class="banner">
+        <h1>🍌 MOMORE Retail</h1>
+        <p>ហាងលក់រាយដំណាប់ចេក និងចេកបំពងស្រួយ ម៉ូម៉័រ</p>
+    </div>
+
+    <div class="section-title">🛒 ជ្រើសរើសទំនិញលក់រាយ</div>
+
+    <!-- ទំនិញទី ១ -->
+    <div class="product-card">
+        <div class="product-img">🍌</div>
+        <div class="product-info">
+            <h3>ចែមចេកអាំង (Soft Jam)</h3>
+            <div class="price">$3.50</div>
+        </div>
+        <div class="qty-controls">
+            <button class="btn-qty" onclick="updateQty(0, -1)">-</button>
+            <span class="qty-num" id="qty-0">0</span>
+            <button class="btn-qty" onclick="updateQty(0, 1)">+</button>
+        </div>
+    </div>
+
+    <!-- ទំនិញទី ២ -->
+    <div class="product-card">
+        <div class="product-img">🍌</div>
+        <div class="product-info">
+            <h3>ចេកបន្ទះស្តើង (Thin Slices)</h3>
+            <div class="price">$4.00</div>
+        </div>
+        <div class="qty-controls">
+            <button class="btn-qty" onclick="updateQty(1, -1)">-</button>
+            <span class="qty-num" id="qty-1">0</span>
+            <button class="btn-qty" onclick="updateQty(1, 1)">+</button>
+        </div>
+    </div>
+
+    <!-- ព័ត៌មានអតិថិជន -->
+    <div class="section-title">📍 ព័ត៌មានសម្រាប់ការដឹកជញ្ជូន</div>
+    <div class="form-card">
+        <div class="form-group">
+            <label>លេខទូរស័ព្ទ / Phone Number:</label>
+            <input type="tel" id="cust-phone" placeholder="ឧ. 012345678">
+        </div>
+        <div class="form-group">
+            <label>អាសយដ្ឋានដឹកជញ្ជូន / Delivery Address:</label>
+            <textarea id="cust-address" rows="2" placeholder="បញ្ចូលផ្ទះលេខ, ផ្លូវ, ខណ្ឌ/ខេត្ត..."></textarea>
+        </div>
+    </div>
+
+    <div class="footer-bar">
+        <div>
+            <div style="font-size: 11px; color: #777;">សរុបចុងក្រោយ</div>
+            <div class="footer-total" id="footer-price">$0.00</div>
+        </div>
+        <button class="btn-submit" onclick="submitRetailOrder()">បញ្ជាទិញឥឡូវនេះ</button>
+    </div>
+
+    <script>
+        const products = [
+            { id: 1, name: "ចែមចេកអាំង (Soft Jam)", price: 3.50, qty: 0 },
+            { id: 2, name: "ចេកបន្ទះស្តើង (Thin Slices)", price: 4.00, qty: 0 }
+        ];
+
+        function updateQty(index, change) {
+            if (products[index].qty + change >= 0) {
+                products[index].qty += change;
+                document.getElementById(`qty-${index}`).innerText = products[index].qty;
+                calculateAll();
+            }
+        }
+
+        function calculateAll() {
+            let total = 0;
+            products.forEach(p => { total += p.price * p.qty; });
+            document.getElementById('footer-price').innerText = `$${total.toFixed(2)}`;
+        }
+
+        function submitRetailOrder() {
+            const selected = products.filter(p => p.qty > 0);
+            const phone = document.getElementById('cust-phone').value.trim();
+            const address = document.getElementById('cust-address').value.trim();
+
+            if (selected.length === 0) {
+                alert("សូមជ្រើសរើសទំនិញយ៉ាងហោចណាស់ ១ កញ្ចប់!");
+                return;
+            }
+
+            if (!phone || !address) {
+                alert("សូមបំពេញលេខទូរស័ព្ទ និងអាសយដ្ឋានឱ្យបានគ្រប់ជ្រុងជ្រោយ!");
+                return;
+            }
+
+            const payload = {
+                type: "RETAIL_ORDER",
+                phone: phone,
+                address: address,
+                items: selected,
+                totalAmount: selected.reduce((sum, p) => sum + (p.price * p.qty), 0)
+            };
+
+            if (window.Telegram && window.Telegram.WebApp) {
+                Telegram.WebApp.sendData(JSON.stringify(payload));
+            } else {
+                alert("កុម្ម៉ង់ទិញរាយជោគជ័យ! សរុប: $" + payload.totalAmount.toFixed(2));
+            }
+        }
+
+        if (window.Telegram && window.Telegram.WebApp) {
+            Telegram.WebApp.ready();
+            Telegram.WebApp.expand();
+        }
+    </script>
+</body>
+</html>
