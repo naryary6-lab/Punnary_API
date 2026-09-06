@@ -1,86 +1,47 @@
-import express from 'express';
-import cors from 'cors';
-import dotenv from 'dotenv';
-import { GoogleGenAI } from '@google/genai';
+<!DOCTYPE html>
+<html lang="km">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MoMore Snack Store - Telegram Mini App</title>
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
 
-dotenv.config();
+  <header>
+    <h1>🍌 ម៉ូម័រ MoMore Snack Store</h1>
+    <p>ដំណាប់ចេកណាំវ៉ាខ្មែរ & ចេកបំពងស្រួយ</p>
+  </header>
 
-const app = express();
+  <div class="section-title">🍌 ក្រុមដំណាប់ចេក (៩ មុខ)</div>
+  <div class="grid" id="dried-bananas"></div>
 
-// Middleware
-app.use(cors());
-app.use(express.json());
+  <div class="section-title">🍿 ក្រុមចេកបំពងស្រួយ (៥ មុខ)</div>
+  <div class="grid" id="crispy-bananas"></div>
 
-// Initialize Google Gen AI Client
-const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+  <div class="bottom-bar">
+    <div class="cart-summary">
+      សរុប៖ <span id="cart-total" style="color: var(--accent-color); font-weight: bold;">0៛</span>
+    </div>
+    <button class="btn-chat" onclick="openChat()">💬 ឆាតសួរ / កុម្ម៉ង់ទិញ AI</button>
+  </div>
 
-// System Instruction ពេញលេញ រួមបញ្ចូលទិន្នន័យផលិតផល តម្លៃ និងប្រូម៉ូសិន ម៉ូម័រ MoMore
-const SYSTEM_INSTRUCTION = `
-អ្នកគឺជាជំនួយការ AI ផ្នែកលក់ និងសេវាកម្មអតិថិជនសម្រាប់ "ម៉ូម័រ MoMore Snack Store" (លក់ដំណាប់ចេកណាំវ៉ាខ្មែរ និងចេកបំពងស្រួយ)។
+  <!-- Chat Drawer / Modal -->
+  <div class="chat-modal" id="chatModal">
+    <div class="chat-header">
+      <h3>🤖 ជំនួយការ AI ម៉ូម័រ</h3>
+      <button onclick="closeChat()" class="btn-close">✕</button>
+    </div>
+    <div class="chat-body" id="chatBody">
+      <div class="msg ai">សួស្តីបង! ខ្ញុំជា AI ជំនួយការលក់នៅហាង ម៉ូម័រ MoMore Snack Store។ តើបងចង់សួរព័ត៌មាន ឬកុម្ម៉ង់ទិញមុខណាដែរ?</div>
+    </div>
+    <div class="chat-footer">
+      <input type="text" id="userInput" placeholder="វាយសារនៅទីនេះ..." onkeypress="handleKeyPress(event)">
+      <button onclick="sendMessage()">ផ្ញើ</button>
+    </div>
+  </div>
 
-[ទិន្នន័យផលិតផល និងតម្លៃ]:
-1. ក្រុមដំណាប់ចេក (៩ មុខ):
-   - ដំណាប់ចេក រសជាតិដើម (200g) = 10,000៛ (ID: D-ORIG200)
-   - ដំណាប់ចេក រោយល្ង ស/ខ្មៅ (200g) = 10,000៛ (ID: D-SESM200)
-   - ដំណាប់ចេក រោយអាល់ម៉ុន (200g) = 12,000៛ (ID: D-ALMD200)
-   - ដំណាប់ចេក ធញ្ញជាតិគ្រប់មុខ (200g) = 12,000៛ (ID: D-MIXG200)
-   - ដំណាប់ចេក រោយដូង (200g) = 12,000៛ (ID: D-COCO200)
-   - ដំណាប់ចេកមូល (200g) = 10,000៛ (ID: D-BALL200)
-   - ដំណាប់ចេក ស្នូលសូកូឡាដូង លាយល្ងសខ្មៅ (300g) = 20,000៛ (ID: D-RCHCS300)
-   - ដំណាប់ចេក ស្នូលសូកូឡាចន្ទី (300g) = 20,000៛ (ID: D-RCHCC300)
-   - ដំណាប់ចេក ស្នូលសូកូឡាដូង (300g) = 20,000៛ (ID: D-RCHCD300)
-
-2. ក្រុមចេកបំពងស្រួយ ម៉ូម័រ:
-   - រសជាតិ Original 500g = 15,000៛ (ID: C-ORIG500)
-   - Milk Chocolate (200g [ធំ] = 14,000៛ [ID: C-CHOC200] / 100g [តូច] = 7,000៛ [ID: C-CHOC100])
-   - Milk Cheese (200g [ធំ] = 14,000៛ [ID: C-CHES200] / 100g [តូច] = 7,000៛ [ID: C-CHES100])
-   - Spicy Garlic 🧄 (200g [ធំ] = 14,000៛ [ID: C-SPIC200] / 100g [តូច] = 7,000៛ [ID: C-SPIC100])
-   - BBQ 🍖 (200g [ធំ] = 14,000៛ [ID: C-BBQ200] / 100g [តូច] = 7,000៛ [ID: C-BBQ100])
-
-[លក្ខខណ្ឌប្រូម៉ូសិន និងដឹកជញ្ជូន]:
-- ថ្លៃដឹកជញ្ជូនស្ដង់ដារ៖ 8,000៛ (ភ្នំពេញ / ខេត្ត)
-- ចេកបំពងកញ្ចប់ធំ (200g/500g) ១០ កញ្ចប់ => ដឹក FREE + ថែម ១ កញ្ចប់ធំ (ឱ្យអតិថិជនជ្រើសរើសកូដថែម៖ C-CHOC200, C-CHES200, C-SPIC200, ឬ C-BBQ200)
-- ចេកបំពងកញ្ចប់តូច (100g) ២០ កញ្ចប់ => ដឹក FREE + ថែម ១ កញ្ចប់ធំ (ឱ្យអតិថិជនជ្រើសរើសកូដថែម៖ C-CHOC200, C-CHES200, C-SPIC200, ឬ C-BBQ200)
-- ចេកបំពងកញ្ចប់តូច (100g) ១០ កញ្ចប់ => ដឹក FREE (មិនមានថែមនំទេ)
-
-[ភារកិច្ចរបស់អ្នក]:
-- ឆ្លើយតបសំណួរអតិថិជនយ៉ាងរួសរាយ រហ័ស និងច្បាស់លាស់ជាភាសាខ្មែរ។
-- ណែនាំផលិតផល គណនាតម្លៃទំនិញ ថ្លៃដឹក និងឆែកប្រូម៉ូសិនដោយស្វ័យប្រវត្តិ។
-- ប្រសិនបើអតិថិជនគ្រប់លក្ខខណ្ឌទទួលបាននំថែម សូមសួររំលឹកអតិថិជនឱ្យជ្រើសរើសកូដរសជាតិនំថែម។
-- ចេញវិក្កយបត្រសរុប (Digital Receipt) ជូនអតិថិជន។
-`;
-
-// Health check endpoint
-app.get('/', (req, res) => {
-  res.send('MoMore Backend AI is running!');
-});
-
-// Chat API Endpoint សម្រាប់ Telegram Mini App
-app.post('/api/chat', async (req, res) => {
-  try {
-    const { message } = req.body;
-
-    if (!message) {
-      return res.status(400).json({ error: 'Message is required' });
-    }
-
-    const response = await ai.models.generateContent({
-      model: 'gemini-2.5-flash',
-      contents: message,
-      config: {
-        systemInstruction: SYSTEM_INSTRUCTION,
-        temperature: 0.7,
-      },
-    });
-
-    res.json({ reply: response.text });
-  } catch (error) {
-    console.error('Error executing Gemini API:', error);
-    res.status(500).json({ error: 'ប្រព័ន្ធ AI រវល់ បន្តិច' });
-  }
-});
-
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log(`MoMore Backend is running on port ${PORT}`);
-});
+  <script src="app.js"></script>
+</body>
+</html>
