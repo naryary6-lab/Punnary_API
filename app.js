@@ -86,7 +86,8 @@ async function sendMessage() {
   chatBody.scrollTop = chatBody.scrollHeight;
 
   try {
-    const res = await fetch(API_ENDPOINT, {
+    const res = await fetch('/api/chat';
+    (, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ message: text })
