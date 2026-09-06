@@ -1,152 +1,86 @@
-<!DOCTYPE html>
-<html lang="km">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MOMORE Retail Store</title>
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
-        body { background-color: #f8f9fa; padding: 12px; color: #333; padding-bottom: 120px; }
-        
-        .banner { background: linear-gradient(135deg, #d9381e, #ff6b4a); color: white; padding: 18px; border-radius: 16px; text-align: center; margin-bottom: 15px; box-shadow: 0 4px 10px rgba(217, 56, 30, 0.2); }
-        .banner h1 { font-size: 22px; font-weight: 800; }
-        .banner p { font-size: 13px; opacity: 0.9; margin-top: 4px; }
+import express from 'express';
+import cors from 'cors';
+import dotenv from 'dotenv';
+import { GoogleGenAI } from '@google/genai';
 
-        .section-title { font-size: 15px; font-weight: bold; margin: 15px 0 10px 4px; color: #444; }
+dotenv.config();
 
-        .product-card { background: white; border-radius: 14px; padding: 12px; margin-bottom: 12px; display: flex; gap: 12px; align-items: center; box-shadow: 0 2px 6px rgba(0,0,0,0.04); }
-        .product-img { width: 70px; height: 70px; background: #fff3e0; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 30px; flex-shrink: 0; }
-        .product-info { flex: 1; }
-        .product-info h3 { font-size: 15px; color: #222; margin-bottom: 4px; }
-        .product-info .price { font-size: 15px; color: #d9381e; font-weight: bold; }
+const app = express();
 
-        .qty-controls { display: flex; align-items: center; background: #f1f3f5; border-radius: 8px; padding: 3px; }
-        .btn-qty { width: 28px; height: 28px; background: white; border: none; border-radius: 6px; font-size: 16px; font-weight: bold; color: #d9381e; cursor: pointer; box-shadow: 0 1px 2px rgba(0,0,0,0.1); }
-        .qty-num { width: 24px; text-align: center; font-weight: bold; font-size: 13px; }
+// Middleware
+app.use(cors());
+app.use(express.json());
 
-        .form-card { background: white; border-radius: 14px; padding: 14px; margin-top: 15px; box-shadow: 0 2px 6px rgba(0,0,0,0.04); }
-        .form-group { margin-bottom: 10px; }
-        .form-group label { display: block; font-size: 12px; font-weight: bold; color: #555; margin-bottom: 4px; }
-        .form-group input, .form-group textarea { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 8px; font-size: 13px; outline: none; }
+// Initialize Google Gen AI Client
+const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 
-        .footer-bar { position: fixed; bottom: 0; left: 0; right: 0; background: white; padding: 12px 16px; box-shadow: 0 -4px 12px rgba(0,0,0,0.08); display: flex; justify-content: space-between; align-items: center; border-top-left-radius: 16px; border-top-right-radius: 16px; }
-        .footer-total { font-size: 18px; color: #d9381e; font-weight: bold; }
-        .btn-submit { background: #d9381e; color: white; border: none; padding: 12px 22px; border-radius: 10px; font-weight: bold; font-size: 15px; cursor: pointer; }
-    </style>
-</head>
-<body>
+// System Instruction ពេញលេញ រួមបញ្ចូលទិន្នន័យផលិតផល តម្លៃ និងប្រូម៉ូសិន ម៉ូម័រ MoMore
+const SYSTEM_INSTRUCTION = `
+អ្នកគឺជាជំនួយការ AI ផ្នែកលក់ និងសេវាកម្មអតិថិជនសម្រាប់ "ម៉ូម័រ MoMore Snack Store" (លក់ដំណាប់ចេកណាំវ៉ាខ្មែរ និងចេកបំពងស្រួយ)។
 
-    <div class="banner">
-        <h1>🍌 MOMORE Retail</h1>
-        <p>ហាងលក់រាយដំណាប់ចេក និងចេកបំពងស្រួយ ម៉ូម៉័រ</p>
-    </div>
+[ទិន្នន័យផលិតផល និងតម្លៃ]:
+1. ក្រុមដំណាប់ចេក (៩ មុខ):
+   - ដំណាប់ចេក រសជាតិដើម (200g) = 10,000៛ (ID: D-ORIG200)
+   - ដំណាប់ចេក រោយល្ង ស/ខ្មៅ (200g) = 10,000៛ (ID: D-SESM200)
+   - ដំណាប់ចេក រោយអាល់ម៉ុន (200g) = 12,000៛ (ID: D-ALMD200)
+   - ដំណាប់ចេក ធញ្ញជាតិគ្រប់មុខ (200g) = 12,000៛ (ID: D-MIXG200)
+   - ដំណាប់ចេក រោយដូង (200g) = 12,000៛ (ID: D-COCO200)
+   - ដំណាប់ចេកមូល (200g) = 10,000៛ (ID: D-BALL200)
+   - ដំណាប់ចេក ស្នូលសូកូឡាដូង លាយល្ងសខ្មៅ (300g) = 20,000៛ (ID: D-RCHCS300)
+   - ដំណាប់ចេក ស្នូលសូកូឡាចន្ទី (300g) = 20,000៛ (ID: D-RCHCC300)
+   - ដំណាប់ចេក ស្នូលសូកូឡាដូង (300g) = 20,000៛ (ID: D-RCHCD300)
 
-    <div class="section-title">🛒 ជ្រើសរើសទំនិញលក់រាយ</div>
+2. ក្រុមចេកបំពងស្រួយ ម៉ូម័រ:
+   - រសជាតិ Original 500g = 15,000៛ (ID: C-ORIG500)
+   - Milk Chocolate (200g [ធំ] = 14,000៛ [ID: C-CHOC200] / 100g [តូច] = 7,000៛ [ID: C-CHOC100])
+   - Milk Cheese (200g [ធំ] = 14,000៛ [ID: C-CHES200] / 100g [តូច] = 7,000៛ [ID: C-CHES100])
+   - Spicy Garlic 🧄 (200g [ធំ] = 14,000៛ [ID: C-SPIC200] / 100g [តូច] = 7,000៛ [ID: C-SPIC100])
+   - BBQ 🍖 (200g [ធំ] = 14,000៛ [ID: C-BBQ200] / 100g [តូច] = 7,000៛ [ID: C-BBQ100])
 
-    <!-- ទំនិញទី ១ -->
-    <div class="product-card">
-        <div class="product-img">🍌</div>
-        <div class="product-info">
-            <h3>ចែមចេកអាំង (Soft Jam)</h3>
-            <div class="price">$3.50</div>
-        </div>
-        <div class="qty-controls">
-            <button class="btn-qty" onclick="updateQty(0, -1)">-</button>
-            <span class="qty-num" id="qty-0">0</span>
-            <button class="btn-qty" onclick="updateQty(0, 1)">+</button>
-        </div>
-    </div>
+[លក្ខខណ្ឌប្រូម៉ូសិន និងដឹកជញ្ជូន]:
+- ថ្លៃដឹកជញ្ជូនស្ដង់ដារ៖ 8,000៛ (ភ្នំពេញ / ខេត្ត)
+- ចេកបំពងកញ្ចប់ធំ (200g/500g) ១០ កញ្ចប់ => ដឹក FREE + ថែម ១ កញ្ចប់ធំ (ឱ្យអតិថិជនជ្រើសរើសកូដថែម៖ C-CHOC200, C-CHES200, C-SPIC200, ឬ C-BBQ200)
+- ចេកបំពងកញ្ចប់តូច (100g) ២០ កញ្ចប់ => ដឹក FREE + ថែម ១ កញ្ចប់ធំ (ឱ្យអតិថិជនជ្រើសរើសកូដថែម៖ C-CHOC200, C-CHES200, C-SPIC200, ឬ C-BBQ200)
+- ចេកបំពងកញ្ចប់តូច (100g) ១០ កញ្ចប់ => ដឹក FREE (មិនមានថែមនំទេ)
 
-    <!-- ទំនិញទី ២ -->
-    <div class="product-card">
-        <div class="product-img">🍌</div>
-        <div class="product-info">
-            <h3>ចេកបន្ទះស្តើង (Thin Slices)</h3>
-            <div class="price">$4.00</div>
-        </div>
-        <div class="qty-controls">
-            <button class="btn-qty" onclick="updateQty(1, -1)">-</button>
-            <span class="qty-num" id="qty-1">0</span>
-            <button class="btn-qty" onclick="updateQty(1, 1)">+</button>
-        </div>
-    </div>
+[ភារកិច្ចរបស់អ្នក]:
+- ឆ្លើយតបសំណួរអតិថិជនយ៉ាងរួសរាយ រហ័ស និងច្បាស់លាស់ជាភាសាខ្មែរ។
+- ណែនាំផលិតផល គណនាតម្លៃទំនិញ ថ្លៃដឹក និងឆែកប្រូម៉ូសិនដោយស្វ័យប្រវត្តិ។
+- ប្រសិនបើអតិថិជនគ្រប់លក្ខខណ្ឌទទួលបាននំថែម សូមសួររំលឹកអតិថិជនឱ្យជ្រើសរើសកូដរសជាតិនំថែម។
+- ចេញវិក្កយបត្រសរុប (Digital Receipt) ជូនអតិថិជន។
+`;
 
-    <!-- ព័ត៌មានអតិថិជន -->
-    <div class="section-title">📍 ព័ត៌មានសម្រាប់ការដឹកជញ្ជូន</div>
-    <div class="form-card">
-        <div class="form-group">
-            <label>លេខទូរស័ព្ទ / Phone Number:</label>
-            <input type="tel" id="cust-phone" placeholder="ឧ. 012345678">
-        </div>
-        <div class="form-group">
-            <label>អាសយដ្ឋានដឹកជញ្ជូន / Delivery Address:</label>
-            <textarea id="cust-address" rows="2" placeholder="បញ្ចូលផ្ទះលេខ, ផ្លូវ, ខណ្ឌ/ខេត្ត..."></textarea>
-        </div>
-    </div>
+// Health check endpoint
+app.get('/', (req, res) => {
+  res.send('MoMore Backend AI is running!');
+});
 
-    <div class="footer-bar">
-        <div>
-            <div style="font-size: 11px; color: #777;">សរុបចុងក្រោយ</div>
-            <div class="footer-total" id="footer-price">$0.00</div>
-        </div>
-        <button class="btn-submit" onclick="submitRetailOrder()">បញ្ជាទិញឥឡូវនេះ</button>
-    </div>
+// Chat API Endpoint សម្រាប់ Telegram Mini App
+app.post('/api/chat', async (req, res) => {
+  try {
+    const { message } = req.body;
 
-    <script>
-        const products = [
-            { id: 1, name: "ចែមចេកអាំង (Soft Jam)", price: 3.50, qty: 0 },
-            { id: 2, name: "ចេកបន្ទះស្តើង (Thin Slices)", price: 4.00, qty: 0 }
-        ];
+    if (!message) {
+      return res.status(400).json({ error: 'Message is required' });
+    }
 
-        function updateQty(index, change) {
-            if (products[index].qty + change >= 0) {
-                products[index].qty += change;
-                document.getElementById(`qty-${index}`).innerText = products[index].qty;
-                calculateAll();
-            }
-        }
+    const response = await ai.models.generateContent({
+      model: 'gemini-2.5-flash',
+      contents: message,
+      config: {
+        systemInstruction: SYSTEM_INSTRUCTION,
+        temperature: 0.7,
+      },
+    });
 
-        function calculateAll() {
-            let total = 0;
-            products.forEach(p => { total += p.price * p.qty; });
-            document.getElementById('footer-price').innerText = `$${total.toFixed(2)}`;
-        }
+    res.json({ reply: response.text });
+  } catch (error) {
+    console.error('Error executing Gemini API:', error);
+    res.status(500).json({ error: 'ប្រព័ន្ធ AI រវល់ បន្តិច' });
+  }
+});
 
-        function submitRetailOrder() {
-            const selected = products.filter(p => p.qty > 0);
-            const phone = document.getElementById('cust-phone').value.trim();
-            const address = document.getElementById('cust-address').value.trim();
-
-            if (selected.length === 0) {
-                alert("សូមជ្រើសរើសទំនិញយ៉ាងហោចណាស់ ១ កញ្ចប់!");
-                return;
-            }
-
-            if (!phone || !address) {
-                alert("សូមបំពេញលេខទូរស័ព្ទ និងអាសយដ្ឋានឱ្យបានគ្រប់ជ្រុងជ្រោយ!");
-                return;
-            }
-
-            const payload = {
-                type: "RETAIL_ORDER",
-                phone: phone,
-                address: address,
-                items: selected,
-                totalAmount: selected.reduce((sum, p) => sum + (p.price * p.qty), 0)
-            };
-
-            if (window.Telegram && window.Telegram.WebApp) {
-                Telegram.WebApp.sendData(JSON.stringify(payload));
-            } else {
-                alert("កុម្ម៉ង់ទិញរាយជោគជ័យ! សរុប: $" + payload.totalAmount.toFixed(2));
-            }
-        }
-
-        if (window.Telegram && window.Telegram.WebApp) {
-            Telegram.WebApp.ready();
-            Telegram.WebApp.expand();
-        }
-    </script>
-</body>
-</html>
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+  console.log(`MoMore Backend is running on port ${PORT}`);
+});
