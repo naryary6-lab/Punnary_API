@@ -1,28 +1,59 @@
-/* Styling Bopha/Pinterest Layout សម្រាប់ MoMore Store */
+/* 1. Import Google Font (Kantumruy Pro & Koh Santepheap) */
+@import url('https://fonts.googleapis.com/css2?family=Kantumruy+Pro:wght@400;500;600;700&family=Koh+Santepheap:wght@400;700&display=swap');
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
 body {
     background-color: #121212;
     color: #ffffff;
-    font-family: 'Kantumruy Pro', Khmer, sans-serif;
-    margin: 0;
-    padding: 12px;
+    font-family: 'Kantumruy Pro', 'Koh Santepheap', sans-serif;
+    padding: 14px;
+    padding-bottom: 90px;
 }
 
-/* Pinterest Grid Container */
+/* Header Section */
+.header-title {
+    font-size: 22px;
+    font-weight: 700;
+    margin-bottom: 4px;
+    color: #ffffff;
+}
+
+.header-subtitle {
+    font-size: 13px;
+    color: #aaaaaa;
+    margin-bottom: 16px;
+}
+
+/* Category Section Title */
+.category-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: #ffb703;
+    margin: 18px 0 10px 0;
+    border-left: 3px solid #ffb703;
+    padding-left: 8px;
+}
+
+/* 2. Pinterest Masonry Grid Layout */
 .product-grid {
-    column-count: 2; /* បែងចែកជា ២ ជួរឈរដូច Pinterest */
+    column-count: 2;
     column-gap: 12px;
-    padding-bottom: 80px;
+    margin-bottom: 20px;
 }
 
-/* Card ទំនិញ style Pinterest */
 .product-card {
     break-inside: avoid;
     background-color: #1e1e1e;
     border-radius: 16px;
     margin-bottom: 12px;
     overflow: hidden;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
     border: 1px solid #2a2a2a;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
     transition: transform 0.2s ease;
 }
 
@@ -30,43 +61,145 @@ body {
     transform: scale(0.98);
 }
 
-/* រូបភាពទំនិញ Pinterest (រៀងវែង ស្អាតពេញ Card) */
-.product-card img {
+.product-card img, .product-card video {
     width: 100%;
     height: auto;
     display: block;
-    border-bottom: 1px solid #2a2a2a;
     object-fit: cover;
 }
 
-/* ព័ត៌មានទំនិញ */
 .product-info {
     padding: 10px;
 }
 
 .product-title {
-    font-size: 14px;
+    font-size: 13px;
     font-weight: 600;
-    margin-bottom: 6px;
+    line-height: 1.4;
     color: #f1f1f1;
+    margin-bottom: 6px;
 }
 
 .product-price {
     color: #ffb703;
-    font-size: 15px;
-    font-weight: bold;
+    font-size: 14px;
+    font-weight: 700;
     margin-bottom: 8px;
 }
 
-/* ប៊ូតុង + បន្ថែមចូល Cart ស្អាតបែប Pinterest Floating */
 .add-btn {
     width: 100%;
-    background: #ffb703;
-    color: #000;
+    background-color: #ffb703;
+    color: #000000;
     border: none;
     padding: 8px 0;
     border-radius: 20px;
-    font-weight: bold;
-    font-size: 13px;
+    font-weight: 700;
+    font-size: 12px;
     cursor: pointer;
+    font-family: 'Kantumruy Pro', sans-serif;
+}
+
+/* Cart Bar */
+.cart-bar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: #1e1e1e;
+    border-top: 1px solid #333333;
+    padding: 12px 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    z-index: 99;
+}
+
+.cart-btn {
+    background: #ffb703;
+    color: #000;
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-weight: bold;
+    border: none;
+    cursor: pointer;
+    font-family: 'Kantumruy Pro', sans-serif;
+}
+
+/* Chat AI Box Modal */
+.chat-container {
+    background-color: #1e1e1e;
+    border: 1px solid #333;
+    border-radius: 16px;
+    padding: 12px;
+    margin-top: 15px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.5);
+}
+
+.chat-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-weight: bold;
+    color: #ffb703;
+    margin-bottom: 10px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid #333;
+}
+
+.chat-body {
+    max-height: 250px;
+    overflow-y: auto;
+    margin-bottom: 10px;
+}
+
+.msg {
+    padding: 8px 12px;
+    border-radius: 12px;
+    margin-bottom: 8px;
+    font-size: 13px;
+    line-height: 1.4;
+    max-width: 85%;
+}
+
+.msg.user {
+    background-color: #ffb703;
+    color: #000;
+    margin-left: auto;
+    text-align: right;
+    font-weight: 500;
+}
+
+.msg.ai {
+    background-color: #2a2a2a;
+    color: #fff;
+    margin-right: auto;
+}
+
+.chat-input-area {
+    display: flex;
+    gap: 8px;
+}
+
+.chat-input-area input {
+    flex: 1;
+    background: #2a2a2a;
+    border: 1px solid #444;
+    color: #fff;
+    padding: 8px 12px;
+    border-radius: 20px;
+    outline: none;
+    font-family: 'Kantumruy Pro', sans-serif;
+    font-size: 13px;
+}
+
+.chat-input-area button {
+    background: #ffb703;
+    color: #000;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-weight: bold;
+    cursor: pointer;
+    font-family: 'Kantumruy Pro', sans-serif;
 }
