@@ -44,7 +44,7 @@
     
     /* Products Grid */
     .section-title { font-size: 1.1rem; font-weight: bold; margin: 15px 0 10px 5px; color: var(--secondary); border-left: 4px solid var(--primary); padding-left: 8px; }
-    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; min-height: 50px; }
     .product-card { background: var(--card-bg); border-radius: 10px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.06); display: flex; flex-direction: column; justify-content: space-between; }
     
     .media-box { width: 100%; height: 160px; background-color: #eee; position: relative; overflow: hidden; cursor: pointer; }
@@ -214,8 +214,8 @@
   </div>
 
   <script>
-    const tg = window.Telegram.WebApp;
-    tg.expand();
+    const tg = window.Telegram?.WebApp;
+    if (tg) tg.expand();
     
     const API_BACKEND_URL = "https://punnary-api.onrender.com/api/orders/create";
     
@@ -244,12 +244,16 @@
     let lastCheckin = localStorage.getItem('momore_last_checkin');
 
     function initCheckIn() {
-      document.getElementById('user-coins').innerText = userCoins;
+      const coinElem = document.getElementById('user-coins');
+      if (coinElem) coinElem.innerText = userCoins;
+      
       const today = new Date().toDateString();
       if (lastCheckin === today) {
         const btn = document.getElementById('checkin-btn');
-        btn.innerText = "បាន Check-in រួចរាល់ថ្ងៃនេះ!";
-        btn.disabled = true;
+        if (btn) {
+          btn.innerText = "បាន Check-in រួចរាល់ថ្ងៃនេះ!";
+          btn.disabled = true;
+        }
       }
     }
 
@@ -272,6 +276,8 @@
       const domnapContainer = document.getElementById('domnap-container');
       const crispyContainer = document.getElementById('crispy-container');
       
+      if (!domnapContainer || !crispyContainer) return;
+
       domnapContainer.innerHTML = '';
       crispyContainer.innerHTML = '';
 
@@ -311,7 +317,8 @@
     function changeQty(key, change) {
       if (products[key].qty + change >= 0) {
         products[key].qty += change;
-        document.getElementById(`qty-${key}`).innerText = products[key].qty;
+        const qtyElem = document.getElementById(`qty-${key}`);
+        if (qtyElem) qtyElem.innerText = products[key].qty;
         updateTotal();
       }
     }
@@ -321,7 +328,8 @@
       for (let key in products) {
         total += products[key].qty * products[key].price;
       }
-      document.getElementById('total-val').innerText = total.toLocaleString();
+      const totalElem = document.getElementById('total-val');
+      if (totalElem) totalElem.innerText = total.toLocaleString();
     }
 
     function openProductDetail(key) {
@@ -426,7 +434,7 @@
       formData.append('products', JSON.stringify(selectedProducts));
       formData.append('slip', slipFile);
 
-      if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
+      if (tg && tg.initDataUnsafe && tg.initDataUnsafe.user) {
         formData.append('telegramUser', JSON.stringify(tg.initDataUnsafe.user));
       }
 
@@ -438,7 +446,7 @@
 
         if (response.ok) {
           alert("🎉 ការកុម្ម៉ង់ទំនិញរបស់អ្នកទទួលបានជោគជ័យ! យើងខ្ញុំនឹងទាក់ទងទៅក្នុងពេលឆាប់ៗ។");
-          tg.close();
+          if (tg) tg.close();
         } else {
           alert("❌ មានបញ្ហាក្នុងការផ្ញើការកុម្ម៉ង់។ សូមព្យាយាមម្តងទៀត!");
         }
@@ -451,11 +459,11 @@
       }
     }
 
-    // Initialize WebApp
-    window.onload = function() {
+    // ធានាថា DOM ដំណើរការរួចរាល់ទើបបង្កើត List ផលិតផល
+    document.addEventListener("DOMContentLoaded", function() {
       initCheckIn();
       renderProducts();
-    };
+    });
   </script>
 </body>
 </html>
