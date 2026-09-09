@@ -3,491 +3,403 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Momore Wholesale WebApp</title>
-  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <title>MoMore Collection - ហាងលក់រាយចេកធម្មជាតិខ្មែរ</title>
   <style>
     :root {
-      --primary: #f39c12;
-      --secondary: #d35400;
-      --bg: #f8f9fa;
-      --card-bg: #ffffff;
-      --text: #2c3e50;
-      --gray: #7f8c8d;
-      --green: #27ae60;
-      --red: #e74c3c;
+      --banana-green: #2E7D32;
+      --leaf-light: #4CAF50;
+      --banana-yellow: #FFC107;
+      --bg-color: #F1F8E9;
+      --card-bg: #FFFFFF;
+      --text-color: #333333;
     }
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Khmer OS Battambang', sans-serif, Arial; }
-    body { background-color: var(--bg); color: var(--text); padding-bottom: 140px; }
-    
-    header { background-color: var(--primary); color: white; padding: 12px; text-align: center; font-weight: bold; font-size: 1.2rem; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-    
-    .container { max-width: 600px; margin: auto; padding: 10px; }
-    
-    /* Reward Card */
-    .reward-card { background: linear-gradient(135deg, #fff3e0, #ffe0b2); border: 1px solid #ffe0b2; border-radius: 10px; padding: 10px 12px; margin-bottom: 12px; }
-    .reward-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
-    .reward-title { font-weight: bold; font-size: 0.88rem; color: var(--secondary); }
-    .coin-badge { background: #e67e22; color: white; padding: 3px 8px; border-radius: 12px; font-weight: bold; font-size: 0.78rem; }
-    
-    .checkin-days { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; margin-top: 6px; text-align: center; }
-    .day-box { background: white; border-radius: 5px; padding: 5px 2px; border: 1px solid #e0e0e0; font-size: 0.65rem; }
-    .day-box.active { background: var(--primary); color: white; border-color: var(--primary); font-weight: bold; }
-    
-    .btn-checkin { width: 100%; background: var(--secondary); color: white; border: none; padding: 8px; border-radius: 6px; font-weight: bold; font-size: 0.82rem; margin-top: 8px; cursor: pointer; }
-
-    /* Notice Box */
-    .notice-box { background: #eef9f1; border-left: 4px solid var(--green); padding: 8px 10px; border-radius: 6px; margin-bottom: 12px; font-size: 0.78rem; line-height: 1.4; }
-
-    /* Product Section Title */
-    .section-title { font-size: 1.05rem; font-weight: bold; margin: 15px 0 8px 2px; color: var(--secondary); border-left: 4px solid var(--primary); padding-left: 6px; }
-    
-    /* Product Grid */
-    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-    .product-card { background: var(--card-bg); border-radius: 10px; overflow: hidden; box-shadow: 0 2px 6px rgba(0,0,0,0.06); display: flex; flex-direction: column; justify-content: space-between; border: 1px solid #eee; }
-    
-    /* Big Image Focus */
-    .media-box { width: 100%; height: 200px; background-color: #fdfdfd; position: relative; overflow: hidden; cursor: pointer; display: flex; align-items: center; justify-content: center; }
-    .media-box img { width: 100%; height: 100%; object-fit: contain; }
-    
-    .play-video-badge { position: absolute; top: 6px; right: 6px; background: rgba(0, 0, 0, 0.75); color: #fff; padding: 4px 8px; border-radius: 12px; font-size: 0.7rem; font-weight: bold; cursor: pointer; }
-
-    /* Compact Product Info Box */
-    .product-info { padding: 8px 10px; display: flex; flex-direction: column; justify-content: space-between; flex-grow: 1; }
-    .product-name { font-size: 0.92rem; font-weight: bold; margin-bottom: 2px; color: #1a252f; line-height: 1.25; cursor: pointer; }
-    .product-weight { font-size: 0.75rem; color: var(--gray); margin-bottom: 4px; font-weight: 500; }
-    .product-price { font-size: 1.1rem; font-weight: bold; color: var(--secondary); margin-bottom: 6px; }
-    
-    .quantity-control { display: flex; align-items: center; justify-content: space-between; background: #f1f2f6; border-radius: 6px; padding: 2px 4px; }
-    .btn-qty { width: 28px; height: 28px; background: white; border: 1px solid #ccc; border-radius: 4px; font-weight: bold; cursor: pointer; font-size: 1rem; color: var(--secondary); display: flex; align-items: center; justify-content: center; }
-    .qty-number { font-weight: bold; font-size: 0.95rem; }
-    
-    /* Form Styles */
-    .form-section { background: var(--card-bg); padding: 12px; border-radius: 10px; margin-top: 15px; box-shadow: 0 2px 6px rgba(0,0,0,0.05); }
-    .form-group { margin-bottom: 10px; }
-    .form-group label { display: block; font-weight: bold; font-size: 0.82rem; margin-bottom: 4px; color: var(--secondary); }
-    .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 8px 10px; border: 1px solid #ccc; border-radius: 6px; font-size: 0.85rem; }
-
-    /* Payment Box */
-    .payment-card { background: #f0f7ff; border: 1px solid #b3d7ff; border-radius: 8px; padding: 12px; margin-top: 10px; }
-    .payment-title { font-weight: bold; color: #0056b3; font-size: 0.9rem; margin-bottom: 6px; text-align: center; }
-    .bank-details { font-size: 0.82rem; color: #333; line-height: 1.5; background: #fff; padding: 8px; border-radius: 6px; border: 1px solid #e0e0e0; margin-bottom: 8px; }
-    .qr-image { width: 160px; height: 160px; object-fit: contain; margin: 8px auto; display: block; border-radius: 6px; border: 1px solid #ddd; }
-
-    /* Cart Fixed Bottom */
-    .cart-bar { position: fixed; bottom: 0; left: 0; right: 0; background: white; padding: 10px 15px; box-shadow: 0 -3px 10px rgba(0,0,0,0.1); display: flex; justify-content: space-between; align-items: center; max-width: 600px; margin: auto; border-top-left-radius: 15px; border-top-right-radius: 15px; z-index: 999; }
-    .total-price { font-size: 1.15rem; font-weight: bold; color: var(--secondary); }
-    .delivery-info { font-size: 0.72rem; color: var(--green); margin-top: 2px; font-weight: 600; }
-    .btn-checkout { background: var(--primary); color: white; border: none; padding: 10px 16px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 0.9rem; }
-    .btn-checkout:disabled { background: #95a5a6; cursor: not-allowed; }
-
-    /* Modals General */
-    .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 2000; justify-content: center; align-items: center; padding: 15px; }
-    .modal-content { width: 100%; max-width: 420px; background: #fff; border-radius: 12px; overflow: hidden; position: relative; max-height: 85vh; display: flex; flex-direction: column; }
-    .close-modal { position: absolute; top: 8px; right: 10px; color: white; font-size: 20px; font-weight: bold; cursor: pointer; z-index: 2001; background: rgba(0,0,0,0.6); width: 28px; height: 28px; border-radius: 50%; text-align: center; line-height: 26px; }
-    
-    .detail-header-img { width: 100%; height: 220px; object-fit: contain; background: #fff; }
-    .detail-body { padding: 15px; overflow-y: auto; font-size: 0.85rem; line-height: 1.5; color: #333; }
-    .detail-title { font-size: 1.1rem; font-weight: bold; color: var(--secondary); margin-bottom: 4px; }
-    .detail-price { font-size: 1.2rem; font-weight: bold; color: var(--secondary); margin-bottom: 10px; }
-    .detail-sec-title { font-weight: bold; color: var(--primary); margin-top: 10px; margin-bottom: 2px; }
+    body {
+      font-family: 'Hanuman', 'Khmer OS Battambang', Arial, sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      margin: 0;
+      padding: 0;
+      line-height: 1.6;
+    }
+    header {
+      background: linear-gradient(135deg, var(--banana-green), var(--leaf-light));
+      color: white;
+      text-align: center;
+      padding: 15px;
+      border-bottom: 4px solid var(--banana-yellow);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    header h1 {
+      margin: 0;
+      font-size: 20px;
+    }
+    header p {
+      margin: 3px 0 0 0;
+      font-size: 12px;
+      opacity: 0.9;
+    }
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 15px;
+    }
+    .category-title {
+      font-size: 16px;
+      font-weight: bold;
+      color: var(--banana-green);
+      margin: 20px 0 10px 0;
+      border-bottom: 2px solid var(--banana-yellow);
+      padding-bottom: 5px;
+    }
+    .product-card {
+      background: var(--card-bg);
+      border-radius: 12px;
+      padding: 12px 15px;
+      margin-bottom: 12px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+      border-left: 5px solid var(--banana-green);
+    }
+    .product-title {
+      font-size: 15px;
+      font-weight: bold;
+      color: var(--banana-green);
+      margin-bottom: 4px;
+    }
+    .product-desc {
+      font-size: 12px;
+      color: #666;
+      margin-bottom: 8px;
+    }
+    .product-price {
+      font-weight: bold;
+      color: #D32F2F;
+      margin-bottom: 8px;
+      font-size: 14px;
+    }
+    .qty-control {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .qty-control button {
+      background: var(--banana-green);
+      color: white;
+      border: none;
+      padding: 4px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+    .qty-control span {
+      font-weight: bold;
+      font-size: 15px;
+      min-width: 25px;
+      text-align: center;
+    }
+    .footer-bar {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: white;
+      padding: 12px 15px;
+      box-shadow: 0 -4px 10px rgba(0,0,0,0.1);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      max-width: 600px;
+      margin: 0 auto;
+      box-sizing: border-box;
+      z-index: 99;
+    }
+    .total-display {
+      font-size: 14px;
+      font-weight: bold;
+    }
+    .order-btn {
+      background: var(--banana-yellow);
+      color: #333;
+      border: none;
+      padding: 8px 18px;
+      border-radius: 8px;
+      font-weight: bold;
+      font-size: 15px;
+      cursor: pointer;
+    }
+    /* Modal Pop-up Design */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.5);
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+      padding: 15px;
+    }
+    .modal-content {
+      background: white;
+      padding: 20px;
+      border-radius: 12px;
+      width: 100%;
+      max-width: 450px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+      border-top: 6px solid var(--banana-green);
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+    .modal-content h3 {
+      margin-top: 0;
+      color: var(--banana-green);
+      text-align: center;
+      font-size: 18px;
+    }
+    .form-group {
+      margin-bottom: 12px;
+    }
+    .form-group label {
+      display: block;
+      font-size: 13px;
+      font-weight: bold;
+      margin-bottom: 4px;
+    }
+    .form-group input {
+      width: 100%;
+      padding: 8px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      box-sizing: border-box;
+      font-size: 14px;
+    }
+    .summary-box {
+      background: #F9FBE7;
+      padding: 10px;
+      border-radius: 6px;
+      font-size: 13px;
+      margin-bottom: 12px;
+      border: 1px dashed var(--banana-green);
+    }
+    .notice-box {
+      background: #FFFDE7;
+      border-left: 4px solid var(--banana-yellow);
+      padding: 8px;
+      font-size: 12px;
+      color: #555;
+      margin-bottom: 15px;
+    }
+    .modal-btns {
+      display: flex;
+      gap: 10px;
+    }
+    .modal-btns button {
+      flex: 1;
+      padding: 10px;
+      border: none;
+      border-radius: 6px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    .btn-confirm { background: var(--banana-green); color: white; }
+    .btn-cancel { background: #ccc; color: #333; }
   </style>
 </head>
 <body>
 
-  <header>🍌 MOMORE - កម្មង់ទំនិញបោះដុំ</header>
+  <header>
+    <h1>🍌 MoMore Collection (លក់រាយ) 🌿</h1>
+    <p>បញ្ជីផលិតផលលក់រាយ ដំណាប់ចេក និងចេកបំពងស្រួយ</p>
+  </header>
 
-  <div class="container">
-    
-    <!-- Daily Check-in System -->
-    <div class="reward-card">
-      <div class="reward-header">
-        <div class="reward-title">🎁 Check-in សន្សំកាក់ (Daily Points)</div>
-        <div class="coin-badge">💰 កាក់សរុប: <span id="user-coins">0</span></div>
-      </div>
-      <div class="checkin-days">
-        <div class="day-box active">ថ្ងៃ 1<br>+100</div>
-        <div class="day-box">ថ្ងៃ 2<br>+100</div>
-        <div class="day-box">ថ្ងៃ 3<br>+100</div>
-        <div class="day-box">ថ្ងៃ 4<br>+100</div>
-        <div class="day-box">ថ្ងៃ 5<br>+100</div>
-        <div class="day-box">ថ្ងៃ 6<br>+100</div>
-        <div class="day-box">ថ្ងៃ 7<br>+300</div>
-      </div>
-      <button class="btn-checkin" id="checkin-btn" onclick="doCheckIn()">ចុច Check-in យក ១០០ កាក់ថ្ងៃនេះ</button>
-    </div>
-
-    <!-- Notice Box -->
-    <div class="notice-box">
-      <strong>📌 លក្ខខណ្ឌកុម្ម៉ង់បោះដុំ៖</strong><br>
-      • 200g / 300g / 500g: ទិញចាប់ពី <strong>10 ប្រអប់ឡើង</strong><br>
-      • 100g: ទិញចាប់ពី <strong>20 ប្រអប់ឡើង</strong><br>
-      🎁 <strong>FREE ដឹក (8000៛) & ថែមជូន៖</strong> 30 ប្រអប់ (200g) ថែម 1 ប្រអប់ | 60 ប្រអប់ (100g) ថែម 2 ប្រអប់
-    </div>
-
-    <!-- ផលិតផល ដំណាប់ចេក -->
-    <div class="section-title">🍌 ផ្នែកទី ១៖ ដំណាប់ចេក (សាច់ទន់ស្វិត បន្ទះស្តើង)</div>
-    <div class="grid" id="domnap-container"></div>
-
-    <!-- ផលិតផល ចេកបំពង -->
-    <div class="section-title">🍿 ផ្នែកទី ២៖ ចេកបំពងស្រួយ</div>
-    <div class="grid" id="crispy-container"></div>
-
-    <!-- ផ្នែកព័ត៌មានដឹកជញ្ជូន និងបង់ប្រាក់ -->
-    <div class="section-title">🚚 ផ្នែកទី ៣៖ ព័ត៌មានដឹកជញ្ជូន & វេរប្រាក់</div>
-    <div class="form-section">
-      
-      <div class="form-group">
-        <label>📍 តំបន់ដឹកជញ្ជូន *</label>
-        <select id="cust-zone" onchange="toggleZoneFields()">
-          <option value="ភ្នំពេញ">រាជធានីភ្នំពេញ (ដឹកដល់ផ្ទះ)</option>
-          <option value="តាមខេត្ត">តាមខេត្ត (ផ្ញើតាមក្រុមហ៊ុនដឹកជញ្ជូន)</option>
-        </select>
-      </div>
-
-      <div class="form-group">
-        <label>📞 លេខទូរស័ព្ទទទួលទំនិញ *</label>
-        <input type="tel" id="cust-phone" placeholder="ឧទាហរណ៍៖ 012 345 678" required>
-      </div>
-
-      <!-- ប្រអប់សម្រួលសម្រាប់អ្នកតាមខេត្ត -->
-      <div id="province-fields" style="display:none;">
-        <div class="form-group">
-          <label>🏙️ ជ្រើសរើស ខេត្ត/ក្រុង *</label>
-          <input type="text" id="cust-province" placeholder="ឧទាហរណ៍៖ ខេត្តសៀមរាប, បាត់ដំបង, កំពង់ចាម...">
-        </div>
-        <div class="form-group">
-          <label>🏢 សាខាក្រុមហ៊ុនដឹកជញ្ជូន ដែលត្រូវទទួល *</label>
-          <input type="text" id="cust-branch" placeholder="ឧទាហរណ៍៖ វីរៈ ប៊ុនថាំ សាខាក្រុងសៀមរាប">
-        </div>
-      </div>
-
-      <!-- ប្រអប់សម្រាប់អ្នកនៅភ្នំពេញ -->
-      <div id="phnompenh-fields">
-        <div class="form-group">
-          <label>🏠 អាសយដ្ឋានលម្អិត (ខណ្ឌ/ស្រុក, ផ្ទះលេខ, ផ្លូវ) *</label>
-          <textarea id="cust-address" rows="2" placeholder="ឧទាហរណ៍៖ សែនសុខ, ផ្ទះលេខ ១២, ផ្លូវ ២៧១..."></textarea>
-        </div>
-        <div class="form-group">
-          <label>🗺️ Link Maps (បើមាន)</label>
-          <input type="url" id="cust-location" placeholder="https://maps.app.goo.gl/...">
-        </div>
-      </div>
-
-      <div class="form-group">
-        <label>🚚 ក្រុមហ៊ុនដឹកជញ្ជូន *</label>
-        <select id="courier-select">
-          <option value="វីរៈ ប៊ុនថាំ (Virak Buntham)">វីរៈ ប៊ុនថាំ (Virak Buntham)</option>
-          <option value="J&T Express">J&T Express</option>
-          <option value="Flash Express">Flash Express</option>
-          <option value="VET Express (កាពីតូល)">VET Express</option>
-          <option value="ដឹកជញ្ជូន Express (ភ្នំពេញ)">ដឹកជញ្ជូន Express (ភ្នំពេញ)</option>
-        </select>
-      </div>
-
-      <!-- ប្រអប់ទូទាត់ប្រាក់សម្រាប់អ្នកតាមខេត្ត (វេរលុយមុន) -->
-      <div class="payment-card">
-        <div class="payment-title">💳 ព័ត៌មានទូទាត់ប្រាក់ (វេរលុយមុន)</div>
-        <div class="bank-details">
-          <strong>🏦 ABA Bank:</strong> 000 123 456 (SOM SOURPUNNARY)<br>
-          <strong>📱 Wing / ABA KHQR:</strong> ស្កែន QR ខាងក្រោម
-        </div>
-        <img src="khqr.jpg" alt="KHQR Code" class="qr-image" onerror="this.src='https://via.placeholder.com/160x160?text=KHQR+Code'">
-        
-        <div class="form-group" style="margin-top:8px;">
-          <label>🧾 បង្ហោះរូបភាពវិក្កយបត្រវេរលុយ (Payment Slip) *</label>
-          <input type="file" id="slip-file" accept="image/*">
-        </div>
-      </div>
-
-    </div>
-
+  <div class="container" id="product-list" style="padding-bottom: 80px;">
+    <!-- Rendered by JavaScript -->
   </div>
 
-  <!-- Modal បើកវីដេអូ -->
-  <div class="modal" id="videoModal">
-    <div class="modal-content" style="background:#000;">
-      <span class="close-modal" onclick="closeVideoModal()">&times;</span>
-      <video id="popupVideo" controls style="width:100%; max-height: 70vh; display:block;" autoplay></video>
-    </div>
+  <div class="footer-bar">
+    <div class="total-display">សរុប: <span id="grand-total">0</span> ៛</div>
+    <button class="order-btn" onclick="openModal()">ធ្វើការកុម្ម៉ង់ 🛒</button>
   </div>
 
-  <!-- Modal ព័ត៌មានលម្អិតទំនិញ -->
-  <div class="modal" id="detailModal">
+  <!-- Modal Pop-up -->
+  <div class="modal" id="order-modal">
     <div class="modal-content">
-      <span class="close-modal" onclick="closeDetailModal()">&times;</span>
-      <img id="detail-img" class="detail-header-img" src="" alt="">
-      <div class="detail-body">
-        <div id="detail-name" class="detail-title"></div>
-        <div id="detail-price" class="detail-price"></div>
-        <div class="detail-sec-title">🍌 គ្រឿងផ្សំ</div>
-        <p id="detail-ingredients"></p>
-        <div class="detail-sec-title">✨ រសជាតិ</div>
-        <p id="detail-taste"></p>
-        <div class="detail-sec-title">🛡️ ការរក្សាទុក</div>
-        <p id="detail-storage"></p>
+      <h3>បំពេញព័ត៌មានដឹកជញ្ជូន</h3>
+      
+      <div class="summary-box" id="modal-summary"></div>
+
+      <div class="notice-box">
+        ⚠️ <strong>សម្គាល់៖</strong> ទូទាត់មុនម៉ោង 5:00 ល្ងាច ផ្ញើជូនថ្ងៃហ្នឹង! លើសពីហ្នឹងរៀបចំជូនថ្ងៃស្អែក។
+      </div>
+
+      <div class="form-group">
+        <label>📞 លេខទូរស័ព្ទទំនាក់ទំនង៖</label>
+        <input type="text" id="cust-phone" placeholder="បំពេញលេខទូរស័ព្ទរបស់អ្នក">
+      </div>
+
+      <div class="form-group">
+        <label>📍 ខេត្ត/ក្រុង៖</label>
+        <input type="text" id="cust-province" placeholder="ឧ. ខេត្តសៀមរាប, បាត់ដំបង...">
+      </div>
+
+      <div class="form-group">
+        <label>🏢 សាខាក្រុមហ៊ុនដឹកជញ្ជូន (ឧ. សាខា វីរៈប៊ុនថាំ)：</label>
+        <input type="text" id="cust-branch" placeholder="បំពេញឈ្មោះសាខាឱ្យបានច្បាស់លាស់">
+      </div>
+
+      <div class="modal-btns">
+        <button class="btn-cancel" onclick="closeModal()">បោះបង់</button>
+        <button class="btn-confirm" onclick="submitOrder()">បញ្ជាក់ការកុម្ម៉ង់ 🚀</button>
       </div>
     </div>
-  </div>
-
-  <!-- Cart Fixed Bottom -->
-  <div class="cart-bar">
-    <div>
-      <div style="font-size:0.75rem; color:var(--gray);">សរុបសាច់ប្រាក់:</div>
-      <div class="total-price"><span id="total-val">0</span> ៛</div>
-      <div class="delivery-info" id="delivery-info">🚚 ថ្លៃដឹក៖ 8,000 ៛</div>
-    </div>
-    <button class="btn-checkout" id="submit-btn" onclick="submitOrder()">ផ្ញើការកុម្ម៉ង់</button>
   </div>
 
   <script>
-    const tg = window.Telegram.WebApp;
-    tg.expand();
-
     const products = {
-      D_ORIG200: { name: "ដំណាប់ចេក រសជាតិដើម", price: 8000, qty: 0, size: '200g', id: 'D_ORIG200', ingredients: "ចេកណាំវ៉ាខ្មែរ ធម្មជាតិ 100%", taste: "ទន់ស្វិត ផ្អែមឆ្ងាញ់បែបធម្មជាតិ", storage: "រក្សាទុកបាន ៦ ខែ" },
-      D_SESM200: { name: "ដំណាប់ចេក រោយល្ង ស/ខ្មៅ", price: 8000, qty: 0, size: '200g', id: 'D_SESM200', ingredients: "ចេកណាំវ៉ា + ល្ងស/ខ្មៅលីង", taste: "ទន់ស្វិត ឈ្ងុយល្ងលីង", storage: "រក្សាទុកបាន ៦ ខែ" },
-      D_ALMD200: { name: "ដំណាប់ចេក រោយអាល់ម៉ុន", price: 10000, qty: 0, size: '200g', id: 'D_ALMD200', ingredients: "ចេកណាំវ៉ា + គ្រាប់អាល់ម៉ុន", taste: "ផ្អែមស្រទន់ ឈ្ងុយអាល់ម៉ុន", storage: "រក្សាទុកបាន ៦ ខែ" },
-      D_MIXG200: { name: "ដំណាប់ចេក រោយធញ្ញជាតិ", price: 10000, qty: 0, size: '200g', id: 'D_MIXG200', ingredients: "ចេកណាំវ៉ា + ធញ្ញជាតិចម្រុះ", taste: "ទន់ស្វិត មានអាហាររូបត្ថម្ភខ្ពស់", storage: "រក្សាទុកបាន ៦ ខែ" },
-      D_COCO200: { name: "ដំណាប់ចេក រោយដូង", price: 10000, qty: 0, size: '200g', id: 'D_COCO200', ingredients: "ចេកណាំវ៉ា + សាច់ដូងសម្ងួត", taste: "ឈ្ងុយខ្ទិះដូង ផ្អែមឆ្ងាញ់", storage: "រក្សាទុកបាន ៦ ខែ" },
-      D_BALL200: { name: "ដំណាប់ចេកមូល", price: 10000, qty: 0, size: '200g', id: 'D_BALL200', ingredients: "ចេកណាំវ៉ាទុំជោរ រាងមូល", taste: "ទន់ស្វិតល្មើយ ងាយស្រួលទំពា", storage: "រក្សាទុកបាន ៦ ខែ" },
-      D_RCHCS300: { name: "ដំណាប់ចេក ស្នូលសូកូឡាដូង លាយល្ង", price: 17000, qty: 0, size: '300g', id: 'D_RCHCS300', ingredients: "ចេក + សូកូឡា + ដូង + ល្ង", taste: "ឈ្ងុយដូង និង សូកូឡា", storage: "រក្សាទុកបាន ៣-៦ ខែ" },
-      D_RCHCC300: { name: "ដំណាប់ចេក ស្នូលសូកូឡាចន្ទី", price: 17000, qty: 0, size: '300g', id: 'D_RCHCC300', ingredients: "ចេក + សូកូឡា + គ្រាប់ចន្ទី", taste: "ឈ្ងុយចន្ទី និង សូកូឡា", storage: "រក្សាទុកបាន ៣-៦ ខែ" },
-      D_RCHCD300: { name: "ដំណាប់ចេក សូកូឡាស្នូលដូង", price: 17000, qty: 0, size: '300g', id: 'D_RCHCD300', ingredients: "ចេក + សូកូឡា + កម្ទេចដូង", taste: "ផ្អែមល្មម ឈ្ងុយដូង", storage: "រក្សាទុកបាន ៣-៦ ខែ" },
-      C_ORIG500: { name: "ចេកបំពង រសជាតិដើមសាប", price: 10000, qty: 0, size: '500g', id: 'C_ORIG500', ingredients: "ចេកបន្ទះ + ប្រេងរុក្ខជាតិ", taste: "ស្រួយស្រែស មិនជាប់ខ្លាញ់", storage: "រក្សាទុកបាន ៦ ខែ" },
-      C_CHOC200: { name: "ចេកបំពង សូកូឡាដោះគោ", price: 10000, qty: 0, size: '200g', id: 'C_CHOC200', ingredients: "ចេកបន្ទះ + សូកូឡាដោះគោ", taste: "ស្រួយផ្អែម ឈ្ងុយសូកូឡា", storage: "រក្សាទុកបាន ៦ ខែ" },
-      C_CHOC100: { name: "ចេកបំពង សូកូឡាដោះគោ", price: 5000, qty: 0, size: '100g', id: 'C_CHOC100', ingredients: "ចេកបន្ទះ + សូកូឡាដោះគោ", taste: "ស្រួយផ្អែម ឈ្ងុយសូកូឡា", storage: "រក្សាទុកបាន ៦ ខែ" },
-      C_CHES200: { name: "ចេកបំពង ឈីស ដោះគោ", price: 10000, qty: 0, size: '200g', id: 'C_CHES200', ingredients: "ចេកបន្ទះ + ម្សៅឈីស", taste: "ប្រៃផ្អែម ឈ្ងុយឈីស", storage: "រក្សាទុកបាន ៦ ខែ" },
-      C_CHES100: { name: "ចេកបំពង ឈីស ដោះគោ", price: 5000, qty: 0, size: '100g', id: 'C_CHES100', ingredients: "ចេកបន្ទះ + ម្សៅឈីស", taste: "ប្រៃផ្អែម ឈ្ងុយឈីស", storage: "រក្សាទុកបាន ៦ ខែ" },
-      C_SPIC200: { name: "ចេកបំពង ម្ទេសខ្ទឹម", price: 14000, qty: 0, size: '200g', id: 'C_SPIC200', ingredients: "ចេកបន្ទះ + ម្ទេស និងខ្ទឹមស", taste: "ហឹរតិចៗ ឈ្ងុយខ្ទឹមស", storage: "រក្សាទុកបាន ៦ ខែ" },
-      C_SPIC100: { name: "ចេកបំពង ម្ទេសខ្ទឹម", price: 5000, qty: 0, size: '100g', id: 'C_SPIC100', ingredients: "ចេកបន្ទះ + ម្ទេស និងខ្ទឹមស", taste: "ហឹរតិចៗ ឈ្ងុយខ្ទឹមស", storage: "រក្សាទុកបាន ៦ ខែ" },
-      C_BBQ200: { name: "ចេកបំពង រសជាតិ BBQ", price: 10000, qty: 0, size: '200g', id: 'C_BBQ200', ingredients: "ចេកបន្ទះ + គ្រឿងទេស BBQ", taste: "រសជាតិបាប៊ីឃ្យូ", storage: "រក្សាទុកបាន ៦ ខែ" },
-      C_BBQ100: { name: "ចេកបំពង រសជាតិ BBQ", price: 5000, qty: 0, size: '100g', id: 'C_BBQ100', ingredients: "ចេកបន្ទះ + គ្រឿងទេស BBQ", taste: "រសជាតិបាប៊ីឃ្យូ", storage: "រក្សាទុកបាន ៦ ខែ" }
+      1: { category: "🍌 ដំណាប់ចេកសាច់ទន់ (ខ្នាត ២០០ក្រាម)", name: "រសជាតិដើម / រោយល្ង (200g)", price: 10000, qty: 0, desc: "1ប្រអប់ជាង10បន្ទះ (ចេក1ផ្លែ/បន្ទះ) សាច់ទន់ក្រាស់ល្អ រក្សាបាន 6 ខែ គ្មានជាតិទឹក មិនបាច់ក្លាសេរ។" },
+      2: { category: "🍌 ដំណាប់ចេកសាច់ទន់ (ខ្នាត ២០០ក្រាម)", name: "រោយធញ្ញជាតិ / រោយដូង / រោយអាល់ម៉ុន (200g)", price: 12000, qty: 0, desc: "សាច់ទន់ក្រាស់ល្អ ឈ្ងុយឆ្ងាញ់ មានជីវជាតិចិញ្ចឹមខ្ពស់ រក្សាបាន 6 ខែ។" },
+      
+      3: { category: "🍌 ដំណាប់ចេកសាច់ទន់ (ខ្នាត ១គីឡូក្រាម - Free សេវាដឹក)", name: "រសជាតិដើម / រោយល្ង (1kg)", price: 50000, qty: 0, desc: "1kg មានជាង50-60បន្ទះ សាច់ទន់ក្រាស់ល្អ ឈ្ងុយឆ្ងាញ់ រក្សាបាន 6 ខែ (Free សេវាដឹក)!" },
+      4: { category: "🍌 ដំណាប់ចេកសាច់ទន់ (ខ្នាត ១គីឡូក្រាម - Free សេវាដឹក)", name: "រោយធញ្ញជាតិ / រោយដូង / រោយអាល់ម៉ុន (1kg)", price: 60000, qty: 0, desc: "ខ្នាតធំសន្ធឹកសន្ធាប់ សាច់ទន់ក្រាស់ល្អ ឈ្ងុយឆ្ងាញ់ រក្សាបាន 6 ខែ (Free សេវាដឹក)!" },
+
+      5: { category: "🍫 ដំណាប់ចេកស្នូលសូកូឡា (៣០០ក្រាម)", name: "ស្នូលសូកូឡាដូងល្ងរ (300g)", price: 22000, qty: 0, desc: "សាច់ចេកទន់ឆ្ងាញ់ លាយស្នូលសូកូឡាដូងល្ងរ ឈ្ងុយដិតដួងចិត្ត។" },
+      6: { category: "🍫 ដំណាប់ចេកស្នូលសូកូឡា (៣០០ក្រាម)", name: "ស្នូលសូកូឡាចន្ទី (300g)", price: 22000, qty: 0, desc: "រសជាតិឆ្ងាញ់ពិសេស ជាមួយគ្រាប់ស្វាយចន្ទី និងសូកូឡា។" },
+      7: { category: "🍫 ដំណាប់ចេកស្នូលសូកូឡា (៣០០ក្រាម)", name: "ស្នូលសូកូឡាដូង (300g)", price: 22000, qty: 0, desc: "សូកូឡាដូងឈ្ងុយឆ្ងាញ់ ទន់ស្រទន់ពិសារជាប់មាត់។" },
+
+      8: { category: "🌿 ចេកបំពងស្រួយ ម៉ូម័រ MoMore", name: "រសជាតិដើម (250g)", price: 6000, qty: 0, desc: "ចេកបំពងស្រួយក្រអូបឆ្ងាញ់ ញ៉ាំជក់មាត់។" },
+      9: { category: "🌿 ចេកបំពងស្រួយ ម៉ូម័រ MoMore", name: "រសជាតិដើម (500g)", price: 12000, qty: 0, desc: "ខ្នាតធំចំណុះ 500g ស្រួយឆ្ងាញ់ពិសារ។" },
+      
+      10: { category: "🌿 ចេកបំពងស្រួយ ម៉ូម័រ MoMore (រសជាតិពិសេស)", name: "សូកូឡា / ឈីស / BBQ / ម្ទេសខ្ទឹម (100g)", price: 7000, qty: 0, desc: "រសជាតិពិសេសឆ្ងាញ់ប្លែក ក្រអូបស្រួយល្អ។" },
+      11: { category: "🌿 ចេកបំពងស្រួយ ម៉ូម័រ MoMore (រសជាតិពិសេស)", name: "សូកូឡា / ឈីស / BBQ / ម្ទេសខ្ទឹម (200g)", price: 14000, qty: 0, desc: "ទំហំ 200g ឆ្ងាញ់ពេញចិត្តគ្រប់រសជាតិ។" },
+      12: { category: "🌿 ចេកបំពងស្រួយ ម៉ូម័រ MoMore (រសជាតិពិសេស)", name: "សូកូឡា / ឈីស / BBQ / ម្ទេសខ្ទឹម (500g)", price: 35000, qty: 0, desc: "ទំហំធំ 500g សម្រាប់ញ៉ាំគ្រួសារ ឬចែករំលែកគ្នា។" }
     };
 
-    const BOT_TOKEN = "8850768954:AAF6b82FJ7yWDASFA7Cy1WT75d68nwGu3Hs";
-    const GROUP_ID = "-1004387546731";
-
-    let userCoins = parseInt(localStorage.getItem('momore_coins') || '0');
-    let lastCheckin = localStorage.getItem('momore_last_checkin');
-
-    function initCheckIn() {
-      document.getElementById('user-coins').innerText = userCoins;
-      const today = new Date().toDateString();
-      if (lastCheckin === today) {
-        const btn = document.getElementById('checkin-btn');
-        btn.innerText = "បាន Check-in រួចរាល់ថ្ងៃនេះ!";
-        btn.disabled = true;
-      }
-    }
-
-    function doCheckIn() {
-      const today = new Date().toDateString();
-      if (lastCheckin !== today) {
-        userCoins += 100;
-        localStorage.setItem('momore_coins', userCoins);
-        localStorage.setItem('momore_last_checkin', today);
-        document.getElementById('user-coins').innerText = userCoins;
-        
-        const btn = document.getElementById('checkin-btn');
-        btn.innerText = "បាន Check-in រួចរាល់ថ្ងៃនេះ! (+100 កាក់)";
-        btn.disabled = true;
-        alert("🎉 អ្នកទទួលបាន ១០០ កាក់សម្រាប់ការ Check-in!");
-      }
-    }
-
-    function toggleZoneFields() {
-      const zone = document.getElementById('cust-zone').value;
-      if (zone === 'តាមខេត្ត') {
-        document.getElementById('province-fields').style.display = 'block';
-        document.getElementById('phnompenh-fields').style.display = 'none';
-      } else {
-        document.getElementById('province-fields').style.display = 'none';
-        document.getElementById('phnompenh-fields').style.display = 'block';
-      }
-    }
-
     function renderProducts() {
-      const domnapContainer = document.getElementById('domnap-container');
-      const crispyContainer = document.getElementById('crispy-container');
+      const listEl = document.getElementById('product-list');
+      listEl.innerHTML = "";
+      let lastCategory = "";
 
       for (let key in products) {
         let p = products[key];
-        const isDomnap = key.startsWith('D_');
+        if (p.category !== lastCategory) {
+          lastCategory = p.category;
+          listEl.innerHTML += `<div class="category-title">${lastCategory}</div>`;
+        }
 
-        const cardHtml = `
+        listEl.innerHTML += `
           <div class="product-card">
-            <div class="media-box" onclick="openProductDetail('${key}')">
-              <img src="${p.id}.jpg" alt="${p.name}" onerror="this.src='https://via.placeholder.com/200x200?text=Momore'">
-              <div class="play-video-badge" onclick="event.stopPropagation(); playVideo('${p.id}.mp4');">
-                ▶️ វីដេអូ
-              </div>
-            </div>
-            <div class="product-info">
-              <div>
-                <div class="product-name" onclick="openProductDetail('${key}')">${p.name}</div>
-                <div class="product-weight">ទំហំ: ${p.size}</div>
-                <div class="product-price">${p.price.toLocaleString()} ៛</div>
-              </div>
-              <div class="quantity-control">
-                <button class="btn-qty" onclick="changeQty('${key}', -1)">-</button>
-                <span class="qty-number" id="qty-${key}">0</span>
-                <button class="btn-qty" onclick="changeQty('${key}', 1)">+</button>
-              </div>
+            <div class="product-title">${p.name}</div>
+            <div class="product-desc">${p.desc}</div>
+            <div class="product-price">តម្លៃ: ${p.price.toLocaleString()} ៛</div>
+            <div class="qty-control">
+              <button onclick="changeQty(${key}, -1)">-</button>
+              <span id="qty-${key}">${p.qty}</span>
+              <button onclick="changeQty(${key}, 1)">+</button>
             </div>
           </div>
         `;
-
-        if (isDomnap) {
-          domnapContainer.innerHTML += cardHtml;
-        } else {
-          crispyContainer.innerHTML += cardHtml;
-        }
       }
     }
 
-    function openProductDetail(key) {
-      const p = products[key];
-      document.getElementById('detail-img').src = `${p.id}.jpg`;
-      document.getElementById('detail-name').innerText = p.name;
-      document.getElementById('detail-price').innerText = `${p.price.toLocaleString()} ៛ (${p.size})`;
-      document.getElementById('detail-ingredients').innerText = p.ingredients;
-      document.getElementById('detail-taste').innerText = p.taste;
-      document.getElementById('detail-storage').innerText = p.storage;
-      document.getElementById('detailModal').style.display = 'flex';
-    }
-
-    function closeDetailModal() { document.getElementById('detailModal').style.display = 'none'; }
-    function playVideo(v) { document.getElementById('popupVideo').src = v; document.getElementById('videoModal').style.display = 'flex'; }
-    function closeVideoModal() { document.getElementById('popupVideo').pause(); document.getElementById('videoModal').style.display = 'none'; }
-
-    function changeQty(key, amount) {
-      products[key].qty += amount;
-      if (products[key].qty < 0) products[key].qty = 0;
-      document.getElementById(`qty-${key}`).innerText = products[key].qty;
-      calculateTotal();
+    function changeQty(id, delta) {
+      products[id].qty += delta;
+      if (products[id].qty < 0) products[id].qty = 0;
+      document.getElementById(`qty-${id}`).innerText = products[id].qty;
+      updateTotal();
     }
 
     function calculateTotal() {
       let totalItemPrice = 0;
-      let total200gQty = 0;
-      let total100gQty = 0;
+      let totalQty200g = 0;
+      let totalQty100g = 0;
 
       for (let key in products) {
         let p = products[key];
         totalItemPrice += p.qty * p.price;
-        if (p.size === '100g') total100gQty += p.qty;
-        else total200gQty += p.qty;
+        if (p.name.includes("200g")) totalQty200g += p.qty;
+        if (p.name.includes("100g")) totalQty100g += p.qty;
       }
 
-      let deliveryFee = 8000;
-      let promoFreeMsg = "";
-      let minQtyMet = true;
-      let qtyStatusMsg = "";
-
-      const btnSubmit = document.getElementById('submit-btn');
-
+      let shippingFee = 8000;
       if (totalItemPrice === 0) {
-        deliveryFee = 0;
-        btnSubmit.disabled = false;
-        btnSubmit.innerText = "ផ្ញើការកុម្ម៉ង់";
-        btnSubmit.style.background = "var(--primary)";
-      } else {
-        if (total200gQty > 0 && total200gQty < 10) { minQtyMet = false; qtyStatusMsg = ` (200g ខ្វះ ${10 - total200gQty})`; }
-        if (total100gQty > 0 && total100gQty < 20) { minQtyMet = false; qtyStatusMsg += ` (100g ខ្វះ ${20 - total100gQty})`; }
-
-        if (!minQtyMet) {
-          btnSubmit.disabled = true;
-          btnSubmit.innerText = "ខ្វះចំនួនដើម" + qtyStatusMsg;
-          btnSubmit.style.background = "var(--red)";
-        } else {
-          btnSubmit.disabled = false;
-          btnSubmit.innerText = "ផ្ញើការកុម្ម៉ង់";
-          btnSubmit.style.background = "var(--primary)";
-        }
-
-        if (total200gQty >= 15 && total100gQty >= 30) { deliveryFee = 0; promoFreeMsg = " [FREE ដឹក + ថែម 200g]"; }
-        else if (total200gQty >= 30) { deliveryFee = 0; promoFreeMsg = " [FREE ដឹក + ថែម 200g]"; }
-        else if (total100gQty >= 60) { deliveryFee = 0; promoFreeMsg = " [FREE ដឹក + ថែម 100g ២ដង]"; }
+        shippingFee = 0;
+      } else if (totalQty200g >= 5 || totalQty100g >= 10 || totalItemPrice >= 50000) {
+        shippingFee = 0; // Free សេវាដឹកតាមប្រម៉ូសិន
       }
 
-      let grandTotal = totalItemPrice + deliveryFee;
-      document.getElementById('total-val').innerText = grandTotal.toLocaleString();
-      document.getElementById('delivery-info').innerText = deliveryFee === 0 && totalItemPrice > 0 ? `🚚 ថ្លៃដឹក៖ FREE! ${promoFreeMsg}` : `🚚 ថ្លៃដឹក៖ ${deliveryFee.toLocaleString()} ៛`;
-
-      return { grandTotal, totalItemPrice, deliveryFee, promoFreeMsg, minQtyMet };
+      let grandTotal = totalItemPrice + shippingFee;
+      return { totalItemPrice, shippingFee, grandTotal };
     }
 
-    async function submitOrder() {
+    function updateTotal() {
       let calc = calculateTotal();
-      if (calc.totalItemPrice === 0) { alert("សូមជ្រើសរើសទំនិញជាមុនសិន!"); return; }
-      if (!calc.minQtyMet) { alert("សូមពិនិត្យចំនួនកុម្ម៉ង់ដើម (200g ចាប់ពី 10, 100g ចាប់ពី 20)!"); return; }
+      document.getElementById('grand-total').innerText = calc.grandTotal.toLocaleString();
+    }
 
-      const zone = document.getElementById('cust-zone').value;
+    function openModal() {
+      let calc = calculateTotal();
+      if (calc.totalItemPrice === 0) {
+        alert("សូមជ្រើសរើសទំនិញយ៉ាងហោចណាស់ ១ មុខសិន!");
+        return;
+      }
+      
+      document.getElementById('modal-summary').innerHTML = `
+        📦 តម្លៃទំនិញសរុប: <b>${calc.totalItemPrice.toLocaleString()} ៛</b><br>
+        🚚 សេវាដឹកជញ្ជូន: <b>${calc.shippingFee === 0 ? 'Free (ឥតគិតថ្លៃ)' : calc.shippingFee.toLocaleString() + ' ៛'}</b><br>
+        💰 <b>ទឹកប្រាក់សរុបត្រូវបង់: ${calc.grandTotal.toLocaleString()} ៛</b>
+      `;
+      
+      document.getElementById('order-modal').style.display = 'flex';
+    }
+
+    function closeModal() {
+      document.getElementById('order-modal').style.display = 'none';
+    }
+
+    function submitOrder() {
       const phone = document.getElementById('cust-phone').value.trim();
-      const courier = document.getElementById('courier-select').value;
-      const slipFile = document.getElementById('slip-file').files[0];
+      const province = document.getElementById('cust-province').value.trim();
+      const branch = document.getElementById('cust-branch').value.trim();
 
-      let addressDetail = "";
-      if (zone === 'តាមខេត្ត') {
-        const prov = document.getElementById('cust-province').value.trim();
-        const branch = document.getElementById('cust-branch').value.trim();
-        if (!prov || !branch || !phone) { alert("សូមបំពេញ ខេត្ត/ក្រុង, សាខាក្រុមហ៊ុនដឹក និងលេខទូរស័ព្ទ!"); return; }
-        addressDetail = `🏙️ *ខេត្ត/ក្រុង:* ${prov}\n🏢 *សាខាទទួល:* ${branch}`;
-      } else {
-        const addr = document.getElementById('cust-address').value.trim();
-        const loc = document.getElementById('cust-location').value.trim();
-        if (!addr || !phone) { alert("សូមបំពេញអាសយដ្ឋាន និងលេខទូរស័ព្ទ!"); return; }
-        addressDetail = `🏠 *អាសយដ្ឋាន:* ${addr}\n` + (loc ? `🗺️ *Location:* ${loc}` : '');
+      if (!phone || !province || !branch) {
+        alert("សូមបំពេញ លេខទូរសព្ទ ខេត្ត និងឈ្មោះសាខាដឹកជញ្ជូន ឱ្យបានគ្រប់គ្រាន់!");
+        return;
       }
 
-      const btn = document.getElementById('submit-btn');
-      btn.innerText = "កំពុងផ្ញើ...";
-      btn.disabled = true;
+      let calc = calculateTotal();
 
-      const user = tg.initDataUnsafe?.user;
-      const customerName = user ? `${user.first_name} ${user.last_name || ''}` : "អតិថិជន";
+      let orderDetails = "🛍️ ══════════════════ 🛍️\n";
+      orderDetails += "     📥 **សំណើកុម្ម៉ង់ទំនិញលក់រាយ (MoMore)**\n";
+      orderDetails += "🛍️ ══════════════════ 🛍️\n\n";
 
-      let orderText = "";
+      orderDetails += "📋 **បញ្ជីទំនិញដែលបានជ្រើសរើស៖**\n";
       for (let key in products) {
-        let p = products[key];
-        if (p.qty > 0) orderText += `• ${p.name} (${p.size}): ${p.qty} x ${p.price.toLocaleString()} = ${(p.qty * p.price).toLocaleString()} ៛\n`;
+        if (products[key].qty > 0) {
+          let p = products[key];
+          orderDetails += `▪️ ${p.name}\n`;
+          orderDetails += `   👉 ចំនួន: ${p.qty} | ទឹកប្រាក់: ${(p.qty * p.price).toLocaleString()} ៛\n`;
+        }
       }
 
-      let msg = `📦 *ការកុម្ម៉ង់បោះដុំថ្មី (${zone})*\n\n` +
-                `👤 *អតិថិជន:* ${customerName}\n` +
-                `📞 *លេខទូរស័ព្ទ:* ${phone}\n` +
-                `${addressDetail}\n` +
-                `🚚 *ក្រុមហ៊ុនដឹក:* ${courier}\n\n` +
-                `📝 *មុខទំនិញ:*\n${orderText}\n` +
-                `🚚 *ថ្លៃដឹក:* ${calc.deliveryFee === 0 ? "FREE" : calc.deliveryFee.toLocaleString() + " ៛"}\n` +
-                `💰 *សរុបត្រូវទូទាត់:* ${calc.grandTotal.toLocaleString()} ៛`;
+      orderDetails += `\n📦 តម្លៃទំនិញ: ${calc.totalItemPrice.toLocaleString()} ៛\n`;
+      orderDetails += `🚚 សេវាដឹកជញ្ជូន: ${calc.shippingFee === 0 ? 'Free' : calc.shippingFee.toLocaleString() + ' ៛'}\n`;
+      orderDetails += `💰 **សរុបទឹកប្រាក់ត្រូវបង់:** ${calc.grandTotal.toLocaleString()} ៛\n`;
+      orderDetails += "──────────────────────\n";
+      orderDetails += "👤 **ព័ត៌មានអតិថិជន៖**\n";
+      orderDetails += `📞 លេខទូរស័ព្ទ: ${phone}\n`;
+      orderDetails += `📍 ខេត្ត/ក្រុង: ${province}\n`;
+      orderDetails += `🏢 សាខា/ទីតាំង (វីរៈប៊ុនថាំ): ${branch}\n`;
+      orderDetails += "──────────────────────\n";
+      orderDetails += "⚠️ *សម្គាល់៖ ទូទាត់មុនម៉ោង 5:00 ល្ងាច ផ្ញើជូនថ្ងៃហ្នឹង! លើសពីហ្នឹងរៀបចំជូនថ្ងៃស្អែក។*";
 
-      try {
-        if (slipFile) {
-          let formData = new FormData();
-          formData.append("chat_id", GROUP_ID);
-          formData.append("photo", slipFile);
-          formData.append("caption", msg);
-          formData.append("parse_mode", "Markdown");
-
-          let res = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendPhoto`, { method: "POST", body: formData });
-          let data = await res.json();
-          if (data.ok) { alert("ការកុម្ម៉ង់ និងវិក្កយបត្រត្រូវបានផ្ញើរួចរាល់!"); tg.close(); }
-        } else {
-          let res = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ chat_id: GROUP_ID, text: msg, parse_mode: "Markdown" })
-          });
-          let data = await res.json();
-          if (data.ok) { alert("ការកុម្ម៉ង់ត្រូវបានផ្ញើរួចរាល់!"); tg.close(); }
-        }
-      } catch (err) { alert("Error: " + err); }
-      finally { btn.innerText = "ផ្ញើការកុម្ម៉ង់"; btn.disabled = false; }
+      const encodedText = encodeURIComponent(orderDetails);
+      const adminUsername = "MoMore_collection";
+      
+      window.open(`https://t.me/${adminUsername}?text=${encodedText}`, '_blank');
+      closeModal();
     }
 
     renderProducts();
-    initCheckIn();
   </script>
 </body>
 </html>
