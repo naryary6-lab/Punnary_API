@@ -128,7 +128,7 @@
       </div>
       <div class="form-group">
         <label>📍 រាជធានី / ខេត្ត *</label>
-        <select id="cust-province">
+        <select id="cust-province" onchange="updateTotal()">
           <option value="រាជធានីភ្នំពេញ">រាជធានីភ្នំពេញ (Phnom Penh)</option>
           <option value="តាមខេត្ត">ខេត្តផ្សេងៗ (Provinces)</option>
         </select>
@@ -147,8 +147,8 @@
       </div>
       <div class="form-group">
         <label>🚚 ជ្រើសរើសក្រុមហ៊ុនដឹកជញ្ជូន *</label>
-        <select id="courier-select">
-          <option value="ដឹកជញ្ជូនរហ័ស (ភ្នំពេញ)">ដឹកជញ្ជូនរហ័ស Express (ក្នុងភ្នំពេញ)</option>
+        <select id="courier-select" onchange="updateTotal()">
+          <option value="ដឹកជញ្ជូនរហ័ស (ភ្នំពេញ)">ដឹកជញ្ជូនរហ័ស Express (ក្នុងភ្នំពេញ - 6,000 ៛)</option>
           <option value="វីរៈ ប៊ុនថាំ (Virak Buntham)">វីរៈ ប៊ុនថាំ (Virak Buntham)</option>
           <option value="J&T Express">J&T Express</option>
           <option value="Flash Express">Flash Express</option>
@@ -161,7 +161,7 @@
       <div class="form-group">
         <label>💵 វិធីសាស្ត្រទូទាត់ប្រាក់ (Payment Method) *</label>
         <select id="payment-method" onchange="togglePaymentUI()">
-          <option value="COD">ទូទាត់ប្រាក់ពេលទំនិញដល់ (COD - ភ្នំពេញ)</option>
+          <option value="COD" selected>ទូទាត់ប្រាក់ពេលទំនិញដល់ (COD - ភ្នំពេញ)</option>
           <option value="TRANSFER">ទូទាត់ប្រាក់មុន (KHQR Transfer - ភ្នំពេញ/តាមខេត្ត)</option>
         </select>
       </div>
@@ -219,9 +219,9 @@
   <!-- Cart Fixed Bottom -->
   <div class="cart-bar">
     <div>
-      <div style="font-size:0.8rem; color:var(--gray);">សរុបសាច់ប្រាក់:</div>
+      <div style="font-size:0.8rem; color:var(--gray);">សរុបសាច់ប្រាក់ (បូកថ្លៃដឹក):</div>
       <div class="total-price"><span id="total-val">0</span> ៛</div>
-      <div class="delivery-info" id="delivery-info">🚚 ថ្លៃដឹកជញ្ជូន៖ គិតតាមក្រុមហ៊ុន</div>
+      <div class="delivery-info" id="delivery-info">🚚 ថ្លៃដឹកជញ្ជូន៖ 6,000 ៛</div>
     </div>
     <button class="btn-checkout" id="submit-btn" onclick="submitOrder()">ផ្ញើការកុម្ម៉ង់</button>
   </div>
@@ -350,13 +350,36 @@
       }
     }
 
-    function updateTotal() {
-      let total = 0;
-      for (let key in products) {
-        total += products[key].qty * products[key].price;
+    function calculateDeliveryFee() {
+      const province = document.getElementById('cust-province').value;
+      const courier = document.getElementById('courier-select').value;
+      
+      if (province === 'រាជធានីភ្នំពេញ' && courier.includes('Express')) {
+        return 6000;
       }
+      return 0; // ប្រសិនបើផ្ញើតាមខេត្ត ឬក្រុមហ៊ុនដឹកផ្សេងទៀត គិតតាមក្រុមហ៊ុន
+    }
+
+    function updateTotal() {
+      let productTotal = 0;
+      for (let key in products) {
+        productTotal += products[key].qty * products[key].price;
+      }
+      
+      const deliveryFee = productTotal > 0 ? calculateDeliveryFee() : 0;
+      const grandTotal = productTotal + deliveryFee;
+
       const totalElem = document.getElementById('total-val');
-      if (totalElem) totalElem.innerText = total.toLocaleString();
+      const deliveryInfo = document.getElementById('delivery-info');
+      
+      if (totalElem) totalElem.innerText = grandTotal.toLocaleString();
+      if (deliveryInfo) {
+        if (deliveryFee > 0) {
+          deliveryInfo.innerText = `🚚 ថ្លៃដឹកជញ្ជូន៖ ${deliveryFee.toLocaleString()} ៛`;
+        } else {
+          deliveryInfo.innerText = `🚚 ថ្លៃដឹកជញ្ជូន៖ គិតទូទាត់ជាមួយក្រុមហ៊ុនដឹក`;
+        }
+      }
     }
 
     function openProductDetail(key) {
@@ -416,7 +439,7 @@
       const slipFileInput = document.getElementById('slip-file');
 
       let selectedProducts = [];
-      let totalAmount = 0;
+      let productTotal = 0;
 
       for (let key in products) {
         if (products[key].qty > 0) {
@@ -427,7 +450,7 @@
             qty: products[key].qty,
             subtotal: products[key].qty * products[key].price
           });
-          totalAmount += products[key].qty * products[key].price;
+          productTotal += products[key].qty * products[key].price;
         }
       }
 
@@ -441,13 +464,16 @@
         return;
       }
 
-      // ឆែកមើល Slip លុះត្រាតែជ្រើសរើស TRANSFER តែប៉ុណ្ណោះ
+      // ឆែកមើល Slip លុះត្រាតែជ្រើសរើស TRANSFER
       if (paymentMethod === 'TRANSFER') {
         if (!slipFileInput.files || slipFileInput.files.length === 0) {
           alert("សូមបាញ់ស្កែនទូទាត់ប្រាក់ រួចបង្ហោះរូបភាពវិក្កយបត្រទូទាត់ប្រាក់ (Payment Slip) មុននឹងផ្ញើការកុម្ម៉ង់!");
           return;
         }
       }
+
+      const deliveryFee = calculateDeliveryFee();
+      const grandTotal = productTotal + deliveryFee;
 
       const submitBtn = document.getElementById('submit-btn');
       submitBtn.disabled = true;
@@ -461,11 +487,11 @@
       formData.append('location', location);
       formData.append('courier', courier);
       formData.append('paymentMethod', paymentMethod);
-      formData.append('totalAmount', totalAmount);
+      formData.append('deliveryFee', deliveryFee);
+      formData.append('totalAmount', grandTotal);
       formData.append('coinsUsed', 0);
       formData.append('products', JSON.stringify(selectedProducts));
       
-      // បើជា TRANSFER ទើបបញ្ជូន Slip ទៅ Backend
       if (paymentMethod === 'TRANSFER' && slipFileInput.files && slipFileInput.files.length > 0) {
         formData.append('slip', slipFileInput.files[0]);
       }
@@ -481,7 +507,7 @@
         });
 
         if (response.ok) {
-          alert("🎉 ការកុម្ម៉ង់ទំនិញរបស់អ្នកទទួលបានជោគជ័យ! យើងខ្ញុំនឹងទាក់ទងទៅក្នុងពេលឆាប់ៗ។");
+          alert("🎉 ការកុម្ម៉ង់ទំនិញរបស់អ្នកទទួលបានជោគជ័យ!");
           if (tg) tg.close();
         } else {
           alert("❌ មានបញ្ហាក្នុងការផ្ញើការកុម្ម៉ង់។ សូមព្យាយាមម្តងទៀត!");
@@ -499,6 +525,7 @@
       initCheckIn();
       renderProducts();
       togglePaymentUI();
+      updateTotal();
     });
   </script>
 </body>
