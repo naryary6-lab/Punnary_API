@@ -83,7 +83,7 @@
     .qr-image { width: 100%; height: auto; object-fit: contain; border-radius: 8px; }
     .acc-details { margin-top: 10px; font-size: 0.85rem; text-align: center; }
     .acc-name { font-weight: bold; color: #1a252f; font-size: 0.95rem; }
-    .acc-id { color: #7f8c8d; font-size: 0.8rem; margin-top: 2px; }
+    .acc-id { color: #d35400; font-weight: bold; font-size: 0.85rem; margin-top: 4px; background: #fef5e7; padding: 6px; border-radius: 6px; }
     .preview-slip { width: 100%; max-height: 200px; object-fit: contain; border-radius: 8px; margin-top: 10px; border: 1px solid #ddd; display: none; }
   </style>
 </head>
@@ -166,21 +166,21 @@
         </select>
       </div>
 
-      <!-- KHQR Section (បង្ហាញតែពេលជ្រើសរើសទូទាត់ប្រាក់មុន) -->
+      <!-- KHQR Section -->
       <div class="qr-container" id="qr-section" style="display: none;">
         <div style="font-weight:bold; color:var(--secondary); margin-bottom: 8px;">💳 ទូទាត់ប្រាក់តាម KHQR (ACLEDA Bank)</div>
-        <div style="font-size:0.8rem; color:#666; margin-bottom: 12px;">សូមបាញ់ស្កែនទូទាត់ប្រាក់សរុប រួចបង្ហោះ Slip ខាងក្រោម៖</div>
+        <div style="font-size:0.8rem; color:#666; margin-bottom: 12px;">សូមបាញ់ស្កែន KHQR ឬរផ្ទេរតាមលេខគណនីខាងក្រោម៖</div>
         
         <div class="qr-card">
-          <img src="khqr.jpg" alt="KHQR ACLEDA" class="qr-image" onerror="this.src='https://via.placeholder.com/250x300?text=ACLEDA+KHQR'">
+          <img src="khqr.jpg" alt="KHQR ACLEDA" class="qr-image" onerror="this.onerror=null; this.src='https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=00020101021138520016A0000006770101110113151987980208151987985204599953031165802KH5915SORM%20SOURPUNARY6010Phnom%20Penh630489A1';">
           <div class="acc-details">
             <div class="acc-name">SORM SOURPUNARY</div>
-            <div class="acc-id">Merchant ID: 15198798</div>
+            <div class="acc-id">ACLEDA / KHQR: 15198798</div>
           </div>
         </div>
       </div>
 
-      <!-- Slip Upload Section (បង្ហាញតែពេលជ្រើសរើសទូទាត់ប្រាក់មុន) -->
+      <!-- Slip Upload Section -->
       <div class="form-group" id="slip-section" style="margin-top:15px; display: none;">
         <label>🧾 បង្ហោះរូបភាពវិក្កយបត្រ (Payment Slip) *</label>
         <input type="file" id="slip-file" accept="image/*" onchange="previewReceipt(event)">
@@ -436,16 +436,15 @@
         return;
       }
 
-      // កែសម្រួល៖ ឆែកតម្រូវឱ្យមាន លេខទូរស័ព្ទ និង អាសយដ្ឋាន ជាចាំបាច់
       if (!phone || !address) {
         alert("សូមបំពេញលេខទូរស័ព្ទ និងអាសយដ្ឋានលម្អិតឱ្យបានត្រឹមត្រូវ!");
         return;
       }
 
-      // ឆែក Slip តែពេលជ្រើសរើសទូទាត់តាម TRANSFER ប៉ុណ្ណោះ
+      // ឆែកមើល Slip លុះត្រាតែជ្រើសរើសប្រភេទ TRANSFER
       if (paymentMethod === 'TRANSFER') {
         if (!slipFileInput.files || slipFileInput.files.length === 0) {
-          alert("សូមបង្ហោះរូបភាពវិក្កយបត្រទូទាត់ប្រាក់ (Payment Slip) មុននឹងផ្ញើការកុម្ម៉ង់!");
+          alert("សូមបាញ់ស្កែនទូទាត់ប្រាក់ រួចបង្ហោះរូបភាពវិក្កយបត្រទូទាត់ប្រាក់ (Payment Slip) មុននឹងផ្ញើការកុម្ម៉ង់!");
           return;
         }
       }
