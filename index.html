@@ -78,7 +78,7 @@
     .detail-sec-title { font-weight: bold; color: var(--primary); margin-top: 12px; margin-bottom: 4px; display: flex; align-items: center; gap: 5px; }
 
     /* QR Code & Slip Section */
-    .qr-container { text-align: center; margin-top: 10px; padding: 15px; background: #fff8f0; border-radius: 12px; border: 1px dashed var(--primary); }
+    .qr-container { text-align: center; margin-top: 10px; padding: 15px; background: #fff8f0; border-radius: 12px; border: 1px dashed var(--primary); display: none; }
     .qr-card { background: #ffffff; padding: 15px; border-radius: 10px; box-shadow: 0 2px 6px rgba(0,0,0,0.08); display: inline-block; width: 100%; max-width: 280px; }
     .qr-image { width: 100%; height: auto; object-fit: contain; border-radius: 8px; }
     .acc-details { margin-top: 10px; font-size: 0.85rem; text-align: center; }
@@ -97,7 +97,7 @@
         <div class="reward-title">🎁 Check-in សន្សំកាក់ (Daily Points)</div>
         <div class="coin-badge">💰 កាក់សរុប: <span id="user-coins">0</span></div>
       </div>
-      <div style="font-size:0.75rem; color:#555;">Check-in រាល់ថ្ងៃដើម្បីបាន ១០០ កាក់/ថ្ងៃ ដូរយកកាដូ និងបញ្ចុះតម្លៃពិសេស!</div>
+      <div style="font-size:0.75rem; color:#555;">Check-in រាល់ថ្ងៃដើម្បីបាន ១۰۰ កាក់/ថ្ងៃ ដូរយកកាដូ និងបញ្ចុះតម្លៃពិសេស!</div>
       
       <div class="checkin-days">
         <div class="day-box active">ថ្ងៃ 1<span class="pts">+100</span></div>
@@ -108,7 +108,7 @@
         <div class="day-box">ថ្ងៃ 6<span class="pts">+100</span></div>
         <div class="day-box">ថ្ងៃ 7<span class="pts">+300</span></div>
       </div>
-      <button class="btn-checkin" id="checkin-btn" onclick="doCheckIn()">ចុច Check-in យក ១០០ កាក់ថ្ងៃនេះ</button>
+      <button class="btn-checkin" id="checkin-btn" onclick="doCheckIn()">ចុច Check-in យក ១۰۰ កាក់ថ្ងៃនេះ</button>
     </div>
 
     <!-- ផលិតផល ដំណាប់ចេក -->
@@ -167,9 +167,9 @@
       </div>
 
       <!-- KHQR Section -->
-      <div class="qr-container" id="qr-section" style="display: none;">
+      <div class="qr-container" id="qr-section">
         <div style="font-weight:bold; color:var(--secondary); margin-bottom: 8px;">💳 ទូទាត់ប្រាក់តាម KHQR (ACLEDA Bank)</div>
-        <div style="font-size:0.8rem; color:#666; margin-bottom: 12px;">សូមបាញ់ស្កែន KHQR ឬរផ្ទេរតាមលេខគណនីខាងក្រោម៖</div>
+        <div style="font-size:0.8rem; color:#666; margin-bottom: 12px;">សូមបាញ់ស្កែន KHQR ឬផ្ទេរតាមលេខគណនីខាងក្រោម៖</div>
         
         <div class="qr-card">
           <img src="khqr.jpg" alt="KHQR ACLEDA" class="qr-image" onerror="this.onerror=null; this.src='https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=00020101021138520016A0000006770101110113151987980208151987985204599953031165802KH5915SORM%20SOURPUNARY6010Phnom%20Penh630489A1';">
@@ -237,7 +237,7 @@
       D_SESM200: { name: "ដំណាប់ចេក រោយល្ង ស/ខ្មៅ (200g)", price: 10000, qty: 0, size: '200g', id: 'D_SESM200', ingredients: "ចេកណាំវ៉ាធម្មជាតិ + ល្ងស និងល្ងខ្មៅលីងឈ្ងុយៗ បែបខ្មែរ", taste: "សាច់ចេកទន់ស្វិតផ្អែមល្មម លាយជាមួយក្លិនឈ្ងុយពិសេសនៃល្ងរលីង", storage: "រក្សាទុកក្នុងកញ្ចប់បិទជិត រក្សាទុកបាន រហូតដល់ ៦ ខែ" },
       D_ALMD200: { name: "ដំណាប់ចេក រោយអាល់ម៉ុន (200g)", price: 12000, qty: 0, size: '200g', id: 'D_ALMD200', ingredients: "ចេកណាវ៉ាខ្មែរធម្មជាតិ + ចំណិតគ្រាប់អាល់ម៉ុន (Almond) ស្រួយស្រស់", taste: "រសជាតិប្លែកអារម្មណ៍ផ្អែមតិចៗ ឈ្ងុយខ្ទិះ និងភាពស្រួយនៃគ្រាប់អាល់ម៉ុន", storage: "រក្សាទុកបាន រហូតដល់ ៦ ខែ" },
       D_MIXG200: { name: "ដំណាប់ចេក រោយធញ្ញជាតិ (200g)", price: 12000, qty: 0, size: '200g', id: 'D_MIXG200', ingredients: "ចេកណាំវ៉ា + គ្រាប់ធញ្ញជាតិចម្រុះ + គ្រាប់ល្ពៅលីង + ល្ងរលីង", taste: "ទន់ស្វិត និងមានអាហាររូបត្ថម្ភខ្ពស់ពីធញ្ញជាតិចម្រុះ", storage: "បិទមាត់ថង់ឱ្យជិតបន្ទាប់ពីបើក ទុកបាន ៦ ខែ" },
-      D_COCO200: { name: "ដំណាប់ចេក រោយដូង (200g)", price: 12000, qty: 0, size: '200g', id: 'D_COCO200', ingredients: "ចេកណាំវ៉ាខ្មែរធម្មជាតិ + សាច់ដូង សម្ងួត ឈ្ងុយឆ្ងាញ់", taste: "ក្លិនដូងឈ្ងុយឆ្ងាញ់ ត្រូវជាមួយសាច់ចេក ទន់ផ្អែម", storage: "រក្សាទុកក្នុងសីតុណ្ហភាពធម្មតាបាន ៦ ខែ" },
+      D_COCO200: { name: "ដំណាប់ចេក រោយដូង (200g)", price: 12000, qty: 0, size: '200g', id: 'D_COCO200', ingredients: "ចេកណាំវ៉ាខ្មែរធម្មជាតិ + សាច់ដូង សម្ងួត ឈ្ងុយឆ្ងាញ់", taste: "ក្លិនដូងឈ្ងុយឆ្ងាញ់ ត្រូវជាមួយសាច់ចេក ទន់ផ្អែម", storage: "រក្សាទុកក្នុងសីតុតុណ្ហភាពធម្មតាបាន ៦ ខែ" },
       D_BALL200: { name: "ដំណាប់ចេកមូល (200g)", price: 10000, qty: 0, size: '200g', id: 'D_BALL200', ingredients: "ចេកណាំវ៉ាទុំជោរ ប្រពៃណីខ្មែរ រាងមូលតូចៗ", taste: "ទន់ស្វិតល្មើយ ងាយស្រួលទំពា និងកាន់ញ៉ាំ", storage: "រក្សាទុកបាន ៦ ខែ" },
       D_RCHCS300: { name: "ដំណាប់ចេក ស្នូលសូកូឡាដូង លាយល្ង (300g)", price: 22000, qty: 0, size: '300g', id: 'D_RCHCS300', ingredients: "បន្ទះចេកណាំវ៉ា + ស្នូលសូកូឡា + កម្ទេចដូង + ល្ងលីង", taste: "រសជាតិខ្ទិះដូងលាយសូកូឡា និង ល្ង ឆ្ងាញ់ប្លែកមាត់", storage: "រក្សាទុកក្នុងកន្លែងត្រជាក់បាន ៣-៦ ខែ" },
       D_RCHCC300: { name: "ដំណាប់ចេក ស្នូលសូកូឡាចន្ទី (300g)", price: 22000, qty: 0, size: '300g', id: 'D_RCHCC300', ingredients: "បន្ទះចេកណាំវ៉ា + ស្នូលសូកូឡា + គ្រាប់ចន្ទីលីង", taste: "ឈ្ងុយគ្រាប់ចន្ទី លាយភាពផ្អែមស្រទន់នៃសូកូឡា", storage: "រក្សាទុកបាន ៣-៦ ខែ" },
@@ -441,7 +441,7 @@
         return;
       }
 
-      // ឆែកមើល Slip លុះត្រាតែជ្រើសរើសប្រភេទ TRANSFER
+      // ឆែកមើល Slip លុះត្រាតែជ្រើសរើស TRANSFER តែប៉ុណ្ណោះ
       if (paymentMethod === 'TRANSFER') {
         if (!slipFileInput.files || slipFileInput.files.length === 0) {
           alert("សូមបាញ់ស្កែនទូទាត់ប្រាក់ រួចបង្ហោះរូបភាពវិក្កយបត្រទូទាត់ប្រាក់ (Payment Slip) មុននឹងផ្ញើការកុម្ម៉ង់!");
@@ -465,7 +465,8 @@
       formData.append('coinsUsed', 0);
       formData.append('products', JSON.stringify(selectedProducts));
       
-      if (paymentMethod === 'TRANSFER' && slipFileInput.files.length > 0) {
+      // បើជា TRANSFER ទើបបញ្ជូន Slip ទៅ Backend
+      if (paymentMethod === 'TRANSFER' && slipFileInput.files && slipFileInput.files.length > 0) {
         formData.append('slip', slipFileInput.files[0]);
       }
 
