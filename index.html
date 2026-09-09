@@ -128,14 +128,17 @@
       </div>
       <div class="form-group">
         <label>📍 រាជធានី / ខេត្ត *</label>
-        <input type="text" id="cust-province" placeholder="ឧទាហរណ៍៖ ភ្នំពេញ ឬ សៀមរាប" required>
+        <select id="cust-province">
+          <option value="រាជធានីភ្នំពេញ">រាជធានីភ្នំពេញ (Phnom Penh)</option>
+          <option value="តាមខេត្ត">ខេត្តផ្សេងៗ (Provinces)</option>
+        </select>
       </div>
       <div class="form-group">
-        <label>🏙️ ខណ្ឌ / ស្រុក / ក្រុង *</label>
-        <input type="text" id="cust-district" placeholder="ឧទាហរណ៍៖ ទួលគោក ឬ សែនសុខ" required>
+        <label>🏙️ ខណ្ឌ / ស្រុក / ក្រុង</label>
+        <input type="text" id="cust-district" placeholder="ឧទាហរណ៍៖ ទួលគោក, សែនសុខ, ឬច្បារអំពៅ...">
       </div>
       <div class="form-group">
-        <label>🏠 អាសយដ្ឋានលម្អិត (ផ្ទះលេខ, ផ្លូវ) *</label>
+        <label>🏠 អាសយដ្ឋានលម្អិត (ផ្ទះលេខ, ផ្លូវ, ឬភូមិ) *</label>
         <textarea id="cust-address" rows="2" placeholder="ឧទាហរណ៍៖ ផ្ទះលេខ ១២, ផ្លូវ ២៧១..." required></textarea>
       </div>
       <div class="form-group">
@@ -404,13 +407,13 @@
 
     async function submitOrder() {
       const phone = document.getElementById('cust-phone').value.trim();
-      const province = document.getElementById('cust-province').value.trim();
+      const province = document.getElementById('cust-province').value;
       const district = document.getElementById('cust-district').value.trim();
       const address = document.getElementById('cust-address').value.trim();
       const location = document.getElementById('cust-location').value.trim();
       const courier = document.getElementById('courier-select').value;
       const paymentMethod = document.getElementById('payment-method').value;
-      const slipFile = document.getElementById('slip-file').files[0];
+      const slipFileInput = document.getElementById('slip-file');
 
       let selectedProducts = [];
       let totalAmount = 0;
@@ -433,15 +436,18 @@
         return;
       }
 
-      if (!phone || !province || !district || !address) {
-        alert("សូមបំពេញព័ត៌មានដឹកជញ្ជូនដែលចាំបាច់ (*) ឱ្យបានគ្រប់គ្រាន់!");
+      // កែសម្រួល៖ ឆែកតម្រូវឱ្យមាន លេខទូរស័ព្ទ និង អាសយដ្ឋាន ជាចាំបាច់
+      if (!phone || !address) {
+        alert("សូមបំពេញលេខទូរស័ព្ទ និងអាសយដ្ឋានលម្អិតឱ្យបានត្រឹមត្រូវ!");
         return;
       }
 
-      // ពិនិត្យមើល Slip តែក្នុងករណីជ្រើសរើសវិធី TRANSFER (ទូទាត់ប្រាក់មុន) ប៉ុណ្ណោះ
-      if (paymentMethod === 'TRANSFER' && !slipFile) {
-        alert("សូមបង្ហោះរូបភាពវិក្កយបត្រទូទាត់ប្រាក់ (Payment Slip)!");
-        return;
+      // ឆែក Slip តែពេលជ្រើសរើសទូទាត់តាម TRANSFER ប៉ុណ្ណោះ
+      if (paymentMethod === 'TRANSFER') {
+        if (!slipFileInput.files || slipFileInput.files.length === 0) {
+          alert("សូមបង្ហោះរូបភាពវិក្កយបត្រទូទាត់ប្រាក់ (Payment Slip) មុននឹងផ្ញើការកុម្ម៉ង់!");
+          return;
+        }
       }
 
       const submitBtn = document.getElementById('submit-btn');
@@ -451,7 +457,7 @@
       const formData = new FormData();
       formData.append('phone', phone);
       formData.append('province', province);
-      formData.append('district', district);
+      formData.append('district', district || 'ភ្នំពេញ');
       formData.append('address', address);
       formData.append('location', location);
       formData.append('courier', courier);
@@ -460,9 +466,8 @@
       formData.append('coinsUsed', 0);
       formData.append('products', JSON.stringify(selectedProducts));
       
-      // បន្ថែម File Slip តែពេលជ្រើសរើស TRANSFER ប៉ុណ្ណោះ
-      if (paymentMethod === 'TRANSFER' && slipFile) {
-        formData.append('slip', slipFile);
+      if (paymentMethod === 'TRANSFER' && slipFileInput.files.length > 0) {
+        formData.append('slip', slipFileInput.files[0]);
       }
 
       if (tg && tg.initDataUnsafe && tg.initDataUnsafe.user) {
