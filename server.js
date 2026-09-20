@@ -10,11 +10,11 @@ app.post('/order', async (req, res) => {
     orderMessage += `\n💰 សរុបទឹកប្រាក់: $${total}`;
 
     // Telegram Chat ID របស់ Admin (ជំនួសលេខនេះដោយ Chat ID ផ្ទាល់ខ្លួនរបស់បង)
-    const ADMIN_CHAT_ID = '-1004387546731';
+    const -1004387546731 = '-1004387546731';
 
     try {
         await axios.post(`${TELEGRAM_API}/sendMessage`, {
-            chat_id: ADMIN_CHAT_ID,
+            chat_id: -1004387546731,
             text: orderMessage,
         });
         res.status(200).json({ status: 'success', message: 'Order sent successfully' });
