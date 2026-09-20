@@ -1,34 +1,14 @@
-    <script>
-        let tg = window.Telegram.WebApp;
-        tg.expand();
-        
-        let totalPrice = 0;
-        let cart = [];
-
-        function addToCart(name, price) {
-            cart.push({ name, price });
-            totalPrice += price;
-            document.getElementById('total-price').innerText = totalPrice.toFixed(2);
-        }
-
-        function sendOrder() {
-            if (cart.length === 0) {
-                alert("សូមជ្រើសរើសទំនិញយ៉ាងហោចណាស់មួយ!");
-                return;
-            }
-            
-            // រៀបចំអត្ថបទវិក្កយបត្រសម្រាប់ផ្ញើ
-            let text = "🛒 សួស្តី Admin! ខ្ញុំចង់កុម្ម៉ង់ទំនិញពី MoMore Mini App៖\n\n";
-            cart.forEach((item, index) => {
-                text += `${index + 1}. ${item.name} - $${item.price.toFixed(2)}\n`;
-            });
-            text += `\n💰 សរុបទឹកប្រាក់: $${totalPrice.toFixed(2)}`;
-            
-            // ដាក់ Username របស់ Admin ត្រង់នេះ (ឧទាហរណ៍: MoMore_collection)
-            let adminUsername = "MoMore_collection"; 
-            let encodedText = encodeURIComponent(text);
-            
-            // បើកតំណ Telegram ទៅកាន់ Admin ផ្ទាល់
-            window.open(`https://t.me/${adminUsername}?text=${encodedText}`, '_blank');
-        }
-    </script>
+{
+  "name": "momore-retail-api",
+  "version": "1.0.0",
+  "description": "MOMORE Retail Telegram Mini App API",
+  "main": "index.html",
+  "scripts": {
+    "start": "npx serve -s ."
+  },
+  "dependencies": {
+    "serve": "^14.2.1"
+  },
+  "author": "MOMORE Team",
+  "license": "ISC"
+}
