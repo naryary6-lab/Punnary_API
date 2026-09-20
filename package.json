@@ -2,9 +2,9 @@
   "name": "momore-retail-api",
   "version": "1.0.0",
   "description": "MOMORE Retail Telegram Mini App API",
-  "main": "index.html",
+  "main": "index.js",
   "scripts": {
-    "start": "npx serve -s ."
+    "start": "node index.js -s ."
   },
   "dependencies": {
     "serve": "^14.2.1"
