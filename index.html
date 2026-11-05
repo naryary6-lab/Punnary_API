@@ -59,44 +59,27 @@
   <!-- VIEW 1: HOME (Category Covers) -->
   <main id="home-view" class="max-w-xl mx-auto w-full px-4 pt-4 flex-grow fade-in">
     
-    <!-- Branding Banner (New Addition) -->
+    <!-- Branding Banner -->
     <div class="mb-6 rounded-2xl overflow-hidden shadow-md border-[3px] border-banana-green relative">
-      <!-- ដាក់ Link រូបភាព Banner របស់អ្នកនៅត្រង់ src នេះ -->
-      <img src="YOUR_BANNER_IMAGE_URL.jpg" alt="MoMore Banner" onerror="this.src='https://images.unsplash.com/photo-149883716733f-5738006d1239?auto=format&fit=crop&w=800&q=80'" class="w-full h-40 object-cover">
-      <div class="absolute inset-0 bg-black/20 flex items-center justify-center">
-         <!-- អ្នកអាចលុបអក្សរនេះចោលបើមានអក្សរលើរូប Banner រួចហើយ -->
-         <!-- <h2 class="text-white text-2xl font-bold drop-shadow-md">សូមស្វាគមន៍មកកាន់ MoMore</h2> -->
-      </div>
+      <img src="https://images.unsplash.com/photo-149883716733f-5738006d1239?auto=format&fit=crop&w=800&q=80" alt="MoMore Banner" class="w-full h-40 object-cover">
     </div>
 
     <h2 class="text-center text-banana-green font-bold mb-4 border-b-2 border-banana-yellow pb-2 inline-block mx-auto w-full">សូមជ្រើសរើសប្រភេទមុខទំនិញ</h2>
     
     <div class="space-y-5 pb-6">
-      <!-- Cover 1 -->
+      <!-- Cover 1: Dried Banana -->
       <button onclick="openCategory('cat1')" class="w-full relative rounded-2xl overflow-hidden shadow-lg active:scale-[0.98] transition-transform border-[3px] border-transparent hover:border-banana-yellow block">
-        <img src="1000024821.png" alt="ដំណាប់ចេក សម្ងួត" onerror="this.src='https://images.unsplash.com/photo-1603569283847-aa295f0d016a?auto=format&fit=crop&w=800&q=80'" class="w-full aspect-[16/9] object-cover">
-        <div class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex flex-col justify-end p-4 text-left">
-          <h3 class="text-white text-xl font-bold">🍌 ដំណាប់ចេក សម្ងួត</h3>
-          <p class="text-banana-yellow text-sm font-bold mt-1">ចុចមើលម៉ឺនុយ ➡️</p>
-        </div>
+        <img src="https://i.ibb.co/3s68NVK/1000024821-3.png" alt="ដំណាប់ចេក សម្ងួត" class="w-full aspect-[16/9] object-cover">
       </button>
 
-      <!-- Cover 2 -->
+      <!-- Cover 2: Banana Chips -->
       <button onclick="openCategory('cat2')" class="w-full relative rounded-2xl overflow-hidden shadow-lg active:scale-[0.98] transition-transform border-[3px] border-transparent hover:border-banana-yellow block">
-        <img src="1000024823.png" alt="ចេកបំពងស្រួយ" onerror="this.src='https://images.unsplash.com/photo-1528825871115-3581a5387919?auto=format&fit=crop&w=800&q=80'" class="w-full aspect-[16/9] object-cover">
-        <div class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex flex-col justify-end p-4 text-left">
-          <h3 class="text-white text-xl font-bold">🌿 ចេកបំពងស្រួយ</h3>
-          <p class="text-banana-yellow text-sm font-bold mt-1">ចុចមើលម៉ឺនុយ ➡️</p>
-        </div>
+        <img src="https://i.ibb.co/L9H86B9/1000024823-3.png" alt="ចេកបំពងស្រួយ" class="w-full aspect-[16/9] object-cover">
       </button>
 
-      <!-- Cover 3 -->
+      <!-- Cover 3: Khmer Snacks -->
       <button onclick="openCategory('cat3')" class="w-full relative rounded-2xl overflow-hidden shadow-lg active:scale-[0.98] transition-transform border-[3px] border-transparent hover:border-banana-yellow block">
-        <img src="1000024822.png" alt="នំកន្ត្រំខ្មែរ ស្រួយ" onerror="this.src='https://images.unsplash.com/photo-1541580621-e73eb9996e38?auto=format&fit=crop&w=800&q=80'" class="w-full aspect-[16/9] object-cover">
-        <div class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex flex-col justify-end p-4 text-left">
-          <h3 class="text-white text-xl font-bold">💰 នំកន្ត្រំខ្មែរ ស្រួយ</h3>
-          <p class="text-banana-yellow text-sm font-bold mt-1">ចុចមើលម៉ឺនុយ ➡️</p>
-        </div>
+        <img src="https://i.ibb.co/bWb58xV/1000024822-3.png" alt="នំកន្ត្រំខ្មែរ ស្រួយ" class="w-full aspect-[16/9] object-cover">
       </button>
     </div>
   </main>
@@ -217,7 +200,7 @@
       'cat3': '💰 នំកន្ត្រំខ្មែរ ស្រួយ'
     };
 
-    // Product Database (Added "group" attribute to separate by weight)
+    // Product Database
     const products = {
       // ==== CAT 1: ដំណាប់ចេក សម្ងួត ====
       'p1': { cat: 'cat1', group: '📦 ខ្នាតប្រអប់ (200g - 300g)', name: 'រសជាតិដើម (ប្រអប់)', price: 10000, shipCat: 'db_box', image: imgCat1, desc: 'សាច់ចេកទន់ក្រាស់ល្អ គ្មានជាតិទឹក មិនបាច់ក្លាសេរ។' },
@@ -293,14 +276,12 @@
 
       // Render each group
       for (let groupName in groupedProducts) {
-        // Group Title
         listEl.innerHTML += `
           <h3 class="text-base font-bold text-banana-green mt-5 mb-3 pb-1 border-b-2 border-banana-yellow">
             ${groupName}
           </h3>
         `;
 
-        // Products in this group
         groupedProducts[groupName].forEach(p => {
           let qty = cart[p.key] || 0;
           listEl.innerHTML += `
