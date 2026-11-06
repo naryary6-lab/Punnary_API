@@ -15,14 +15,17 @@
         extend: {
           colors: {
             banana: {
-              green: '#2E7D32',
-              light: '#4CAF50',
-              yellow: '#FFC107',
-              bg: '#F1F8E9'
+              dark: '#1b4332',
+              green: '#2d6a4f',
+              light: '#52b788',
+              accent: '#d8f3dc',
+              gold: '#ffb703',
+              orange: '#fb8500',
+              bg: '#f8f9fa'
             }
           },
           fontFamily: {
-            sans: ['Hanuman', 'Khmer OS Battambang', 'Arial', 'sans-serif'],
+            sans: ['Hanuman', 'Khmer OS Battambang', 'Inter', 'sans-serif'],
           }
         }
       }
@@ -34,152 +37,381 @@
 
   <style>
     /* Custom Scrollbar */
-    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
     ::-webkit-scrollbar-track { background: #f1f1f1; }
-    ::-webkit-scrollbar-thumb { background: #888; border-radius: 10px; }
-    ::-webkit-scrollbar-thumb:hover { background: #555; }
+    ::-webkit-scrollbar-thumb { background: #2d6a4f; border-radius: 10px; }
+    ::-webkit-scrollbar-thumb:hover { background: #1b4332; }
     
-    /* Z-Index Overrides */
+    /* Custom Glassmorphism */
+    .glass-header {
+      background: rgba(45, 106, 79, 0.92);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+    }
+
+    .glass-card {
+      background: rgba(255, 255, 255, 0.85);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+    }
+    
+    .glass-footer {
+      background: rgba(255, 255, 255, 0.92);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+    }
+
+    /* Z-Index Hierarchy */
+    .z-sticky { z-index: 40; }
     .z-modal { z-index: 1000; }
     .z-alert { z-index: 2000; }
+
+    /* Keyframe Animations */
+    .animate-fadeIn { animation: fadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1); }
+    .animate-bounce-short { animation: bounceShort 0.5s ease-in-out; }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(8px) scale(0.98); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    @keyframes bounceShort {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.08); }
+    }
     
-    /* Animations */
-    .fade-in { animation: fadeIn 0.3s ease-in-out; }
-    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    /* Line Clamping */
+    .line-clamp-1 { display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden; }
+    .line-clamp-2 { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
   </style>
 </head>
-<body class="bg-banana-bg text-gray-800 font-sans antialiased m-0 p-0 selection:bg-banana-green selection:text-white pb-24 h-screen flex flex-col">
+<body class="bg-banana-bg text-gray-800 font-sans antialiased m-0 p-0 selection:bg-banana-green selection:text-white pb-28 min-h-screen flex flex-col">
 
-  <!-- Sticky Header -->
-  <header class="bg-gradient-to-br from-banana-green to-banana-light text-white text-center py-4 px-3 border-b-4 border-banana-yellow sticky top-0 z-40 shadow-md">
-    <h1 class="m-0 text-xl font-bold tracking-wide">🍌 ម៉ូម័រ MoMore 🌿</h1>
-    <p class="mt-1 mb-0 text-xs text-white/90">ហាងលក់រាយ ដំណាប់ចេក ចេកបំពង និងនំកន្ត្រំខ្មែរ</p>
+  <!-- Sticky Glassmorphism Header -->
+  <header class="glass-header text-white sticky top-0 z-sticky border-b-4 border-banana-gold shadow-lg">
+    <div class="max-w-xl mx-auto px-4 py-3 flex items-center justify-between">
+      <div class="flex items-center space-x-3">
+        <div class="w-10 h-10 bg-banana-gold rounded-full flex items-center justify-center text-xl shadow-inner border-2 border-white">
+          🍌
+        </div>
+        <div>
+          <h1 class="m-0 text-lg font-bold tracking-wide leading-tight text-white flex items-center gap-1.5">
+            ម៉ូម័រ MoMore <span class="text-[10px] bg-banana-gold text-gray-900 font-bold px-2 py-0.5 rounded-full uppercase">Collection</span>
+          </h1>
+          <p class="m-0 text-[11px] text-banana-accent opacity-90">ហាងលក់រាយ ដំណាប់ចេក ចេកបំពង និងនំកន្ត្រំខ្មែរ</p>
+        </div>
+      </div>
+      <button onclick="scrollToVideoSection()" class="bg-white/20 hover:bg-white/30 text-white p-2 rounded-xl text-xs font-bold flex items-center gap-1 transition-all active:scale-95 border border-white/20">
+        🎥 រីវីយូ
+      </button>
+    </div>
   </header>
 
-  <!-- VIEW 1: HOME (Category Covers) -->
-  <main id="home-view" class="max-w-xl mx-auto w-full px-4 pt-4 flex-grow fade-in">
+  <!-- Dynamic Announcement Bar -->
+  <div class="bg-gradient-to-r from-banana-gold via-banana-orange to-banana-gold text-gray-900 py-1.5 px-4 text-xs font-bold text-center shadow-sm flex items-center justify-center gap-2 overflow-hidden">
+    <span class="inline-block animate-pulse">🚚</span>
+    <span class="truncate">ទិញ ៥ ប្រអប់ ឬ ១ គីឡូករាមឡើងទៅ 🚚 Free សេវាដឹកជូន ២៥ ខេត្តក្រុង!</span>
+  </div>
+
+  <!-- VIEW 1: HOME VIEW (Covers & Video Reviews) -->
+  <main id="home-view" class="max-w-xl mx-auto w-full px-4 pt-4 flex-grow animate-fadeIn">
     
-    <!-- Branding Banner -->
-    <div class="mb-6 rounded-2xl overflow-hidden shadow-md border-[3px] border-banana-green relative">
-      <img src="https://images.unsplash.com/photo-149883716733f-5738006d1239?auto=format&fit=crop&w=800&q=80" alt="MoMore Banner" class="w-full h-40 object-cover">
+    <!-- Hero Branding Banner -->
+    <div class="mb-5 rounded-2xl overflow-hidden shadow-xl border-2 border-banana-green relative group">
+      <img src="https://images.unsplash.com/photo-1603569283847-aa295f0d016a?auto=format&fit=crop&w=800&q=80" alt="MoMore Banner" class="w-full h-44 object-cover transform group-hover:scale-105 transition-transform duration-500">
+      <div class="absolute inset-0 bg-gradient-to-t from-banana-dark/90 via-banana-dark/40 to-transparent flex flex-col justify-end p-4 text-white">
+        <span class="bg-banana-gold text-gray-900 font-bold text-[10px] px-2.5 py-0.5 rounded-full w-max mb-1.5 shadow-sm">🌿 ធម្មជាតិ 100%</span>
+        <h2 class="text-xl font-bold leading-snug drop-shadow-md">រសជាតិដើមខ្មែរ ឈ្ងុយឆ្ងាញ់ សុខភាពល្អ</h2>
+        <p class="text-xs text-gray-200 mt-0.5">ផលិតផលសម្រិតសម្រាំងចេញពីចេកធម្មជាតិពិតៗ</p>
+      </div>
     </div>
 
-    <h2 class="text-center text-banana-green font-bold mb-4 border-b-2 border-banana-yellow pb-2 inline-block mx-auto w-full">សូមជ្រើសរើសប្រភេទមុខទំនិញ</h2>
+    <!-- Video Reviews Horizontal Slider Section -->
+    <section id="video-section" class="mb-6 bg-white p-4 rounded-2xl shadow-sm border border-gray-100">
+      <div class="flex justify-between items-center mb-3">
+        <div class="flex items-center gap-2">
+          <span class="text-lg">🎥</span>
+          <h3 class="font-bold text-banana-dark text-sm">វីដេអូរីវីយូពីអតិថិជន និងការផលិត</h3>
+        </div>
+        <span class="text-[11px] text-banana-green font-bold bg-banana-accent px-2 py-0.5 rounded-md">ទស្សនាវីដេអូ</span>
+      </div>
+
+      <!-- Horizontal Scrollable Container -->
+      <div class="flex gap-3 overflow-x-auto pb-2 pt-1 snap-x scroll-smooth">
+        
+        <!-- Video Card 1 -->
+        <div onclick="openVideoModal('https://www.w3schools.com/html/mov_bbb.mp4', '🍌 ការផលិតដំណាប់ចេកសាច់ទន់ ម៉ូម័រ', 'ដំណើការធ្វើដំណាប់ចេកសម្ងួតសាច់ទន់អនាម័យខ្ពស់ រក្សាទុកបាន ៦ខែ។')" class="flex-shrink-0 w-40 bg-gray-900 rounded-xl overflow-hidden shadow-md cursor-pointer relative group snap-start border border-gray-200">
+          <div class="h-28 relative">
+            <img src="https://images.unsplash.com/photo-1603569283847-aa295f0d016a?auto=format&fit=crop&w=300&q=80" alt="Video 1" class="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity">
+            <div class="absolute inset-0 bg-black/30 flex items-center justify-center">
+              <div class="w-9 h-9 bg-banana-gold text-gray-900 rounded-full flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
+                ▶
+              </div>
+            </div>
+            <span class="absolute top-2 left-2 bg-red-600 text-white text-[9px] font-bold px-1.5 py-0.5 rounded">00:30</span>
+          </div>
+          <div class="p-2.5 bg-white">
+            <p class="text-xs font-bold text-gray-800 line-clamp-2 leading-tight">🍌 របៀបផលិតដំណាប់ចេកសាច់ទន់</p>
+            <span class="text-[10px] text-gray-500 mt-1 block">👁️ 2.4k ទស្សនា</span>
+          </div>
+        </div>
+
+        <!-- Video Card 2 -->
+        <div onclick="openVideoModal('https://www.w3schools.com/html/movie.mp4', '🌿 រីវីយូចេកបំពងស្រួយ រសជាតិពិសេស', 'ចេកបំពងស្រួយ រសជាតិឈីស និង BBQ ស្រួយឆ្ងាញ់ញ៉ាំជក់មាត់។')" class="flex-shrink-0 w-40 bg-gray-900 rounded-xl overflow-hidden shadow-md cursor-pointer relative group snap-start border border-gray-200">
+          <div class="h-28 relative">
+            <img src="https://images.unsplash.com/photo-1528825871115-3581a5387919?auto=format&fit=crop&w=300&q=80" alt="Video 2" class="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity">
+            <div class="absolute inset-0 bg-black/30 flex items-center justify-center">
+              <div class="w-9 h-9 bg-banana-gold text-gray-900 rounded-full flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
+                ▶
+              </div>
+            </div>
+            <span class="absolute top-2 left-2 bg-red-600 text-white text-[9px] font-bold px-1.5 py-0.5 rounded">00:45</span>
+          </div>
+          <div class="p-2.5 bg-white">
+            <p class="text-xs font-bold text-gray-800 line-clamp-2 leading-tight">🌿 រីវីយូចេកបំពងស្រួយ គ្រប់រសជាតិ</p>
+            <span class="text-[10px] text-gray-500 mt-1 block">👁️ 5.1k ទស្សនា</span>
+          </div>
+        </div>
+
+        <!-- Video Card 3 -->
+        <div onclick="openVideoModal('https://www.w3schools.com/html/mov_bbb.mp4', '💰 នំកន្ត្រំខ្មែរ ស្រួយស្រកក', 'នំកន្ត្រំខ្មែររសជាតិដើម ស្រួយក្រអូប ញ៉ាំលេងត្រូវមាត់។')" class="flex-shrink-0 w-40 bg-gray-900 rounded-xl overflow-hidden shadow-md cursor-pointer relative group snap-start border border-gray-200">
+          <div class="h-28 relative">
+            <img src="https://images.unsplash.com/photo-1541580621-e73eb9996e38?auto=format&fit=crop&w=300&q=80" alt="Video 3" class="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity">
+            <div class="absolute inset-0 bg-black/30 flex items-center justify-center">
+              <div class="w-9 h-9 bg-banana-gold text-gray-900 rounded-full flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
+                ▶
+              </div>
+            </div>
+            <span class="absolute top-2 left-2 bg-red-600 text-white text-[9px] font-bold px-1.5 py-0.5 rounded">00:25</span>
+          </div>
+          <div class="p-2.5 bg-white">
+            <p class="text-xs font-bold text-gray-800 line-clamp-2 leading-tight">💰 នំកន្ត្រំខ្មែរ ស្រួយប្រអប់</p>
+            <span class="text-[10px] text-gray-500 mt-1 block">👁️ 1.8k ទស្សនា</span>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- Main Categories Heading -->
+    <div class="flex items-center justify-between mb-4">
+      <h2 class="text-base font-bold text-banana-dark flex items-center gap-2">
+        <span class="w-2 h-5 bg-banana-gold rounded-full inline-block"></span>
+        ជ្រើសរើសប្រភេទមុខទំនិញ
+      </h2>
+      <span class="text-xs text-gray-500">៣ ប្រភេទ</span>
+    </div>
     
-    <div class="space-y-5 pb-6">
-      <!-- Cover 1: Dried Banana -->
-      <button onclick="openCategory('cat1')" class="w-full relative rounded-2xl overflow-hidden shadow-lg active:scale-[0.98] transition-transform border-[3px] border-transparent hover:border-banana-yellow block">
-        <img src="https://github.com/user-attachments/assets/1dab8bf9-34c5-49ff-a6b6-7cb9f87bf931" alt="ដំណាប់ចេក សម្ងួត" class="w-full aspect-[16/9] object-cover">
+    <!-- 3 Category Covers -->
+    <div class="space-y-4 pb-6">
+      
+      <!-- Category 1: Dried Banana -->
+      <button onclick="openCategory('cat1')" class="w-full relative rounded-2xl overflow-hidden shadow-md hover:shadow-xl active:scale-[0.98] transition-all border-2 border-banana-accent group block bg-white">
+        <div class="aspect-[16/9] w-full relative">
+          <img src="https://github.com/user-attachments/assets/1dab8bf9-34c5-49ff-a6b6-7cb9f87bf931" alt="ដំណាប់ចេក សម្ងួត" onerror="this.src='https://images.unsplash.com/photo-1603569283847-aa295f0d016a?auto=format&fit=crop&w=800&q=80'" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+          <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent flex flex-col justify-end p-4 text-left">
+            <span class="bg-banana-gold text-gray-900 font-bold text-[10px] px-2 py-0.5 rounded-md w-max mb-1 shadow-sm">🚚 Free ដឹកពេលទិញ 5ប្រអប់/1kg</span>
+            <h3 class="text-white text-lg font-bold">🍌 ដំណាប់ចេក សម្ងួត</h3>
+            <p class="text-banana-accent text-xs font-semibold flex items-center gap-1 mt-0.5">
+              ចូលមើលបញ្ជីទំនិញ <span class="text-banana-gold">➡️</span>
+            </p>
+          </div>
+        </div>
       </button>
 
-      <!-- Cover 2: Banana Chips -->
-      <button onclick="openCategory('cat2')" class="w-full relative rounded-2xl overflow-hidden shadow-lg active:scale-[0.98] transition-transform border-[3px] border-transparent hover:border-banana-yellow block">
-        <img src="https://github.com/user-attachments/assets/7dec8dd3-f4dd-4482-a6f6-96936a59c2a8" alt="ចេកបំពងស្រួយ" class="w-full aspect-[16/9] object-cover">
+      <!-- Category 2: Banana Chips -->
+      <button onclick="openCategory('cat2')" class="w-full relative rounded-2xl overflow-hidden shadow-md hover:shadow-xl active:scale-[0.98] transition-all border-2 border-banana-accent group block bg-white">
+        <div class="aspect-[16/9] w-full relative">
+          <img src="https://github.com/user-attachments/assets/7dec8dd3-f4dd-4482-a6f6-96936a59c2a8" alt="ចេកបំពងស្រួយ" onerror="this.src='https://images.unsplash.com/photo-1528825871115-3581a5387919?auto=format&fit=crop&w=800&q=80'" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+          <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent flex flex-col justify-end p-4 text-left">
+            <span class="bg-banana-orange text-white font-bold text-[10px] px-2 py-0.5 rounded-md w-max mb-1 shadow-sm">🔥 រសជាតិពិសេស BBQ/ឈីស</span>
+            <h3 class="text-white text-lg font-bold">🌿 ចេកបំពងស្រួយ</h3>
+            <p class="text-banana-accent text-xs font-semibold flex items-center gap-1 mt-0.5">
+              ចូលមើលបញ្ជីទំនិញ <span class="text-banana-gold">➡️</span>
+            </p>
+          </div>
+        </div>
       </button>
 
-      <!-- Cover 3: Khmer Snacks -->
-      <button onclick="openCategory('cat3')" class="w-full relative rounded-2xl overflow-hidden shadow-lg active:scale-[0.98] transition-transform border-[3px] border-transparent hover:border-banana-yellow block">
-        <img src="https://github.com/user-attachments/assets/cd6d0de2-aa25-4364-b618-65bcfb6295cf" alt="នំកន្ត្រំខ្មែរ ស្រួយ" class="w-full aspect-[16/9] object-cover">
+      <!-- Category 3: Khmer Snacks -->
+      <button onclick="openCategory('cat3')" class="w-full relative rounded-2xl overflow-hidden shadow-lg hover:shadow-xl active:scale-[0.98] transition-all border-2 border-banana-accent group block bg-white">
+        <div class="aspect-[16/9] w-full relative">
+          <img src="https://github.com/user-attachments/assets/cd6d0de2-aa25-4364-b618-65bcfb6295cf" alt="នំកន្ត្រំខ្មែរ ស្រួយ" onerror="this.src='https://images.unsplash.com/photo-1541580621-e73eb9996e38?auto=format&fit=crop&w=800&q=80'" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+          <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent flex flex-col justify-end p-4 text-left">
+            <span class="bg-banana-green text-white font-bold text-[10px] px-2 py-0.5 rounded-md w-max mb-1 shadow-sm">💰 នំប្រពៃណីខ្មែរ</span>
+            <h3 class="text-white text-lg font-bold">💰 នំកន្ត្រំខ្មែរ ស្រួយ</h3>
+            <p class="text-banana-accent text-xs font-semibold flex items-center gap-1 mt-0.5">
+              ចូលមើលបញ្ជីទំនិញ <span class="text-banana-gold">➡️</span>
+            </p>
+          </div>
+        </div>
       </button>
+
     </div>
   </main>
 
-  <!-- VIEW 2: MENU (Product List) -->
-  <main id="menu-view" class="max-w-xl mx-auto w-full hidden flex-grow bg-banana-bg fade-in">
-    <!-- Back Button Header -->
-    <div class="bg-white px-4 py-3 sticky top-[76px] z-30 shadow-sm border-b border-gray-200 flex items-center justify-between">
-      <button onclick="closeCategory()" class="bg-gray-100 hover:bg-gray-200 text-gray-800 px-4 py-2 rounded-lg font-bold text-sm flex items-center gap-2 transition-colors">
+  <!-- VIEW 2: MENU VIEW (Product List & Back Button) -->
+  <main id="menu-view" class="max-w-xl mx-auto w-full hidden flex-grow bg-banana-bg animate-fadeIn">
+    
+    <!-- Navigation Back Bar -->
+    <div class="bg-white px-4 py-3 sticky top-[68px] z-30 shadow-sm border-b border-gray-200 flex items-center justify-between">
+      <button onclick="closeCategory()" class="bg-banana-accent hover:bg-banana-green hover:text-white text-banana-dark px-3.5 py-2 rounded-xl font-bold text-xs flex items-center gap-1.5 transition-all active:scale-95">
         ⬅️ ត្រលប់ក្រោយ
       </button>
-      <h2 id="menu-title" class="font-bold text-banana-green text-lg truncate ml-3">ម៉ឺនុយ</h2>
+      <h2 id="menu-title" class="font-bold text-banana-dark text-base truncate ml-2">ម៉ឺនុយទំនិញ</h2>
     </div>
 
-    <!-- Product List Container -->
+    <!-- Product List Injection Container -->
     <div id="product-list" class="p-4">
-      <!-- Injected via JS -->
+      <!-- Injected by JavaScript -->
     </div>
   </main>
 
-  <!-- Fixed Bottom Order Bar -->
-  <div class="fixed bottom-0 left-0 right-0 bg-white px-4 py-3 shadow-[0_-4px_15px_rgba(0,0,0,0.08)] z-40 border-t border-gray-100">
-    <div class="max-w-xl mx-auto flex justify-between items-center">
-      <div class="text-[15px] font-bold text-gray-800">
-        សរុប: <span id="grand-total" class="text-red-600 text-lg">0</span> ៛
+  <!-- FLOATING BOTTOM ORDER BAR -->
+  <div class="fixed bottom-0 left-0 right-0 glass-footer px-4 py-3 shadow-[0_-6px_20px_rgba(0,0,0,0.12)] z-sticky border-t border-gray-200">
+    <div class="max-w-xl mx-auto flex justify-between items-center gap-3">
+      
+      <!-- Price and Dynamic Shipping Status -->
+      <div>
+        <div class="text-[11px] text-gray-500 font-semibold" id="shipping-status-badge">
+          🚚 សេវាដឹក: <span class="text-gray-700">8,000 ៛</span>
+        </div>
+        <div class="text-[15px] font-bold text-gray-900 leading-tight">
+          សរុប: <span id="grand-total" class="text-red-600 text-lg font-extrabold">0</span> <span class="text-red-600 font-bold text-xs">៛</span>
+        </div>
       </div>
-      <button onclick="openCheckoutModal()" class="bg-banana-yellow hover:bg-yellow-400 text-gray-900 border-none px-5 py-2.5 rounded-xl font-bold text-[15px] shadow-sm transition-transform active:scale-95 flex items-center gap-2">
-        ធ្វើការកុម្ម៉ង់ 🛒
+
+      <!-- Checkout Order Button -->
+      <button onclick="openCheckoutModal()" class="bg-gradient-to-r from-banana-gold to-banana-orange hover:from-yellow-400 hover:to-orange-500 text-gray-900 border-none px-6 py-3 rounded-2xl font-bold text-sm shadow-md transition-all active:scale-95 flex items-center gap-2">
+        <span>ធ្វើការកុម្ម៉ង់</span>
+        <span id="cart-badge-count" class="bg-gray-900 text-white text-[11px] font-extrabold rounded-full px-2 py-0.5">0</span>
+        <span>🛒</span>
       </button>
     </div>
   </div>
 
-  <!-- VIEW 3: Product Detail Modal Pop-up -->
-  <div id="product-modal" class="fixed inset-0 bg-black/70 hidden justify-center items-center z-modal p-4 backdrop-blur-sm">
-    <div class="bg-white rounded-2xl w-full max-w-sm shadow-2xl flex flex-col overflow-hidden fade-in relative">
-      <button onclick="closeProductModal()" class="absolute top-3 right-3 bg-black/50 hover:bg-black/70 text-white rounded-full w-8 h-8 flex items-center justify-center font-bold z-10 transition-colors">✕</button>
+  <!-- MODAL 1: VIDEO PLAYER MODAL -->
+  <div id="video-modal" class="fixed inset-0 bg-black/80 hidden justify-center items-center z-modal p-4 backdrop-blur-md">
+    <div class="bg-gray-900 text-white rounded-2xl w-full max-w-sm shadow-2xl flex flex-col overflow-hidden animate-fadeIn relative border border-gray-800">
       
-      <div class="w-full aspect-square bg-gray-100">
-        <img id="detail-img" src="" alt="Product" class="w-full h-full object-cover">
+      <!-- Close Button -->
+      <button onclick="closeVideoModal()" class="absolute top-3 right-3 bg-black/60 hover:bg-red-600 text-white rounded-full w-8 h-8 flex items-center justify-center font-bold z-20 transition-colors shadow-lg">✕</button>
+
+      <!-- Video Player Container -->
+      <div class="w-full aspect-video bg-black relative flex items-center justify-center">
+        <video id="player-element" controls class="w-full h-full object-contain">
+          <source id="player-src" src="" type="video/mp4">
+          កម្មវិធីរុករករបស់អ្នកមិនគាំទ្រវីដេអូឡើយ។
+        </video>
+      </div>
+
+      <!-- Video Meta Details -->
+      <div class="p-4">
+        <span class="bg-banana-gold text-gray-900 text-[10px] font-bold px-2 py-0.5 rounded mb-2 inline-block">🎥 វីដេអូរីវីយូ</span>
+        <h3 id="video-modal-title" class="text-base font-bold text-white mb-1 leading-snug"></h3>
+        <p id="video-modal-desc" class="text-xs text-gray-300 leading-relaxed"></p>
       </div>
       
-      <div class="p-5">
-        <h3 id="detail-title" class="text-lg font-bold text-banana-green leading-tight mb-2"></h3>
-        <p id="detail-price" class="text-red-600 font-bold text-base mb-3"></p>
-        <div class="bg-gray-50 p-3 rounded-lg border border-gray-100">
-          <p class="text-sm font-bold text-gray-700 mb-1">ការពិពណ៌នា៖</p>
-          <p id="detail-desc" class="text-xs text-gray-600 leading-relaxed"></p>
-        </div>
-        
-        <button onclick="closeProductModal()" class="w-full mt-4 bg-banana-green text-white font-bold py-3 rounded-xl hover:bg-green-700 active:scale-95 transition-transform">
-          បិទ
+      <div class="p-3 bg-gray-950 text-center border-t border-gray-800">
+        <button onclick="closeVideoModal()" class="w-full bg-banana-green hover:bg-banana-dark text-white font-bold py-2.5 rounded-xl text-xs transition-colors">
+          បិទវីដេអូ
         </button>
       </div>
     </div>
   </div>
 
-  <!-- Checkout Modal Pop-up -->
-  <div id="checkout-modal" class="fixed inset-0 bg-black/60 hidden justify-center items-center z-modal p-4 backdrop-blur-sm">
-    <div class="bg-white rounded-2xl w-full max-w-md shadow-2xl border-t-[6px] border-banana-green max-h-[90vh] flex flex-col overflow-hidden fade-in">
-      <div class="p-5 overflow-y-auto">
-        <h3 class="mt-0 mb-4 text-banana-green text-center text-lg font-bold">បំពេញព័ត៌មានដឹកជញ្ជូន</h3>
-        
-        <div id="modal-summary" class="bg-[#F9FBE7] p-4 rounded-xl text-sm mb-4 border border-dashed border-banana-green leading-relaxed text-gray-700">
-          <!-- Summary injected here -->
-        </div>
-
-        <div class="bg-[#FFFDE7] border-l-4 border-banana-yellow p-3 text-[11px] text-gray-600 mb-5 rounded-r-lg flex gap-2 items-start leading-tight">
-          <span class="text-base leading-none">⚠️</span>
-          <p class="m-0"><strong>សម្គាល់៖</strong> Free សេវាដឹកពេលទិញគ្រប់លក្ខខណ្ឌ! (ដំណាប់ចេក 5ប្រអប់/1kg ឬ ចេកបំពង 200g x5 / 100g x10)</p>
-        </div>
-
-        <div class="space-y-4">
-          <div>
-            <label class="block text-sm font-bold text-gray-700 mb-1.5">📞 លេខទូរស័ព្ទទំនាក់ទំនង៖</label>
-            <input type="tel" id="cust-phone" class="w-full p-3 border border-gray-300 rounded-xl text-sm focus:outline-none focus:border-banana-green focus:ring-1 focus:ring-banana-green" placeholder="លេខទូរស័ព្ទរបស់អ្នក">
-          </div>
-          <div>
-            <label class="block text-sm font-bold text-gray-700 mb-1.5">📍 ខេត្ត/ក្រុង៖</label>
-            <input type="text" id="cust-province" class="w-full p-3 border border-gray-300 rounded-xl text-sm focus:outline-none focus:border-banana-green focus:ring-1 focus:ring-banana-green" placeholder="ឧ. សៀមរាប, ភ្នំពេញ...">
-          </div>
-          <div>
-            <label class="block text-sm font-bold text-gray-700 mb-1.5">🏢 សាខាក្រុមហ៊ុនដឹកជញ្ជូន៖</label>
-            <input type="text" id="cust-branch" class="w-full p-3 border border-gray-300 rounded-xl text-sm focus:outline-none focus:border-banana-green focus:ring-1 focus:ring-banana-green" placeholder="ឧ. វីរៈប៊ុនថាំ សាខា...">
-          </div>
-        </div>
+  <!-- MODAL 2: PRODUCT DETAIL POPUP -->
+  <div id="product-modal" class="fixed inset-0 bg-black/70 hidden justify-center items-center z-modal p-4 backdrop-blur-sm">
+    <div class="bg-white rounded-2xl w-full max-w-sm shadow-2xl flex flex-col overflow-hidden animate-fadeIn relative">
+      
+      <!-- Close Icon -->
+      <button onclick="closeProductModal()" class="absolute top-3 right-3 bg-black/50 hover:bg-black/70 text-white rounded-full w-8 h-8 flex items-center justify-center font-bold z-10 transition-colors">✕</button>
+      
+      <!-- Product Image -->
+      <div class="w-full aspect-square bg-gray-100 relative">
+        <img id="detail-img" src="" alt="Product" class="w-full h-full object-cover">
+        <span id="detail-tag" class="absolute bottom-3 left-3 bg-banana-gold text-gray-900 font-bold text-[11px] px-2.5 py-1 rounded-lg shadow"></span>
       </div>
-      <div class="p-4 bg-gray-50 flex gap-3 border-t border-gray-100 mt-auto">
-        <button onclick="closeCheckoutModal()" class="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-700 py-3 rounded-xl font-bold">បោះបង់</button>
-        <button onclick="submitOrder()" class="flex-1 bg-banana-green hover:bg-green-700 text-white py-3 rounded-xl font-bold shadow-md">បញ្ជាក់ការកុម្ម៉ង់ 🚀</button>
+      
+      <!-- Content Details -->
+      <div class="p-5">
+        <h3 id="detail-title" class="text-lg font-bold text-banana-dark leading-tight mb-1.5"></h3>
+        <div class="flex items-center justify-between mb-3">
+          <p id="detail-price" class="text-red-600 font-extrabold text-lg m-0"></p>
+          <button id="detail-video-btn" class="bg-banana-accent text-banana-dark hover:bg-banana-green hover:text-white font-bold text-xs px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1">
+            🎥 មើលវីដេអូ
+          </button>
+        </div>
+        
+        <div class="bg-gray-50 p-3 rounded-xl border border-gray-100 mb-2">
+          <p class="text-xs font-bold text-gray-700 mb-1">ព័ត៌មានលម្អិត៖</p>
+          <p id="detail-desc" class="text-xs text-gray-600 leading-relaxed m-0"></p>
+        </div>
+
+        <button onclick="closeProductModal()" class="w-full mt-3 bg-banana-green hover:bg-banana-dark text-white font-bold py-3 rounded-xl transition-all active:scale-95 shadow">
+          យល់ព្រម
+        </button>
       </div>
     </div>
   </div>
 
-  <!-- Custom Alert Modal -->
-  <div id="custom-alert" class="fixed inset-0 bg-black/50 hidden justify-center items-center z-alert p-4 backdrop-blur-sm">
-    <div class="bg-white p-6 rounded-2xl w-full max-w-xs shadow-2xl text-center fade-in">
-      <div class="w-16 h-16 bg-red-100 text-red-500 rounded-full flex items-center justify-center mx-auto mb-4 text-3xl">!</div>
-      <h3 class="text-lg font-bold text-gray-800 mb-2">សូមចំណាំ</h3>
-      <p id="alert-message" class="text-sm text-gray-600 mb-6 leading-relaxed"></p>
-      <button onclick="closeAlert()" class="w-full bg-banana-green text-white font-bold py-3 rounded-xl">យល់ព្រម</button>
+  <!-- MODAL 3: CHECKOUT ORDER FORM -->
+  <div id="checkout-modal" class="fixed inset-0 bg-black/60 hidden justify-center items-center z-modal p-4 backdrop-blur-sm">
+    <div class="bg-white rounded-2xl w-full max-w-md shadow-2xl border-t-[6px] border-banana-green max-h-[90vh] flex flex-col overflow-hidden animate-fadeIn">
+      
+      <div class="p-5 overflow-y-auto">
+        <h3 class="mt-0 mb-4 text-banana-dark text-center text-lg font-bold border-b pb-2 flex items-center justify-center gap-2">
+          <span>🛍️</span> ព័ត៌មានកុម្ម៉ង់ និងដឹកជញ្ជូន
+        </h3>
+        
+        <!-- Summary Box -->
+        <div id="modal-summary" class="bg-banana-accent/30 p-4 rounded-xl text-xs mb-4 border border-dashed border-banana-green leading-relaxed text-gray-800">
+          <!-- Summary injected here -->
+        </div>
+
+        <!-- Notice Banner -->
+        <div class="bg-[#FFFDE7] border-l-4 border-banana-gold p-3 text-[11px] text-gray-700 mb-5 rounded-r-lg flex gap-2 items-start leading-tight">
+          <span class="text-sm leading-none">⚠️</span>
+          <p class="m-0"><strong>សម្គាល់៖</strong> Free សេវាដឹកពេលទិញគ្រប់លក្ខខណ្ឌ! ទូទាត់មុនម៉ោង 5:00 ល្ងាច ផ្ញើជូនថ្ងៃហ្នឹង!</p>
+        </div>
+
+        <!-- Input Fields -->
+        <div class="space-y-3.5">
+          <div>
+            <label class="block text-xs font-bold text-gray-700 mb-1">📞 លេខទូរស័ព្ទទំនាក់ទំនង <span class="text-red-500">*</span></label>
+            <input type="tel" id="cust-phone" class="w-full p-2.5 border border-gray-300 rounded-xl text-xs focus:outline-none focus:border-banana-green focus:ring-1 focus:ring-banana-green" placeholder="ឧ. 012 345 678">
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-gray-700 mb-1">📍 ខេត្ត/ក្រុង <span class="text-red-500">*</span></label>
+            <input type="text" id="cust-province" class="w-full p-2.5 border border-gray-300 rounded-xl text-xs focus:outline-none focus:border-banana-green focus:ring-1 focus:ring-banana-green" placeholder="ឧ. ខេត្តសៀមរាប, ភ្នំពេញ...">
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-gray-700 mb-1">🏢 សាខាក្រុមហ៊ុនដឹកជញ្ជូន <span class="text-red-500">*</span></label>
+            <input type="text" id="cust-branch" class="w-full p-2.5 border border-gray-300 rounded-xl text-xs focus:outline-none focus:border-banana-green focus:ring-1 focus:ring-banana-green" placeholder="ឧ. វីរៈប៊ុនថាំ (សាខាកណ្តាល)...">
+          </div>
+        </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="p-4 bg-gray-50 flex gap-3 border-t border-gray-100 mt-auto">
+        <button onclick="closeCheckoutModal()" class="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-700 py-3 rounded-xl font-bold text-xs transition-colors">បោះបង់</button>
+        <button onclick="submitOrder()" class="flex-1 bg-banana-green hover:bg-banana-dark text-white py-3 rounded-xl font-bold text-xs shadow-md transition-all active:scale-95 flex items-center justify-center gap-1">
+          <span>បញ្ជាក់ការកុម្ម៉ង់</span> 🚀
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- MODAL 4: CUSTOM ALERT POPUP -->
+  <div id="custom-alert" class="fixed inset-0 bg-black/60 hidden justify-center items-center z-alert p-4 backdrop-blur-sm">
+    <div class="bg-white p-6 rounded-2xl w-full max-w-xs shadow-2xl text-center animate-fadeIn">
+      <div class="w-14 h-14 bg-red-100 text-red-500 rounded-full flex items-center justify-center mx-auto mb-3 text-2xl font-bold">!</div>
+      <h3 class="text-base font-bold text-gray-900 mb-1.5">សូមចំណាំ</h3>
+      <p id="alert-message" class="text-xs text-gray-600 mb-5 leading-relaxed"></p>
+      <button onclick="closeAlert()" class="w-full bg-banana-green hover:bg-banana-dark text-white font-bold py-2.5 rounded-xl text-xs shadow transition-all active:scale-95">
+        យល់ព្រម
+      </button>
     </div>
   </div>
 
@@ -188,7 +420,7 @@
     let cart = {}; // { productId: qty }
     let currentCategory = null;
 
-    // Default Product Images
+    // Standard Category Default Placeholder Images
     const imgCat1 = "https://images.unsplash.com/photo-1603569283847-aa295f0d016a?auto=format&fit=crop&w=300&q=80";
     const imgCat2 = "https://images.unsplash.com/photo-1528825871115-3581a5387919?auto=format&fit=crop&w=300&q=80";
     const imgCat3 = "https://images.unsplash.com/photo-1541580621-e73eb9996e38?auto=format&fit=crop&w=300&q=80";
@@ -200,63 +432,123 @@
       'cat3': '💰 នំកន្ត្រំខ្មែរ ស្រួយ'
     };
 
-    // Product Database (Grouped by Weight & Type)
+    // Full Product Database (Grouped logically by size & type)
     const products = {
       // ==== CAT 1: ដំណាប់ចេក សម្ងួត ====
-      'p1': { cat: 'cat1', group: '📦 ខ្នាតប្រអប់ (200g - 300g)', name: 'រសជាតិដើម (ប្រអប់)', price: 10000, shipCat: 'db_box', image: imgCat1, desc: 'សាច់ចេកទន់ក្រាស់ល្អ គ្មានជាតិទឹក មិនបាច់ក្លាសេរ។' },
-      'p3': { cat: 'cat1', group: '📦 ខ្នាតប្រអប់ (200g - 300g)', name: 'រសជាតិរោយល្ង (ប្រអប់)', price: 10000, shipCat: 'db_box', image: imgCat1, desc: 'សាច់ទន់ឈ្ងុយឆ្ងាញ់ មានក្លិនល្ងប្រហើរ។' },
-      'p5': { cat: 'cat1', group: '📦 ខ្នាតប្រអប់ (200g - 300g)', name: 'រោយអាល់មុន (ប្រអប់)', price: 12000, shipCat: 'db_box', image: imgCat1, desc: 'ផ្សំជាមួយគ្រាប់អាល់មុន មានជីវជាតិខ្ពស់។' },
-      'p7': { cat: 'cat1', group: '📦 ខ្នាតប្រអប់ (200g - 300g)', name: 'រោយធញ្ញជាតិគ្រប់មុខ (ប្រអប់)', price: 12000, shipCat: 'db_box', image: imgCat1, desc: 'ឈ្ងុយឆ្ងាញ់ សុខភាពល្អ ជាមួយធញ្ញជាតិ។' },
-      'p9': { cat: 'cat1', group: '📦 ខ្នាតប្រអប់ (200g - 300g)', name: 'រោយដូង (ប្រអប់)', price: 12000, shipCat: 'db_box', image: imgCat1, desc: 'រសជាតិរោយដូងឈ្ងុយឆ្ងាញ់ប្លែក។' },
-      'p11': { cat: 'cat1', group: '📦 ខ្នាតប្រអប់ (200g - 300g)', name: 'ចេកមូល (ប្រអប់ 200g)', price: 10000, shipCat: 'db_box', image: imgCat1, desc: 'ចេកមូលទន់ឆ្ងាញ់ ទម្ងន់ ២០០ក្រាម។' },
-      'p13': { cat: 'cat1', group: '📦 ខ្នាតប្រអប់ (200g - 300g)', name: 'សូកូឡាស្នូលដូង (ប្រអប់ 300g)', price: 20000, shipCat: 'db_box', image: imgCat1, desc: 'សាច់ចេកទន់ លាយស្នូលសូកូឡាដូងល្ងរ។' },
-      'p14': { cat: 'cat1', group: '📦 ខ្នាតប្រអប់ (200g - 300g)', name: 'សូកូឡាស្នូលចន្ទី (ប្រអប់ 300g)', price: 20000, shipCat: 'db_box', image: imgCat1, desc: 'រសជាតិឆ្ងាញ់ពិសេស ជាមួយគ្រាប់ស្វាយចន្ទី។' },
+      'p1': { cat: 'cat1', group: '📦 ខ្នាតប្រអប់ (200g - 300g)', name: 'រសជាតិដើម (ប្រអប់ ២០០ក្រាម)', price: 10000, shipCat: 'db_box', image: imgCat1, desc: 'សាច់ចេកទន់ក្រាស់ល្អ គ្មានជាតិទឹក មិនបាច់ក្លាសេរ។ 1ប្រអប់មានជាង10បន្ទះ។', video: 'https://www.w3schools.com/html/mov_bbb.mp4' },
+      'p3': { cat: 'cat1', group: '📦 ខ្នាតប្រអប់ (200g - 300g)', name: 'រសជាតិរោយល្ង (ប្រអប់ ២០០ក្រាម)', price: 10000, shipCat: 'db_box', image: imgCat1, desc: 'សាច់ទន់ឈ្ងុយឆ្ងាញ់ មានក្លិនល្ងប្រហើរ គុណភាពខ្ពស់។', video: 'https://www.w3schools.com/html/mov_bbb.mp4' },
+      'p5': { cat: 'cat1', group: '📦 ខ្នាតប្រអប់ (200g - 300g)', name: 'រោយអាល់មុន (ប្រអប់ ២០០ក្រាម)', price: 12000, shipCat: 'db_box', image: imgCat1, desc: 'ផ្សំជាមួយគ្រាប់អាល់មុន មានជីវជាតិខ្ពស់ ឈ្ងុយពិសារ។', video: 'https://www.w3schools.com/html/mov_bbb.mp4' },
+      'p7': { cat: 'cat1', group: '📦 ខ្នាតប្រអប់ (200g - 300g)', name: 'រោយធញ្ញជាតិគ្រប់មុខ (ប្រអប់ ២០០ក្រាម)', price: 12000, shipCat: 'db_box', image: imgCat1, desc: 'ឈ្ងុយឆ្ងាញ់ សុខភាពល្អ ជាមួយធញ្ញជាតិចម្រុះ។', video: 'https://www.w3schools.com/html/mov_bbb.mp4' },
+      'p9': { cat: 'cat1', group: '📦 ខ្នាតប្រអប់ (200g - 300g)', name: 'រោយដូង (ប្រអប់ ២០០ក្រាម)', price: 12000, shipCat: 'db_box', image: imgCat1, desc: 'រសជាតិរោយដូងឈ្ងុយឆ្ងាញ់ប្លែក ជាប់ចិត្ត។', video: 'https://www.w3schools.com/html/mov_bbb.mp4' },
+      'p11': { cat: 'cat1', group: '📦 ខ្នាតប្រអប់ (200g - 300g)', name: 'ចេកមូល (ប្រអប់ ២០០ក្រាម)', price: 10000, shipCat: 'db_box', image: imgCat1, desc: 'ចេកមូលទន់ឆ្ងាញ់ ទម្ងន់ ២០០ក្រាម ផ្អែមមុតល្មម។', video: 'https://www.w3schools.com/html/mov_bbb.mp4' },
+      'p13': { cat: 'cat1', group: '📦 ខ្នាតប្រអប់ (200g - 300g)', name: 'សូកូឡាស្នូលដូង (ប្រអប់ ៣០០ក្រាម)', price: 20000, shipCat: 'db_box', image: imgCat1, desc: 'សាច់ចេកទន់ លាយស្នូលសូកូឡាដូងល្ងរ ឈ្ងុយឆ្ងាញ់ខ្លាំង។', video: 'https://www.w3schools.com/html/mov_bbb.mp4' },
+      'p14': { cat: 'cat1', group: '📦 ខ្នាតប្រអប់ (200g - 300g)', name: 'សូកូឡាស្នូលចន្ទី (ប្រអប់ ៣០០ក្រាម)', price: 20000, shipCat: 'db_box', image: imgCat1, desc: 'រសជាតិឆ្ងាញ់ពិសេស ជាមួយគ្រាប់ស្វាយចន្ទី និងសូកូឡា។', video: 'https://www.w3schools.com/html/mov_bbb.mp4' },
       
-      'p2': { cat: 'cat1', group: '⚖️ ខ្នាតធំ (1 kg)', name: 'រសជាតិដើម (1 kg)', price: 50000, shipCat: 'db_1kg', image: imgCat1, desc: 'ខ្នាតធំចំណុះ 1 គីឡូក្រាម ញ៉ាំបានយូរ (Free សេវាដឹក)!' },
-      'p4': { cat: 'cat1', group: '⚖️ ខ្នាតធំ (1 kg)', name: 'រសជាតិរោយល្ង (1 kg)', price: 50000, shipCat: 'db_1kg', image: imgCat1, desc: 'ខ្នាត 1 គីឡូក្រាម រសជាតិរោយល្ង (Free សេវាដឹក)!' },
-      'p6': { cat: 'cat1', group: '⚖️ ខ្នាតធំ (1 kg)', name: 'រោយអាល់មុន (1 kg)', price: 60000, shipCat: 'db_1kg', image: imgCat1, desc: 'ខ្នាត 1 គីឡូក្រាម រសជាតិរោយអាល់មុន (Free សេវាដឹក)!' },
-      'p8': { cat: 'cat1', group: '⚖️ ខ្នាតធំ (1 kg)', name: 'រោយធញ្ញជាតិគ្រប់មុខ (1 kg)', price: 60000, shipCat: 'db_1kg', image: imgCat1, desc: 'ខ្នាត 1 គីឡូក្រាម រសជាតិធញ្ញជាតិគ្រប់មុខ (Free សេវាដឹក)!' },
-      'p10': { cat: 'cat1', group: '⚖️ ខ្នាតធំ (1 kg)', name: 'រោយដូង (1 kg)', price: 60000, shipCat: 'db_1kg', image: imgCat1, desc: 'ខ្នាត 1 គីឡូក្រាម រសជាតិរោយដូង (Free សេវាដឹក)!' },
-      'p12': { cat: 'cat1', group: '⚖️ ខ្នាតធំ (1 kg)', name: 'ចេកមូល (1 kg)', price: 50000, shipCat: 'db_1kg', image: imgCat1, desc: 'ចេកមូលខ្នាត 1 គីឡូក្រាម (Free សេវាដឹក)!' },
+      'p2': { cat: 'cat1', group: '⚖️ ខ្នាតធំ (1 kg - Free ដឹក)', name: 'រសជាតិដើម (១ គីឡូក្រាម)', price: 50000, shipCat: 'db_1kg', image: imgCat1, desc: 'ខ្នាតធំចំណុះ 1 គីឡូក្រាម (50-60បន្ទះ) ញ៉ាំបានយូរ (Free សេវាដឹក)!', video: 'https://www.w3schools.com/html/mov_bbb.mp4' },
+      'p4': { cat: 'cat1', group: '⚖️ ខ្នាតធំ (1 kg - Free ដឹក)', name: 'រសជាតិរោយល្ង (១ គីឡូក្រាម)', price: 50000, shipCat: 'db_1kg', image: imgCat1, desc: 'ខ្នាត 1 គីឡូក្រាម រសជាតិរោយល្ង (Free សេវាដឹក)!', video: 'https://www.w3schools.com/html/mov_bbb.mp4' },
+      'p6': { cat: 'cat1', group: '⚖️ ខ្នាតធំ (1 kg - Free ដឹក)', name: 'រោយអាល់មុន (១ គីឡូក្រាម)', price: 60000, shipCat: 'db_1kg', image: imgCat1, desc: 'ខ្នាត 1 គីឡូក្រាម រសជាតិរោយអាល់មុន (Free សេវាដឹក)!', video: 'https://www.w3schools.com/html/mov_bbb.mp4' },
+      'p8': { cat: 'cat1', group: '⚖️ ខ្នាតធំ (1 kg - Free ដឹក)', name: 'រោយធញ្ញជាតិគ្រប់មុខ (១ គីឡូក្រាម)', price: 60000, shipCat: 'db_1kg', image: imgCat1, desc: 'ខ្នាត 1 គីឡូក្រាម រសជាតិធញ្ញជាតិគ្រប់មុខ (Free សេវាដឹក)!', video: 'https://www.w3schools.com/html/mov_bbb.mp4' },
+      'p10': { cat: 'cat1', group: '⚖️ ខ្នាតធំ (1 kg - Free ដឹក)', name: 'រោយដូង (១ គីឡូក្រាម)', price: 60000, shipCat: 'db_1kg', image: imgCat1, desc: 'ខ្នាត 1 គីឡូក្រាម រសជាតិរោយដូង (Free សេវាដឹក)!', video: 'https://www.w3schools.com/html/mov_bbb.mp4' },
+      'p12': { cat: 'cat1', group: '⚖️ ខ្នាតធំ (1 kg - Free ដឹក)', name: 'ចេកមូល (១ គីឡូក្រាម)', price: 50000, shipCat: 'db_1kg', image: imgCat1, desc: 'ចេកមូលខ្នាត 1 គីឡូក្រាម (Free សេវាដឹក)!', video: 'https://www.w3schools.com/html/mov_bbb.mp4' },
 
       // ==== CAT 2: ចេកបំពងស្រួយ ====
-      'p16': { cat: 'cat2', group: '🔹 ខ្នាតតូច (100g)', name: 'សូកូឡាទឹកដោះគោ (100g)', price: 7000, shipCat: 'bc_100g', image: imgCat2, desc: 'ខ្នាតតូច 100g ងាយស្រួលដាក់តាមខ្លួន។' },
-      'p18': { cat: 'cat2', group: '🔹 ខ្នាតតូច (100g)', name: 'ឈីស ទឹកដោះគោ (100g)', price: 7000, shipCat: 'bc_100g', image: imgCat2, desc: 'ខ្នាតតូច 100g រសជាតិឈីសទឹកដោះគោ។' },
-      'p20': { cat: 'cat2', group: '🔹 ខ្នាតតូច (100g)', name: 'បាប៊ីឃ្យូ BBQ (100g)', price: 7000, shipCat: 'bc_100g', image: imgCat2, desc: 'ខ្នាតតូច 100g រសជាតិបាប៊ីឃ្យូ។' },
-      'p22': { cat: 'cat2', group: '🔹 ខ្នាតតូច (100g)', name: 'ម្ទេស ខ្ទឹម (100g)', price: 7000, shipCat: 'bc_100g', image: imgCat2, desc: 'ខ្នាតតូច 100g រសជាតិម្ទេសខ្ទឹម។' },
+      'p16': { cat: 'cat2', group: '🔹 ខ្នាតតូច (100g)', name: 'សូកូឡាទឹកដោះគោ (100g)', price: 7000, shipCat: 'bc_100g', image: imgCat2, desc: 'ខ្នាតតូច 100g ងាយស្រួលដាក់តាមខ្លួន ស្រួយឆ្ងាញ់។', video: 'https://www.w3schools.com/html/movie.mp4' },
+      'p18': { cat: 'cat2', group: '🔹 ខ្នាតតូច (100g)', name: 'ឈីស ទឹកដោះគោ (100g)', price: 7000, shipCat: 'bc_100g', image: imgCat2, desc: 'ខ្នាតតូច 100g រសជាតិឈីសទឹកដោះគោ ឈ្ងុយឆ្ងាញ់។', video: 'https://www.w3schools.com/html/movie.mp4' },
+      'p20': { cat: 'cat2', group: '🔹 ខ្នាតតូច (100g)', name: 'បាប៊ីឃ្យូ BBQ (100g)', price: 7000, shipCat: 'bc_100g', image: imgCat2, desc: 'ខ្នាតតូច 100g រសជាតិបាប៊ីឃ្យូ ដិតដល់ចិត្ត។', video: 'https://www.w3schools.com/html/movie.mp4' },
+      'p22': { cat: 'cat2', group: '🔹 ខ្នាតតូច (100g)', name: 'ម្ទេស ខ្ទឹម (100g)', price: 7000, shipCat: 'bc_100g', image: imgCat2, desc: 'ខ្នាតតូច 100g រសជាតិម្ទេសខ្ទឹម ហឹរស្រាលៗ។', video: 'https://www.w3schools.com/html/movie.mp4' },
 
-      'p15': { cat: 'cat2', group: '🔸 ខ្នាតកណ្តាល (200g)', name: 'សូកូឡាទឹកដោះគោ (200g)', price: 14000, shipCat: 'bc_200g', image: imgCat2, desc: 'ចេកបំពងស្រួយរសជាតិសូកូឡាទឹកដោះគោ។' },
-      'p17': { cat: 'cat2', group: '🔸 ខ្នាតកណ្តាល (200g)', name: 'ឈីស ទឹកដោះគោ (200g)', price: 14000, shipCat: 'bc_200g', image: imgCat2, desc: 'រសជាតិឈីសទឹកដោះគោ ឈ្ងុយឆ្ងាញ់កប់។' },
-      'p19': { cat: 'cat2', group: '🔸 ខ្នាតកណ្តាល (200g)', name: 'បាប៊ីឃ្យូ BBQ (200g)', price: 14000, shipCat: 'bc_200g', image: imgCat2, desc: 'រសជាតិសាច់អាំងបាប៊ីឃ្យូ ជក់មាត់។' },
-      'p21': { cat: 'cat2', group: '🔸 ខ្នាតកណ្តាល (200g)', name: 'ម្ទេស ខ្ទឹម (200g)', price: 14000, shipCat: 'bc_200g', image: imgCat2, desc: 'ហឹរតិចៗ ឈ្ងុយខ្ទឹមស ត្រូវមាត់ម៉ាច់។' },
+      'p15': { cat: 'cat2', group: '🔸 ខ្នាតកណ្តាល (200g)', name: 'សូកូឡាទឹកដោះគោ (200g)', price: 14000, shipCat: 'bc_200g', image: imgCat2, desc: 'ចេកបំពងស្រួយរសជាតិសូកូឡាទឹកដោះគោ 200g។', video: 'https://www.w3schools.com/html/movie.mp4' },
+      'p17': { cat: 'cat2', group: '🔸 ខ្នាតកណ្តាល (200g)', name: 'ឈីស ទឹកដោះគោ (200g)', price: 14000, shipCat: 'bc_200g', image: imgCat2, desc: 'រសជាតិឈីសទឹកដោះគោ 200g ឈ្ងុយឆ្ងាញ់កប់។', video: 'https://www.w3schools.com/html/movie.mp4' },
+      'p19': { cat: 'cat2', group: '🔸 ខ្នាតកណ្តាល (200g)', name: 'បាប៊ីឃ្យូ BBQ (200g)', price: 14000, shipCat: 'bc_200g', image: imgCat2, desc: 'រសជាតិសាច់អាំងបាប៊ីឃ្យូ 200g ជក់មាត់។', video: 'https://www.w3schools.com/html/movie.mp4' },
+      'p21': { cat: 'cat2', group: '🔸 ខ្នាតកណ្តាល (200g)', name: 'ម្ទេស ខ្ទឹម (200g)', price: 14000, shipCat: 'bc_200g', image: imgCat2, desc: 'ហឹរតិចៗ ឈ្ងុយខ្ទឹមស 200g ត្រូវមាត់ម៉ាច់។', video: 'https://www.w3schools.com/html/movie.mp4' },
 
-      'p23': { cat: 'cat2', group: '🔺 ខ្នាតធំ (500g - 1kg)', name: 'រសជាតិដើម - សាបស្រួយ (500g)', price: 13000, shipCat: 'none', image: imgCat2, desc: 'រសជាតិដើម សាបស្រួយឆ្ងាញ់។' },
-      'p24': { cat: 'cat2', group: '🔺 ខ្នាតធំ (500g - 1kg)', name: 'រសជាតិដើម - សាបស្រួយ (1 kg)', price: 25000, shipCat: 'none', image: imgCat2, desc: 'ខ្នាតធំ 1 គីឡូក្រាម សាបស្រួយឆ្ងាញ់។' },
+      'p23': { cat: 'cat2', group: '🔺 ខ្នាតធំ (500g - 1kg)', name: 'រសជាតិដើម - សាបស្រួយ (500g)', price: 13000, shipCat: 'none', image: imgCat2, desc: 'រសជាតិដើម សាបស្រួយឆ្ងាញ់ ចំណុះ 500g។', video: 'https://www.w3schools.com/html/movie.mp4' },
+      'p24': { cat: 'cat2', group: '🔺 ខ្នាតធំ (500g - 1kg)', name: 'រសជាតិដើម - សាបស្រួយ (១ គីឡូក្រាម)', price: 25000, shipCat: 'none', image: imgCat2, desc: 'ខ្នាតធំ 1 គីឡូក្រាម សាបស្រួយឆ្ងាញ់ពិសារ។', video: 'https://www.w3schools.com/html/movie.mp4' },
 
       // ==== CAT 3: នំកន្ត្រំខ្មែរ ស្រួយ ====
-      'p27': { cat: 'cat3', group: '🛍️ ខ្នាតកំប៉ុង / ថង់', name: 'នំកន្ត្រំ (1កំប៉ុង)', price: 8000, shipCat: 'none', image: imgCat3, desc: 'នំកន្ត្រំខ្មែរច្រកកំប៉ុងយ៉ាងស្អាត។' },
-      'p28': { cat: 'cat3', group: '🛍️ ខ្នាតកំប៉ុង / ថង់', name: 'នំកន្ត្រំ (1ថង់)', price: 10000, shipCat: 'none', image: imgCat3, desc: 'នំកន្ត្រំខ្មែរច្រកថង់ ងាយស្រួលញ៉ាំ។' },
+      'p27': { cat: 'cat3', group: '🛍️ ខ្នាតកំប៉ុង / ថង់', name: 'នំកន្ត្រំ (១ កំប៉ុង)', price: 8000, shipCat: 'none', image: imgCat3, desc: 'នំកន្ត្រំខ្មែរច្រកកំប៉ុងយ៉ាងស្អាត ស្រួយក្រអូប។', video: 'https://www.w3schools.com/html/mov_bbb.mp4' },
+      'p28': { cat: 'cat3', group: '🛍️ ខ្នាតកំប៉ុង / ថង់', name: 'នំកន្ត្រំ (១ ថង់)', price: 10000, shipCat: 'none', image: imgCat3, desc: 'នំកន្ត្រំខ្មែរច្រកថង់ ងាយស្រួលញ៉ាំ និងរក្សាទុក។', video: 'https://www.w3schools.com/html/mov_bbb.mp4' },
       
-      'p26': { cat: 'cat3', group: '⚖️ ខ្នាតគីឡូ', name: 'នំកន្ត្រំ (500g)', price: 10000, shipCat: 'none', image: imgCat3, desc: 'នំកន្ត្រំខ្មែរស្រួយឆ្ងាញ់ ខ្នាត 500 ក្រាម។' },
-      'p25': { cat: 'cat3', group: '⚖️ ខ្នាតគីឡូ', name: 'នំកន្ត្រំ (1kg)', price: 20000, shipCat: 'none', image: imgCat3, desc: 'នំកន្ត្រំខ្មែរស្រួយឆ្ងាញ់ ខ្នាតធំ 1 គីឡូ។' }
+      'p26': { cat: 'cat3', group: '⚖️ ខ្នាតគីឡូ', name: 'នំកន្ត្រំ (500g)', price: 10000, shipCat: 'none', image: imgCat3, desc: 'នំកន្ត្រំខ្មែរស្រួយឆ្ងាញ់ ខ្នាត 500 ក្រាម។', video: 'https://www.w3schools.com/html/mov_bbb.mp4' },
+      'p25': { cat: 'cat3', group: '⚖️ ខ្នាតគីឡូ', name: 'នំកន្ត្រំ (១ គីឡូក្រាម)', price: 20000, shipCat: 'none', image: imgCat3, desc: 'នំកន្ត្រំខ្មែរស្រួយឆ្ងាញ់ ខ្នាតធំ 1 គីឡូក្រាម។', video: 'https://www.w3schools.com/html/mov_bbb.mp4' }
     };
 
-    // UI View Controllers
+    // Navigation UI Controllers
     function openCategory(catId) {
       currentCategory = catId;
       document.getElementById('home-view').classList.add('hidden');
       document.getElementById('menu-view').classList.remove('hidden');
       document.getElementById('menu-title').innerText = catTitles[catId];
       renderProducts(catId);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
     function closeCategory() {
       currentCategory = null;
       document.getElementById('menu-view').classList.add('hidden');
       document.getElementById('home-view').classList.remove('hidden');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
-    // Render Products grouped by Sub-Category
+    function scrollToVideoSection() {
+      if (currentCategory) closeCategory();
+      document.getElementById('video-section').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    // Video Player Modal Controllers
+    function openVideoModal(videoUrl, title, desc) {
+      const player = document.getElementById('player-element');
+      const playerSrc = document.getElementById('player-src');
+      
+      playerSrc.src = videoUrl;
+      player.load();
+      document.getElementById('video-modal-title').innerText = title;
+      document.getElementById('video-modal-desc').innerText = desc || 'វីដេអូរីវីយូពីអតិថិជនផ្ទាល់';
+      
+      document.getElementById('video-modal').style.display = 'flex';
+      player.play().catch(() => {});
+    }
+
+    function closeVideoModal() {
+      const player = document.getElementById('player-element');
+      player.pause();
+      document.getElementById('video-modal').style.display = 'none';
+    }
+
+    // Product Detail Modal Controllers
+    function openProductModal(key) {
+      let p = products[key];
+      document.getElementById('detail-img').src = p.image;
+      document.getElementById('detail-title').innerText = p.name;
+      document.getElementById('detail-price').innerText = p.price.toLocaleString() + ' ៛';
+      document.getElementById('detail-desc').innerText = p.desc;
+      document.getElementById('detail-tag').innerText = p.group;
+      
+      const videoBtn = document.getElementById('detail-video-btn');
+      videoBtn.onclick = (e) => {
+        e.stopPropagation();
+        closeProductModal();
+        openVideoModal(p.video, p.name, p.desc);
+      };
+
+      document.getElementById('product-modal').style.display = 'flex';
+    }
+
+    function closeProductModal() {
+      document.getElementById('product-modal').style.display = 'none';
+    }
+
+    // Custom Alert Implementation
+    function showCustomAlert(msg) {
+      document.getElementById('alert-message').innerText = msg;
+      document.getElementById('custom-alert').style.display = 'flex';
+    }
+
+    function closeAlert() {
+      document.getElementById('custom-alert').style.display = 'none';
+    }
+
+    // Render Product Cards grouped by Weight Sub-Categories
     function renderProducts(catId) {
       const listEl = document.getElementById('product-list');
       listEl.innerHTML = "";
@@ -265,7 +557,7 @@
       for (let key in products) {
         if (products[key].cat === catId) {
           let p = products[key];
-          let groupName = p.group || 'ផលិតផលផ្សេងៗ';
+          let groupName = p.group || 'ផលិតផល';
           if (!groupedProducts[groupName]) {
             groupedProducts[groupName] = [];
           }
@@ -274,8 +566,9 @@
       }
 
       for (let groupName in groupedProducts) {
+        // Group Header Title
         listEl.innerHTML += `
-          <h3 class="text-base font-bold text-banana-green mt-5 mb-3 pb-1 border-b-2 border-banana-yellow">
+          <h3 class="text-sm font-bold text-banana-dark mt-4 mb-3 pb-1 border-b-2 border-banana-gold flex items-center gap-1.5">
             ${groupName}
           </h3>
         `;
@@ -283,28 +576,34 @@
         groupedProducts[groupName].forEach(p => {
           let qty = cart[p.key] || 0;
           listEl.innerHTML += `
-            <div class="bg-white rounded-xl mb-4 shadow-sm border border-gray-100 border-l-4 border-l-banana-green flex overflow-hidden h-32 active:bg-gray-50 transition-colors" onclick="openProductModal('${p.key}')">
+            <div class="bg-white rounded-2xl mb-3.5 shadow-sm hover:shadow-md border border-gray-100 flex overflow-hidden h-36 transition-all relative group" onclick="openProductModal('${p.key}')">
               
-              <!-- Image Container -->
+              <!-- Product Image -->
               <div class="w-32 flex-shrink-0 bg-gray-50 relative cursor-pointer border-r border-gray-100">
-                <img src="${p.image}" alt="${p.name}" class="w-full h-full object-cover absolute inset-0" loading="lazy">
-                <div class="absolute bottom-1 right-1 bg-black/50 text-white rounded-full p-1 w-6 h-6 flex items-center justify-center text-xs shadow-sm">🔎</div>
+                <img src="${p.image}" alt="${p.name}" class="w-full h-full object-cover" loading="lazy">
+                <div class="absolute bottom-1.5 right-1.5 bg-black/60 text-white rounded-full p-1 w-6 h-6 flex items-center justify-center text-[10px] shadow">🔎</div>
               </div>
               
-              <!-- Content -->
+              <!-- Product Info & Action Button Controls -->
               <div class="p-3 flex-grow flex flex-col justify-between cursor-pointer">
                 <div>
-                  <div class="text-[14px] leading-tight font-bold text-banana-green mb-1 line-clamp-2">${p.name}</div>
+                  <h4 class="text-[13px] leading-snug font-bold text-gray-900 mb-1 line-clamp-2">${p.name}</h4>
+                  <p class="text-[11px] text-gray-500 line-clamp-2 leading-tight">${p.desc}</p>
                 </div>
                 
-                <div class="flex justify-between items-end mt-1">
-                  <div class="font-bold text-red-600 text-[13px]">${p.price.toLocaleString()} ៛</div>
+                <div class="flex justify-between items-end mt-2 pt-1 border-t border-gray-50">
+                  <div>
+                    <div class="font-extrabold text-red-600 text-sm">${p.price.toLocaleString()} <span class="text-[11px]">៛</span></div>
+                    <button onclick="event.stopPropagation(); openVideoModal('${p.video}', '${p.name}', '${p.desc}')" class="text-[10px] font-bold text-banana-green hover:underline flex items-center gap-0.5 mt-0.5">
+                      🎥 វីដេអូរីវីយូ
+                    </button>
+                  </div>
                   
-                  <!-- Quantity Controls -->
-                  <div class="flex items-center gap-2 bg-gray-50 rounded-lg p-1 border border-gray-200" onclick="event.stopPropagation()">
-                    <button onclick="changeQty('${p.key}', -1)" class="w-7 h-7 flex justify-center items-center bg-white text-banana-green rounded shadow-sm border border-gray-200 active:bg-gray-200 text-lg font-bold leading-none">−</button>
-                    <span id="qty-${p.key}" class="font-bold text-[14px] min-w-[20px] text-center text-gray-800">${qty}</span>
-                    <button onclick="changeQty('${p.key}', 1)" class="w-7 h-7 flex justify-center items-center bg-banana-green text-white rounded shadow-sm active:bg-green-700 text-lg font-bold leading-none">+</button>
+                  <!-- Quantity Control Buttons -->
+                  <div class="flex items-center gap-1.5 bg-banana-accent/40 rounded-xl p-1 border border-banana-accent" onclick="event.stopPropagation()">
+                    <button onclick="changeQty('${p.key}', -1)" class="w-7 h-7 flex justify-center items-center bg-white text-banana-dark rounded-lg shadow-sm border border-gray-200 active:bg-gray-100 font-bold text-base leading-none transition-transform active:scale-90">−</button>
+                    <span id="qty-${p.key}" class="font-bold text-xs min-w-[20px] text-center text-gray-800">${qty}</span>
+                    <button onclick="changeQty('${p.key}', 1)" class="w-7 h-7 flex justify-center items-center bg-banana-green text-white rounded-lg shadow-sm active:bg-banana-dark font-bold text-base leading-none transition-transform active:scale-90">+</button>
                   </div>
                 </div>
               </div>
@@ -315,27 +614,7 @@
       }
     }
 
-    // Modal Logic
-    function openProductModal(key) {
-      let p = products[key];
-      document.getElementById('detail-img').src = p.image;
-      document.getElementById('detail-title').innerText = p.name;
-      document.getElementById('detail-price').innerText = p.price.toLocaleString() + ' ៛';
-      document.getElementById('detail-desc').innerText = p.desc;
-      document.getElementById('product-modal').style.display = 'flex';
-    }
-
-    function closeProductModal() {
-      document.getElementById('product-modal').style.display = 'none';
-    }
-
-    function showCustomAlert(msg) {
-      document.getElementById('alert-message').innerText = msg;
-      document.getElementById('custom-alert').style.display = 'flex';
-    }
-    function closeAlert() { document.getElementById('custom-alert').style.display = 'none'; }
-
-    // Cart Logic
+    // Shopping Cart Quantity Updates
     function changeQty(id, delta) {
       let currentQty = cart[id] || 0;
       currentQty += delta;
@@ -348,9 +627,10 @@
       updateTotals();
     }
 
-    // Advanced Shipping Logic
+    // Advanced Shipping & Cart Total Calculations
     function calculateTotals() {
       let totalItemPrice = 0;
+      let totalItemsCount = 0;
       let counts = { db_box: 0, db_1kg: 0, bc_200g: 0, bc_100g: 0 };
 
       for (let key in cart) {
@@ -358,52 +638,71 @@
         if (qty > 0) {
           let p = products[key];
           totalItemPrice += p.price * qty;
+          totalItemsCount += qty;
           if (p.shipCat !== 'none') {
             counts[p.shipCat] = (counts[p.shipCat] || 0) + qty;
           }
         }
       }
 
+      // Strict Shipping Rule Validation
       let shippingFee = 8000;
       let isFreeShipping = false;
 
       if (totalItemPrice === 0) {
         shippingFee = 0;
-      } else if (counts.db_box >= 5 || counts.db_1kg >= 1 || counts.bc_200g >= 5 || counts.bc_100g >= 10 || totalItemPrice >= 50000) {
+      } else if (
+        counts.db_box >= 5 || 
+        counts.db_1kg >= 1 || 
+        counts.bc_200g >= 5 || 
+        counts.bc_100g >= 10 || 
+        totalItemPrice >= 50000
+      ) {
         shippingFee = 0;
         isFreeShipping = true;
       }
 
       let grandTotal = totalItemPrice + shippingFee;
-      return { totalItemPrice, shippingFee, grandTotal, isFreeShipping };
+      return { totalItemPrice, totalItemsCount, shippingFee, grandTotal, isFreeShipping };
     }
 
+    // Dynamic Footer Bar Updating
     function updateTotals() {
       let calc = calculateTotals();
       document.getElementById('grand-total').innerText = calc.grandTotal.toLocaleString();
+      document.getElementById('cart-badge-count').innerText = calc.totalItemsCount;
+      
+      const badgeEl = document.getElementById('shipping-status-badge');
+      if (calc.totalItemPrice === 0) {
+        badgeEl.innerHTML = `🚚 សេវាដឹក: <span class="text-gray-700">8,000 ៛</span>`;
+      } else if (calc.isFreeShipping) {
+        badgeEl.innerHTML = `🚚 សេវាដឹក: <span class="text-green-600 font-extrabold bg-green-100 px-1.5 py-0.5 rounded">Free (ឥតគិតថ្លៃ)</span>`;
+      } else {
+        badgeEl.innerHTML = `🚚 សេវាដឹក: <span class="text-gray-700 font-bold">8,000 ៛</span> <span class="text-[10px] text-banana-orange block">(ទិញថែមដើម្បី Free ដឹក)</span>`;
+      }
     }
 
-    // Checkout Flow
+    // Checkout Modal Setup
     function openCheckoutModal() {
       let calc = calculateTotals();
       if (calc.totalItemPrice === 0) {
-        showCustomAlert("សូមជ្រើសរើសទំនិញយ៉ាងហោចណាស់ ១ មុខសិន!");
+        showCustomAlert("សូមជ្រើសរើសទំនិញយ៉ាងហោចណាស់ ១ មុខសិន មុននឹងធ្វើការកុម្ម៉ង់!");
         return;
       }
       
       let shipText = calc.isFreeShipping 
-        ? '<span class="text-green-600 font-bold">Free (ឥតគិតថ្លៃ)</span>' 
-        : calc.shippingFee.toLocaleString() + ' ៛';
+        ? '<span class="text-green-600 font-bold bg-green-100 px-2 py-0.5 rounded">Free (ឥតគិតថ្លៃ)</span>' 
+        : '<span class="font-bold text-gray-800">' + calc.shippingFee.toLocaleString() + ' ៛</span>';
 
       document.getElementById('modal-summary').innerHTML = `
-        <div class="flex justify-between mb-1">
-          <span>📦 តម្លៃទំនិញ:</span> <b>${calc.totalItemPrice.toLocaleString()} ៛</b>
+        <div class="flex justify-between mb-1.5">
+          <span>📦 តម្លៃទំនិញសរុប:</span> <b>${calc.totalItemPrice.toLocaleString()} ៛</b>
         </div>
         <div class="flex justify-between mb-2">
           <span>🚚 សេវាដឹកជញ្ជូន:</span> <b>${shipText}</b>
         </div>
-        <div class="flex justify-between border-t border-banana-green pt-2 mt-2 text-base">
-          <span>💰 <b>ទឹកប្រាក់ត្រូវបង់:</b></span> <b class="text-red-600">${calc.grandTotal.toLocaleString()} ៛</b>
+        <div class="flex justify-between border-t border-banana-green pt-2 mt-2 text-sm">
+          <span>💰 <b>ទឹកប្រាក់ត្រូវបង់សរុប:</b></span> <b class="text-red-600 font-extrabold text-base">${calc.grandTotal.toLocaleString()} ៛</b>
         </div>
       `;
       
@@ -414,6 +713,7 @@
       document.getElementById('checkout-modal').style.display = 'none';
     }
 
+    // Telegram Order Link Generator & Order Submission
     function submitOrder() {
       const phone = document.getElementById('cust-phone').value.trim();
       const province = document.getElementById('cust-province').value.trim();
@@ -440,14 +740,15 @@
       }
 
       orderText += `\n📦 តម្លៃទំនិញ: ${calc.totalItemPrice.toLocaleString()} ៛\n`;
-      orderText += `🚚 សេវាដឹកជញ្ជូន: ${calc.isFreeShipping ? 'Free' : calc.shippingFee.toLocaleString() + ' ៛'}\n`;
+      orderText += `🚚 សេវាដឹកជញ្ជូន: ${calc.isFreeShipping ? 'Free (ឥតគិតថ្លៃ)' : calc.shippingFee.toLocaleString() + ' ៛'}\n`;
       orderText += `💰 **សរុបទឹកប្រាក់ត្រូវបង់:** ${calc.grandTotal.toLocaleString()} ៛\n`;
       orderText += "──────────────────────\n";
       orderText += "👤 **ព័ត៌មានអតិថិជន៖**\n";
       orderText += `📞 លេខទូរស័ព្ទ: ${phone}\n`;
       orderText += `📍 ខេត្ត/ក្រុង: ${province}\n`;
-      orderText += `🏢 សាខា/ទីតាំង: ${branch}\n`;
+      orderText += `🏢 សាខា/ទីតាំងដឹកជញ្ជូន: ${branch}\n`;
       orderText += "──────────────────────\n";
+      orderText += "⚠️ *សម្គាល់៖ ទូទាត់មុនម៉ោង 5:00 ល្ងាច ផ្ញើជូនថ្ងៃហ្នឹង!*";
 
       const encodedText = encodeURIComponent(orderText);
       const adminUsername = "MoMore_collection"; 
