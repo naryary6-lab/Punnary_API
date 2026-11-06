@@ -34,9 +34,9 @@
   <link href="https://fonts.googleapis.com/css2?family=Hanuman:wght@400;700&display=swap" rel="stylesheet">
 
   <style>
-    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
     ::-webkit-scrollbar-track { background: #f1f1f1; }
-    ::-webkit-scrollbar-thumb { background: #888; border-radius: 10px; }
+    ::-webkit-scrollbar-thumb { background: #2E7D32; border-radius: 10px; }
     
     .z-modal { z-index: 1000; }
     .z-alert { z-index: 2000; }
@@ -46,7 +46,7 @@
 </head>
 <body class="bg-banana-bg text-gray-800 font-sans antialiased m-0 p-0 pb-28 min-h-screen flex flex-col selection:bg-banana-green selection:text-white">
 
-  <!-- Header Header -->
+  <!-- Header Section -->
   <header class="bg-gradient-to-r from-banana-darkgreen via-banana-green to-banana-light text-white text-center py-3.5 px-3 border-b-4 border-banana-yellow sticky top-0 z-40 shadow-lg backdrop-blur-md">
     <div class="max-w-xl mx-auto flex flex-col items-center">
       <div class="flex items-center gap-2 mb-0.5">
@@ -58,7 +58,7 @@
     </div>
   </header>
 
-  <!-- VIEW 1: HOME (Brand Header, Social Buttons & Category Covers) -->
+  <!-- VIEW 1: HOME (Brand Header, Social Links, Video Reviews & Categories) -->
   <main id="home-view" class="max-w-xl mx-auto w-full px-4 pt-4 flex-grow fade-in">
     
     <!-- Brand Cover Banner -->
@@ -70,8 +70,8 @@
       </div>
     </div>
 
-    <!-- Quick Action Links / Contact Buttons -->
-    <div class="grid grid-cols-5 gap-2 mb-6 text-center">
+    <!-- Quick Action Contact Buttons -->
+    <div class="grid grid-cols-5 gap-2 mb-5 text-center">
       <a href="https://t.me/MoMore_collection" target="_blank" class="bg-white p-2 rounded-xl shadow-sm border border-gray-100 flex flex-col items-center justify-center hover:bg-green-50 transition-colors active:scale-95">
         <span class="text-xl">✈️</span>
         <span class="text-[10px] font-bold text-gray-700 mt-1">Telegram</span>
@@ -92,6 +92,21 @@
         <span class="text-xl">💳</span>
         <span class="text-[10px] font-bold text-banana-darkgreen mt-1">KHQR</span>
       </button>
+    </div>
+
+    <!-- 🎥 Video Review Section (Vertical 9:16 Slider) -->
+    <div class="mb-6 bg-white p-3.5 rounded-2xl shadow-sm border border-gray-100">
+      <div class="flex items-center justify-between mb-3">
+        <h3 class="text-banana-darkgreen font-bold text-sm flex items-center gap-1.5">
+          <span>🎥</span> វីដេអូរីវីយូ (Video Reviews 9:16)
+        </h3>
+        <span class="text-[10px] bg-banana-yellow/20 text-banana-darkgreen font-bold px-2 py-0.5 rounded-full">អូសដើម្បីមើល ➡️</span>
+      </div>
+
+      <!-- 9:16 Horizontal Video Slider Container -->
+      <div id="video-reviews-slider" class="flex gap-3 overflow-x-auto pb-2 scrollbar-thin">
+        <!-- Injected via JS -->
+      </div>
     </div>
 
     <!-- Category Section Header -->
@@ -120,12 +135,10 @@
 
   <!-- VIEW 2: MENU (Horizontal Banner Products List) -->
   <main id="menu-view" class="max-w-xl mx-auto w-full hidden flex-grow bg-banana-bg fade-in">
-    <!-- Back Button Sub-Header -->
-    <div class="bg-white/90 backdrop-blur-md px-4 py-2.5 sticky top-[60px] z-30 shadow-sm border-b border-gray-200 flex items-center justify-between">
-      <button onclick="closeCategory()" class="bg-gray-100 hover:bg-gray-200 text-banana-darkgreen px-3.5 py-1.5 rounded-lg font-bold text-xs flex items-center gap-1.5 transition-colors border border-gray-200 shadow-sm">
-        ⬅️ ត្រលប់ក្រោយ
-      </button>
-      <h2 id="menu-title" class="font-bold text-banana-darkgreen text-base truncate ml-2">ម៉ឺនុយ</h2>
+    <!-- Sub-Header Title -->
+    <div class="bg-white/90 backdrop-blur-md px-4 py-3 sticky top-[60px] z-30 shadow-sm border-b border-gray-200 flex items-center justify-between">
+      <h2 id="menu-title" class="font-bold text-banana-darkgreen text-base truncate">ម៉ឺនុយ</h2>
+      <span class="text-xs text-banana-green font-bold">MoMore Collection</span>
     </div>
 
     <!-- Product List Container (Full Width Banner Cards) -->
@@ -134,13 +147,13 @@
     </div>
   </main>
 
-  <!-- Fixed Bottom Order Bar + Sticky Back Button -->
+  <!-- Fixed Bottom Order Bar + Bold Floating Back Button -->
   <div class="fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-md px-4 py-3 shadow-[0_-4px_20px_rgba(0,0,0,0.12)] z-40 border-t border-gray-200">
     <div class="max-w-xl mx-auto flex justify-between items-center gap-3">
       
-      <!-- Persistent Back Button (Visible in Menu View) -->
-      <button id="sticky-back-btn" onclick="closeCategory()" class="hidden bg-gray-100 hover:bg-gray-200 text-gray-800 p-2.5 rounded-xl font-bold text-xs flex items-center gap-1 border border-gray-300 shadow-sm active:scale-95 transition-all">
-        ⬅️ ថយក្រោយ
+      <!-- Bold Floating Back Button ( Visible in Menu View ) -->
+      <button id="sticky-back-btn" onclick="closeCategory()" class="hidden bg-gradient-to-r from-banana-darkgreen to-banana-green text-white px-4 py-2.5 rounded-xl font-bold text-xs flex items-center gap-1.5 border-2 border-banana-yellow shadow-lg active:scale-95 transition-all">
+        ⬅️ ត្រលប់ក្រោយ
       </button>
 
       <div class="flex flex-col">
@@ -153,6 +166,24 @@
       <button onclick="openCheckoutModal()" class="bg-gradient-to-r from-banana-yellow to-yellow-500 hover:from-yellow-400 hover:to-banana-yellow text-gray-900 px-5 py-2.5 rounded-xl font-bold text-sm shadow-md transition-transform active:scale-95 flex items-center gap-2 border border-yellow-300">
         ធ្វើការកុម្ម៉ង់ 🛒
       </button>
+    </div>
+  </div>
+
+  <!-- 🎥 Video Player Modal Pop-up (Vertical 9:16 & Product Videos) -->
+  <div id="video-modal" class="fixed inset-0 bg-black/85 hidden justify-center items-center z-modal p-4 backdrop-blur-md">
+    <div class="bg-black rounded-2xl w-full max-w-sm shadow-2xl flex flex-col overflow-hidden fade-in relative border border-gray-800">
+      <button onclick="closeVideoModal()" class="absolute top-3 right-3 bg-black/70 text-white rounded-full w-9 h-9 flex items-center justify-center font-bold z-20 transition-colors border border-white/20">✕</button>
+      
+      <div class="p-3 bg-gradient-to-b from-black/80 to-transparent absolute top-0 left-0 right-0 z-10">
+        <h4 id="video-modal-title" class="text-white text-xs font-bold leading-tight drop-shadow"></h4>
+      </div>
+
+      <div class="w-full aspect-[9/16] bg-black flex items-center justify-center relative">
+        <video id="main-video-player" controls class="w-full h-full object-contain" playsinline>
+          <source id="video-source" src="" type="video/mp4">
+          Browser របស់អ្នកមិនគាំទ្រការលេងវីដេអូឡើយ។
+        </video>
+      </div>
     </div>
   </div>
 
@@ -255,6 +286,22 @@
     let cart = {}; 
     let currentCategory = null;
 
+    // 9:16 Video Reviews Array
+    const videoReviews = [
+      {
+        id: 1,
+        title: "រំលឹកពីសាច់ចេកទន់ ដំណាប់ចេកខ្មែរ",
+        videoUrl: "REV-MARKET-002.mp4",
+        poster: "https://github.com/user-attachments/assets/1dab8bf9-34c5-49ff-a6b6-7cb9f87bf931"
+      },
+      {
+        id: 2,
+        title: "ចេកបំពងស្រួយ រសជាតិពិសេស",
+        videoUrl: "REV-MARKET-003.mp4",
+        poster: "https://github.com/user-attachments/assets/7dec8dd3-f4dd-4482-a6f6-96936a59c2a8"
+      }
+    ];
+
     const imgCat1 = "https://images.unsplash.com/photo-1603569283847-aa295f0d016a?auto=format&fit=crop&w=600&q=80";
     const imgCat2 = "https://images.unsplash.com/photo-1528825871115-3581a5387919?auto=format&fit=crop&w=600&q=80";
     const imgCat3 = "https://images.unsplash.com/photo-1541580621-e73eb9996e38?auto=format&fit=crop&w=600&q=80";
@@ -265,38 +312,38 @@
       'cat3': '💰 នំកន្ត្រំខ្មែរ ស្រួយ'
     };
 
-    // Product Database (Nary will replace image links with custom 16:9 banner designs)
+    // Product Database with 16:9 Banner layouts & Video options
     const products = {
       // ==== CAT 1: ដំណាប់ចេក សម្ងួត ====
-      'p1': { cat: 'cat1', group: '📦 ខ្នាតប្រអប់ (200g - 300g)', name: 'រសជាតិដើម (ប្រអប់ 200g)', price: 10000, shipCat: 'db_box', image: imgCat1, desc: 'សាច់ចេកទន់ក្រាស់ល្អ គ្មានជាតិទឹក មិនបាច់ក្លាសេរ។' },
-      'p3': { cat: 'cat1', group: '📦 ខ្នាតប្រអប់ (200g - 300g)', name: 'រសជាតិរោយល្ង (ប្រអប់ 200g)', price: 10000, shipCat: 'db_box', image: imgCat1, desc: 'សាច់ទន់ឈ្ងុយឆ្ងាញ់ មានក្លិនល្ងប្រហើរ។' },
-      'p5': { cat: 'cat1', group: '📦 ខ្នាតប្រអប់ (200g - 300g)', name: 'រោយអាល់មុន (ប្រអប់ 200g)', price: 12000, shipCat: 'db_box', image: imgCat1, desc: 'ផ្សំជាមួយគ្រាប់អាល់មុន មានជីវជាតិខ្ពស់។' },
-      'p7': { cat: 'cat1', group: '📦 ខ្នាតប្រអប់ (200g - 300g)', name: 'រោយធញ្ញជាតិគ្រប់មុខ (ប្រអប់ 200g)', price: 12000, shipCat: 'db_box', image: imgCat1, desc: 'ឈ្ងុយឆ្ងាញ់ សុខភាពល្អ ជាមួយធញ្ញជាតិ។' },
-      'p9': { cat: 'cat1', group: '📦 ខ្នាតប្រអប់ (200g - 300g)', name: 'រោយដូង (ប្រអប់ 200g)', price: 12000, shipCat: 'db_box', image: imgCat1, desc: 'រសជាតិរោយដូងឈ្ងុយឆ្ងាញ់ប្លែក។' },
-      'p11': { cat: 'cat1', group: '📦 ខ្នាតប្រអប់ (200g - 300g)', name: 'ចេកមូល (ប្រអប់ 200g)', price: 10000, shipCat: 'db_box', image: imgCat1, desc: 'ចេកមូលទន់ឆ្ងាញ់ ទម្ងន់ 200g។' },
-      'p13': { cat: 'cat1', group: '📦 ខ្នាតប្រអប់ (200g - 300g)', name: 'សូកូឡាស្នូលដូង (ប្រអប់ 300g)', price: 20000, shipCat: 'db_box', image: imgCat1, desc: 'សាច់ចេកទន់ លាយស្នូលសូកូឡាដូងល្ងរ។' },
-      'p14': { cat: 'cat1', group: '📦 ខ្នាតប្រអប់ (200g - 300g)', name: 'សូកូឡាស្នូលចន្ទី (ប្រអប់ 300g)', price: 20000, shipCat: 'db_box', image: imgCat1, desc: 'រសជាតិឆ្ងាញ់ពិសេស ជាមួយគ្រាប់ស្វាយចន្ទី។' },
+      'p1': { cat: 'cat1', group: '📦 ខ្នាតប្រអប់ (200g - 300g)', name: 'រសជាតិដើម (ប្រអប់ 200g)', price: 10000, shipCat: 'db_box', image: imgCat1, video: 'REV-MARKET-002.mp4', desc: 'សាច់ចេកទន់ក្រាស់ល្អ គ្មានជាតិទឹក មិនបាច់ក្លាសេរ។' },
+      'p3': { cat: 'cat1', group: '📦 ខ្នាតប្រអប់ (200g - 300g)', name: 'រសជាតិរោយល្ង (ប្រអប់ 200g)', price: 10000, shipCat: 'db_box', image: imgCat1, video: 'REV-MARKET-002.mp4', desc: 'សាច់ទន់ឈ្ងុយឆ្ងាញ់ មានក្លិនល្ងប្រហើរ។' },
+      'p5': { cat: 'cat1', group: '📦 ខ្នាតប្រអប់ (200g - 300g)', name: 'រោយអាល់មុន (ប្រអប់ 200g)', price: 12000, shipCat: 'db_box', image: imgCat1, video: 'REV-MARKET-002.mp4', desc: 'ផ្សំជាមួយគ្រាប់អាល់មុន មានជីវជាតិខ្ពស់។' },
+      'p7': { cat: 'cat1', group: '📦 ខ្នាតប្រអប់ (200g - 300g)', name: 'រោយធញ្ញជាតិគ្រប់មុខ (ប្រអប់ 200g)', price: 12000, shipCat: 'db_box', image: imgCat1, video: 'REV-MARKET-002.mp4', desc: 'ឈ្ងុយឆ្ងាញ់ សុខភាពល្អ ជាមួយធញ្ញជាតិ។' },
+      'p9': { cat: 'cat1', group: '📦 ខ្នាតប្រអប់ (200g - 300g)', name: 'រោយដូង (ប្រអប់ 200g)', price: 12000, shipCat: 'db_box', image: imgCat1, video: 'REV-MARKET-002.mp4', desc: 'រសជាតិរោយដូងឈ្ងុយឆ្ងាញ់ប្លែក។' },
+      'p11': { cat: 'cat1', group: '📦 ខ្នាតប្រអប់ (200g - 300g)', name: 'ចេកមូល (ប្រអប់ 200g)', price: 10000, shipCat: 'db_box', image: imgCat1, video: 'REV-MARKET-002.mp4', desc: 'ចេកមូលទន់ឆ្ងាញ់ ទម្ងន់ 200g។' },
+      'p13': { cat: 'cat1', group: '📦 ខ្នាតប្រអប់ (200g - 300g)', name: 'សូកូឡាស្នូលដូង (ប្រអប់ 300g)', price: 20000, shipCat: 'db_box', image: imgCat1, video: 'REV-MARKET-002.mp4', desc: 'សាច់ចេកទន់ លាយស្នូលសូកូឡាដូងល្ងរ។' },
+      'p14': { cat: 'cat1', group: '📦 ខ្នាតប្រអប់ (200g - 300g)', name: 'សូកូឡាស្នូលចន្ទី (ប្រអប់ 300g)', price: 20000, shipCat: 'db_box', image: imgCat1, video: 'REV-MARKET-002.mp4', desc: 'រសជាតិឆ្ងាញ់ពិសេស ជាមួយគ្រាប់ស្វាយចន្ទី។' },
       
-      'p2': { cat: 'cat1', group: '⚖️ ខ្នាតធំ (1kg)', name: 'រសជាតិដើម (1kg)', price: 50000, shipCat: 'db_1kg', image: imgCat1, desc: 'ខ្នាតធំចំណុះ 1kg ញ៉ាំបានយូរ (Free សេវាដឹក)!' },
-      'p4': { cat: 'cat1', group: '⚖️ ខ្នាតធំ (1kg)', name: 'រសជាតិរោយល្ង (1kg)', price: 50000, shipCat: 'db_1kg', image: imgCat1, desc: 'ខ្នាត 1kg រសជាតិរោយល្ង (Free សេវាដឹក)!' },
-      'p6': { cat: 'cat1', group: '⚖️ ខ្នាតធំ (1kg)', name: 'រោយអាល់មុន (1kg)', price: 60000, shipCat: 'db_1kg', image: imgCat1, desc: 'ខ្នាត 1kg រសជាតិរោយអាល់មុន (Free សេវាដឹក)!' },
-      'p8': { cat: 'cat1', group: '⚖️ ខ្នាតធំ (1kg)', name: 'រោយធញ្ញជាតិគ្រប់មុខ (1kg)', price: 60000, shipCat: 'db_1kg', image: imgCat1, desc: 'ខ្នាត 1kg រសជាតិធញ្ញជាតិគ្រប់មុខ (Free សេវាដឹក)!' },
-      'p10': { cat: 'cat1', group: '⚖️ ខ្នាតធំ (1kg)', name: 'រោយដូង (1kg)', price: 60000, shipCat: 'db_1kg', image: imgCat1, desc: 'ខ្នាត 1kg រសជាតិរោយដូង (Free សេវាដឹក)!' },
-      'p12': { cat: 'cat1', group: '⚖️ ខ្នាតធំ (1kg)', name: 'ចេកមូល (1kg)', price: 50000, shipCat: 'db_1kg', image: imgCat1, desc: 'ចេកមូលខ្នាត 1kg (Free សេវាដឹក)!' },
+      'p2': { cat: 'cat1', group: '⚖️ ខ្នាតធំ (1kg)', name: 'រសជាតិដើម (1kg)', price: 50000, shipCat: 'db_1kg', image: imgCat1, video: 'REV-MARKET-002.mp4', desc: 'ខ្នាតធំចំណុះ 1kg ញ៉ាំបានយូរ (Free សេវាដឹក)!' },
+      'p4': { cat: 'cat1', group: '⚖️ ខ្នាតធំ (1kg)', name: 'រសជាតិរោយល្ង (1kg)', price: 50000, shipCat: 'db_1kg', image: imgCat1, video: 'REV-MARKET-002.mp4', desc: 'ខ្នាត 1kg រសជាតិរោយល្ង (Free សេវាដឹក)!' },
+      'p6': { cat: 'cat1', group: '⚖️ ខ្នាតធំ (1kg)', name: 'រោយអាល់មុន (1kg)', price: 60000, shipCat: 'db_1kg', image: imgCat1, video: 'REV-MARKET-002.mp4', desc: 'ខ្នាត 1kg រសជាតិរោយអាល់មុន (Free សេវាដឹក)!' },
+      'p8': { cat: 'cat1', group: '⚖️ ខ្នាតធំ (1kg)', name: 'រោយធញ្ញជាតិគ្រប់មុខ (1kg)', price: 60000, shipCat: 'db_1kg', image: imgCat1, video: 'REV-MARKET-002.mp4', desc: 'ខ្នាត 1kg រសជាតិធញ្ញជាតិគ្រប់មុខ (Free សេវាដឹក)!' },
+      'p10': { cat: 'cat1', group: '⚖️ ខ្នាតធំ (1kg)', name: 'រោយដូង (1kg)', price: 60000, shipCat: 'db_1kg', image: imgCat1, video: 'REV-MARKET-002.mp4', desc: 'ខ្នាត 1kg រសជាតិរោយដូង (Free សេវាដឹក)!' },
+      'p12': { cat: 'cat1', group: '⚖️ ខ្នាតធំ (1kg)', name: 'ចេកមូល (1kg)', price: 50000, shipCat: 'db_1kg', image: imgCat1, video: 'REV-MARKET-002.mp4', desc: 'ចេកមូលខ្នាត 1kg (Free សេវាដឹក)!' },
 
       // ==== CAT 2: ចេកបំពងស្រួយ ====
-      'p16': { cat: 'cat2', group: '🔹 ខ្នាតតូច (100g)', name: 'សូកូឡាទឹកដោះគោ (100g)', price: 7000, shipCat: 'bc_100g', image: imgCat2, desc: 'ខ្នាតតូច 100g ងាយស្រួលដាក់តាមខ្លួន។' },
-      'p18': { cat: 'cat2', group: '🔹 ខ្នាតតូច (100g)', name: 'ឈីស ទឹកដោះគោ (100g)', price: 7000, shipCat: 'bc_100g', image: imgCat2, desc: 'ខ្នាតតូច 100g រសជាតិឈីសទឹកដោះគោ។' },
-      'p20': { cat: 'cat2', group: '🔹 ខ្នាតតូច (100g)', name: 'បាប៊ីឃ្យូ BBQ (100g)', price: 7000, shipCat: 'bc_100g', image: imgCat2, desc: 'ខ្នាតតូច 100g រសជាតិបាប៊ីឃ្យូ។' },
-      'p22': { cat: 'cat2', group: '🔹 ខ្នាតតូច (100g)', name: 'ម្ទេស ខ្ទឹម (100g)', price: 7000, shipCat: 'bc_100g', image: imgCat2, desc: 'ខ្នាតតូច 100g រសជាតិម្ទេសខ្ទឹម។' },
+      'p16': { cat: 'cat2', group: '🔹 ខ្នាតតូច (100g)', name: 'សូកូឡាទឹកដោះគោ (100g)', price: 7000, shipCat: 'bc_100g', image: imgCat2, video: 'REV-MARKET-003.mp4', desc: 'ខ្នាតតូច 100g ងាយស្រួលដាក់តាមខ្លួន។' },
+      'p18': { cat: 'cat2', group: '🔹 ខ្នាតតូច (100g)', name: 'ឈីស ទឹកដោះគោ (100g)', price: 7000, shipCat: 'bc_100g', image: imgCat2, video: 'REV-MARKET-003.mp4', desc: 'ខ្នាតតូច 100g រសជាតិឈីសទឹកដោះគោ។' },
+      'p20': { cat: 'cat2', group: '🔹 ខ្នាតតូច (100g)', name: 'បាប៊ីឃ្យូ BBQ (100g)', price: 7000, shipCat: 'bc_100g', image: imgCat2, video: 'REV-MARKET-003.mp4', desc: 'ខ្នាតតូច 100g រសជាតិបាប៊ីឃ្យូ។' },
+      'p22': { cat: 'cat2', group: '🔹 ខ្នាតតូច (100g)', name: 'ម្ទេស ខ្ទឹម (100g)', price: 7000, shipCat: 'bc_100g', image: imgCat2, video: 'REV-MARKET-003.mp4', desc: 'ខ្នាតតូច 100g រសជាតិម្ទេសខ្ទឹម។' },
 
-      'p15': { cat: 'cat2', group: '🔸 ខ្នាតកណ្តាល (200g)', name: 'សូកូឡាទឹកដោះគោ (200g)', price: 14000, shipCat: 'bc_200g', image: imgCat2, desc: 'ចេកបំពងស្រួយរសជាតិសូកូឡាទឹកដោះគោ។' },
-      'p17': { cat: 'cat2', group: '🔸 ខ្នាតកណ្តាល (200g)', name: 'ឈីស ទឹកដោះគោ (200g)', price: 14000, shipCat: 'bc_200g', image: imgCat2, desc: 'រសជាតិឈីសទឹកដោះគោ ឈ្ងុយឆ្ងាញ់កប់។' },
-      'p19': { cat: 'cat2', group: '🔸 ខ្នាតកណ្តាល (200g)', name: 'បាប៊ីឃ្យូ BBQ (200g)', price: 14000, shipCat: 'bc_200g', image: imgCat2, desc: 'រសជាតិសាច់អាំងបាប៊ីឃ្យូ ជក់មាត់។' },
-      'p21': { cat: 'cat2', group: '🔸 ខ្នាតកណ្តាល (200g)', name: 'ម្ទេស ខ្ទឹម (200g)', price: 14000, shipCat: 'bc_200g', image: imgCat2, desc: 'ហឹរតិចៗ ឈ្ងុយខ្ទឹមស ត្រូវមាត់ម៉ាច់។' },
+      'p15': { cat: 'cat2', group: '🔸 ខ្នាតកណ្តាល (200g)', name: 'សូកូឡាទឹកដោះគោ (200g)', price: 14000, shipCat: 'bc_200g', image: imgCat2, video: 'REV-MARKET-003.mp4', desc: 'ចេកបំពងស្រួយរសជាតិសូកូឡាទឹកដោះគោ។' },
+      'p17': { cat: 'cat2', group: '🔸 ខ្នាតកណ្តាល (200g)', name: 'ឈីស ទឹកដោះគោ (200g)', price: 14000, shipCat: 'bc_200g', image: imgCat2, video: 'REV-MARKET-003.mp4', desc: 'រសជាតិឈីសទឹកដោះគោ ឈ្ងុយឆ្ងាញ់កប់។' },
+      'p19': { cat: 'cat2', group: '🔸 ខ្នាតកណ្តាល (200g)', name: 'បាប៊ីឃ្យូ BBQ (200g)', price: 14000, shipCat: 'bc_200g', image: imgCat2, video: 'REV-MARKET-003.mp4', desc: 'រសជាតិសាច់អាំងបាប៊ីឃ្យូ ជក់មាត់។' },
+      'p21': { cat: 'cat2', group: '🔸 ខ្នាតកណ្តាល (200g)', name: 'ម្ទេស ខ្ទឹម (200g)', price: 14000, shipCat: 'bc_200g', image: imgCat2, video: 'REV-MARKET-003.mp4', desc: 'ហឹរតិចៗ ឈ្ងុយខ្ទឹមស ត្រូវមាត់ម៉ាច់។' },
 
-      'p23': { cat: 'cat2', group: '🔺 ខ្នាតធំ (500g - 1kg)', name: 'រសជាតិដើម - សាបស្រួយ (500g)', price: 13000, shipCat: 'none', image: imgCat2, desc: 'រសជាតិដើម សាបស្រួយឆ្ងាញ់។' },
-      'p24': { cat: 'cat2', group: '🔺 ខ្នាតធំ (500g - 1kg)', name: 'រសជាតិដើម - សាបស្រួយ (1kg)', price: 25000, shipCat: 'none', image: imgCat2, desc: 'ខ្នាតធំ 1kg សាបស្រួយឆ្ងាញ់។' },
+      'p23': { cat: 'cat2', group: '🔺 ខ្នាតធំ (500g - 1kg)', name: 'រសជាតិដើម - សាបស្រួយ (500g)', price: 13000, shipCat: 'none', image: imgCat2, video: 'REV-MARKET-003.mp4', desc: 'រសជាតិដើម សាបស្រួយឆ្ងាញ់។' },
+      'p24': { cat: 'cat2', group: '🔺 ខ្នាតធំ (500g - 1kg)', name: 'រសជាតិដើម - សាបស្រួយ (1kg)', price: 25000, shipCat: 'none', image: imgCat2, video: 'REV-MARKET-003.mp4', desc: 'ខ្នាតធំ 1kg សាបស្រួយឆ្ងាញ់។' },
 
       // ==== CAT 3: នំកន្ត្រំខ្មែរ ស្រួយ ====
       'p27': { cat: 'cat3', group: '🛍️ ខ្នាតកំប៉ុង / ថង់', name: 'នំកន្ត្រំ (1កំប៉ុង)', price: 8000, shipCat: 'none', image: imgCat3, desc: 'នំកន្ត្រំខ្មែរច្រកកំប៉ុងយ៉ាងស្អាត។' },
@@ -304,6 +351,45 @@
       'p26': { cat: 'cat3', group: '⚖️ ខ្នាតគីឡូ', name: 'នំកន្ត្រំ (500g)', price: 10000, shipCat: 'none', image: imgCat3, desc: 'នំកន្ត្រំខ្មែរស្រួយឆ្ងាញ់ ខ្នាត 500g។' },
       'p25': { cat: 'cat3', group: '⚖️ ខ្នាតគីឡូ', name: 'នំកន្ត្រំ (1kg)', price: 20000, shipCat: 'none', image: imgCat3, desc: 'នំកន្ត្រំខ្មែរស្រួយឆ្ងាញ់ ខ្នាតធំ 1kg។' }
     };
+
+    // Render Video Reviews (9:16 Cards)
+    function renderVideoReviews() {
+      const container = document.getElementById('video-reviews-slider');
+      container.innerHTML = "";
+
+      videoReviews.forEach(item => {
+        container.innerHTML += `
+          <div onclick="openVideoModal('${item.videoUrl}', '${item.title}')" class="w-28 flex-shrink-0 aspect-[9/16] bg-gray-900 rounded-xl overflow-hidden relative shadow-md cursor-pointer border border-banana-yellow/40 active:scale-95 transition-transform group">
+            <img src="${item.poster}" alt="${item.title}" class="w-full h-full object-cover opacity-80 group-hover:opacity-100">
+            <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent flex flex-col justify-between p-2">
+              <div class="w-6 h-6 bg-banana-yellow text-gray-900 rounded-full flex items-center justify-center font-bold text-xs ml-auto shadow">
+                ▶
+              </div>
+              <p class="text-white text-[10px] font-bold leading-tight line-clamp-2 drop-shadow">${item.title}</p>
+            </div>
+          </div>
+        `;
+      });
+    }
+
+    function openVideoModal(url, title) {
+      const modal = document.getElementById('video-modal');
+      const player = document.getElementById('main-video-player');
+      const source = document.getElementById('video-source');
+      document.getElementById('video-modal-title').innerText = title || 'វីដេអូរីវីយូ ម៉ូម័រ MoMore';
+      
+      source.src = url;
+      player.load();
+      modal.style.display = 'flex';
+      player.play().catch(e => console.log('Autoplay prevented'));
+    }
+
+    function closeVideoModal() {
+      const modal = document.getElementById('video-modal');
+      const player = document.getElementById('main-video-player');
+      player.pause();
+      modal.style.display = 'none';
+    }
 
     function openCategory(catId) {
       currentCategory = catId;
@@ -323,7 +409,7 @@
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
-    // Render Full Horizontal Banner Product Cards
+    // Render Full Horizontal Banner Product Cards with Video button
     function renderProducts(catId) {
       const listEl = document.getElementById('product-list');
       listEl.innerHTML = "";
@@ -349,20 +435,30 @@
 
         groupedProducts[groupName].forEach(p => {
           let qty = cart[p.key] || 0;
+          let videoBtnHtml = p.video ? `
+            <button onclick="event.stopPropagation(); openVideoModal('${p.video}', '${p.name}')" class="bg-black/60 hover:bg-black/80 text-banana-gold px-2.5 py-1 rounded-full text-[10px] font-bold shadow flex items-center gap-1 backdrop-blur-sm border border-banana-yellow/30">
+              <span>🎥</span> មើលវីដេអូ
+            </button>
+          ` : '';
+
           listEl.innerHTML += `
             <div class="bg-white rounded-2xl shadow-md border-2 border-banana-green/20 overflow-hidden relative group active:scale-[0.99] transition-transform">
               
               <!-- Full Horizontal Banner Image (Click to Open Detail Modal) -->
               <div class="w-full aspect-[16/9] bg-gray-100 relative cursor-pointer" onclick="openProductModal('${p.key}')">
                 <img src="${p.image}" alt="${p.name}" class="w-full h-full object-cover">
-                <div class="absolute top-2 right-2 bg-black/60 text-white rounded-full p-1.5 shadow-md backdrop-blur-sm">
-                  <span class="text-xs">🔎</span>
+                
+                <div class="absolute top-2 right-2 flex items-center gap-1.5">
+                  ${videoBtnHtml}
+                  <div class="bg-black/60 text-white rounded-full p-1.5 shadow-md backdrop-blur-sm">
+                    <span class="text-xs">🔎</span>
+                  </div>
                 </div>
               </div>
 
-              <!-- Floating High-Contrast Quantity Controller (Bottom Right of Banner Card) -->
+              <!-- High-Contrast Quantity Controller Bar -->
               <div class="p-2.5 bg-white flex justify-between items-center border-t border-gray-100">
-                <div class="text-xs text-gray-500 font-bold">
+                <div class="text-xs text-gray-700 font-bold">
                   ${p.name}
                 </div>
 
@@ -521,6 +617,11 @@
       window.open(`https://t.me/${adminUsername}?text=${encodedText}`, '_blank');
       closeCheckoutModal();
     }
+
+    // Initialize Video Reviews on load
+    window.onload = () => {
+      renderVideoReviews();
+    };
   </script>
 </body>
 </html>
