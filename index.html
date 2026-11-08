@@ -381,6 +381,52 @@
       'p25': { cat: 'cat3', group: '⚖️ ខ្នាតគីឡូ', name: 'នំកន្ត្រំ (1kg)', price: 20000, shipCat: 'none', image: imgCat3, desc: 'នំកន្ត្រំខ្មែរស្រួយឆ្ងាញ់ ខ្នាតធំ 1kg។' }
     };
 
+    // ==== PER-PRODUCT PICTURES ====
+    // Put a file name (e.g. "banana-original.jpg") or full URL for each product.
+    // Leave "" to keep using the category picture (imgCat1 / imgCat2 / imgCat3).
+    // Tip: the 200g and 1kg of the same flavor can use the same file.
+    const productImages = {
+      // ---- ដំណាប់ចេក សម្ងួត: ប្រអប់ 200g - 300g ----
+      p1:  "photo_6307320673348557711_y.jpg",   // រសជាតិដើម (200g)
+      p3:  "photo_6307320673348557710_y.jpg",   // រសជាតិរោយល្ង (200g)
+      p5:  "photo_6307320673348557709_y.jpg",   // រោយអាល់មុន (200g)
+      p7:  "photo_6307320673348557708_y.jpg",   // រោយធញ្ញជាតិគ្រប់មុខ (200g)
+      p9:  "",   // រោយដូង (200g)
+      p11: "",   // ចេកមូល (200g)
+      p13: "",   // សូកូឡាស្នូលដូង (300g)
+      p14: "",   // សូកូឡាស្នូលចន្ទី (300g)
+      // ---- ដំណាប់ចេក សម្ងួត: ខ្នាតធំ 1kg ----
+      p2:  "photo_6307320673348557711_y.jpg",   // រសជាតិដើម (1kg)
+      p4:  "photo_6307320673348557710_y.jpg",   // រសជាតិរោយល្ង (1kg)
+      p6:  "photo_6307320673348557709_y.jpg",   // រោយអាល់មុន (1kg)
+      p8:  "photo_6307320673348557708_y.jpg",   // រោយធញ្ញជាតិគ្រប់មុខ (1kg)
+      p10: "",   // រោយដូង (1kg)
+      p12: "",   // ចេកមូល (1kg)
+      // ---- ចេកបំពងស្រួយ: ខ្នាតតូច 100g ----
+      p16: "",   // សូកូឡាទឹកដោះគោ (100g)
+      p18: "",   // ឈីស ទឹកដោះគោ (100g)
+      p20: "",   // បាប៊ីឃ្យូ BBQ (100g)
+      p22: "",   // ម្ទេស ខ្ទឹម (100g)
+      // ---- ចេកបំពងស្រួយ: ខ្នាតកណ្តាល 200g ----
+      p15: "",   // សូកូឡាទឹកដោះគោ (200g)
+      p17: "",   // ឈីស ទឹកដោះគោ (200g)
+      p19: "",   // បាប៊ីឃ្យូ BBQ (200g)
+      p21: "",   // ម្ទេស ខ្ទឹម (200g)
+      // ---- ចេកបំពងស្រួយ: ខ្នាតធំ 500g - 1kg ----
+      p23: "",   // រសជាតិដើម សាបស្រួយ (500g)
+      p24: "",   // រសជាតិដើម សាបស្រួយ (1kg)
+      // ---- នំកន្ត្រំខ្មែរ ស្រួយ ----
+      p27: "",   // នំកន្ត្រំ (1កំប៉ុង)
+      p28: "",   // នំកន្ត្រំ (1ថង់)
+      p26: "",   // នំកន្ត្រំ (500g)
+      p25: ""    // នំកន្ត្រំ (1kg)
+    };
+    // Apply: use the product's own picture when filled in, otherwise keep the category picture
+    Object.keys(productImages).forEach(id => {
+      if (productImages[id] && products[id]) products[id].image = productImages[id];
+    });
+
+
     // Render Video Reviews (9:16 Cards)
     function renderVideoReviews() {
       const container = document.getElementById('video-reviews-slider');
