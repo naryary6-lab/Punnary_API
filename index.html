@@ -61,13 +61,27 @@
   <!-- VIEW 1: HOME (Brand Header, Social Links, Video Reviews & Categories) -->
   <main id="home-view" class="max-w-xl mx-auto w-full px-4 pt-4 flex-grow fade-in">
     
-    <!-- Brand Cover Banner -->
-    <div class="mb-4 rounded-2xl overflow-hidden shadow-lg border-2 border-banana-green/30 relative group">
-      <img src="https://images.unsplash.com/photo-149883716733f-5738006d1239?auto=format&fit=crop&w=800&q=80" alt="MoMore Branding Banner" class="w-full h-40 object-cover transform group-hover:scale-105 transition-transform duration-500">
-      <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent flex flex-col justify-end p-3.5">
+    <!-- Brand Cover Banner (Auto Slideshow, 4s) -->
+    <div id="banner-slider" class="mb-4 rounded-2xl overflow-hidden shadow-lg border-2 border-banana-green/30 relative">
+      <!-- Slides track -->
+      <div id="banner-track" class="flex transition-transform duration-700 ease-in-out">
+        <div class="w-full flex-shrink-0 h-40 relative">
+          <img src="BANNER-1.jpg" alt="MoMore Banner 1" class="w-full h-full object-cover">
+        </div>
+        <div class="w-full flex-shrink-0 h-40 relative">
+          <img src="BANNER-2.jpg" alt="MoMore Banner 2" class="w-full h-full object-cover">
+        </div>
+        <div class="w-full flex-shrink-0 h-40 relative">
+          <img src="BANNER-3.jpg" alt="MoMore Banner 3" class="w-full h-full object-cover">
+        </div>
+      </div>
+      <!-- Fixed text overlay -->
+      <div class="absolute inset-0 pointer-events-none bg-gradient-to-t from-black/80 via-black/30 to-transparent flex flex-col justify-end p-3.5">
         <h2 class="text-white text-lg font-bold leading-tight drop-shadow">ម៉ូម័រ MoMore - ហាងចេកធម្មជាតិខ្មែរ</h2>
         <p class="text-banana-gold text-xs font-bold mt-0.5 drop-shadow">ដំណាប់ចេកសាច់ទន់ • ចេកបំពងស្រួយ • នំកន្ត្រំខ្មែរ</p>
       </div>
+      <!-- Dots -->
+      <div id="banner-dots" class="absolute top-2 right-3 flex gap-1.5"></div>
     </div>
 
     <!-- Quick Action Contact Buttons -->
@@ -618,8 +632,44 @@
       closeCheckoutModal();
     }
 
-    // Initialize Video Reviews on load
+    // Banner Slideshow (auto-slide every 4 seconds)
+    function initBannerSlider() {
+      const track = document.getElementById('banner-track');
+      const dotsBox = document.getElementById('banner-dots');
+      const total = track.children.length;
+      let index = 0, timer;
+
+      dotsBox.innerHTML = Array.from({length: total}, (_, i) =>
+        `<span class="w-2 h-2 rounded-full bg-white/50 transition-colors" data-i="${i}"></span>`).join('');
+
+      function show(i) {
+        index = (i + total) % total;
+        track.style.transform = `translateX(-${index * 100}%)`;
+        [...dotsBox.children].forEach((d, n) =>
+          d.className = 'w-2 h-2 rounded-full transition-colors ' + (n === index ? 'bg-banana-yellow' : 'bg-white/50'));
+      }
+      function start() { stop(); timer = setInterval(() => show(index + 1), 4000); }
+      function stop() { clearInterval(timer); }
+
+      // Swipe support
+      const box = document.getElementById('banner-slider');
+      let x0 = null;
+      box.addEventListener('touchstart', e => { x0 = e.touches[0].clientX; stop(); }, {passive: true});
+      box.addEventListener('touchend', e => {
+        if (x0 !== null) {
+          const dx = e.changedTouches[0].clientX - x0;
+          if (Math.abs(dx) > 40) show(index + (dx < 0 ? 1 : -1));
+        }
+        x0 = null; start();
+      });
+
+      show(0);
+      start();
+    }
+
+    // Initialize Banner + Video Reviews on load
     window.onload = () => {
+      initBannerSlider();
       renderVideoReviews();
     };
   </script>
