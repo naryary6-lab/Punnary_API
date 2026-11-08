@@ -65,21 +65,22 @@
     <div id="banner-slider" class="mb-4 rounded-2xl overflow-hidden shadow-lg border-2 border-banana-green/30 relative">
       <!-- Slides track -->
       <div id="banner-track" class="flex transition-transform duration-700 ease-in-out">
-        <div class="w-full flex-shrink-0 h-40 relative">
+        <div class="banner-slide w-full flex-shrink-0 h-40 relative">
           <img src="photo_6307320673348557702_w.jpg" alt="MoMore Banner 1" class="w-full h-full object-cover">
         </div>
-        <div class="w-full flex-shrink-0 h-40 relative">
+        <div class="banner-slide w-full flex-shrink-0 h-40 relative">
           <img src="photo_6307320673348557703_w.jpg" alt="MoMore Banner 2" class="w-full h-full object-cover">
         </div>
-        <div class="w-full flex-shrink-0 h-40 relative">
+        <div class="banner-slide w-full flex-shrink-0 h-40 relative">
           <img src="photo_6307320673348557704_w.jpg" alt="MoMore Banner 3" class="w-full h-full object-cover">
         </div>
-        <div class="w-full flex-shrink-0 h-40 relative">
+        <div class="banner-slide w-full flex-shrink-0 h-40 relative">
           <img src="photo_6307320673348557706_w.jpg" alt="MoMore Banner 4" class="w-full h-full object-cover" onerror="this.parentElement.remove()">
         </div>
-        <div class="w-full flex-shrink-0 h-40 relative">
+        <div class="banner-slide w-full flex-shrink-0 h-40 relative">
           <img src="photo_6307320673348557705_w.jpg" alt="MoMore Banner 5" class="w-full h-full object-cover" onerror="this.parentElement.remove()">
         </div>
+      </div>
       <!-- Fixed text overlay -->
       <div class="absolute inset-0 pointer-events-none bg-gradient-to-t from-black/80 via-black/30 to-transparent flex flex-col justify-end p-3.5">
         <h2 class="text-white text-lg font-bold leading-tight drop-shadow">ម៉ូម័រ MoMore - ហាងចេកធម្មជាតិខ្មែរ</h2>
@@ -702,12 +703,13 @@
     function initBannerSlider() {
       const track = document.getElementById('banner-track');
       const dotsBox = document.getElementById('banner-dots');
-      const total = track.children.length;      // real slides (max 5)
+      const slides = track.querySelectorAll(':scope > .banner-slide');
+      const total = slides.length;               // real slides (max 5)
       if (total < 2) { dotsBox.innerHTML = ''; return; }
 
       // Clone the first slide and put it at the end, so after the last slide
       // the track keeps sliding left into "slide 1" and then silently resets.
-      track.appendChild(track.children[0].cloneNode(true));
+      track.appendChild(slides[0].cloneNode(true));
 
       let index = 0, timer;
 
