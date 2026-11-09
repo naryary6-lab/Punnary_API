@@ -57,10 +57,11 @@
     #splash-screen { transition: opacity 0.6s ease; }
     #splash-screen.splash-hide { opacity: 0; pointer-events: none; }
     .splash-logo { animation: splashPop 0.8s ease-out both; }
-    .splash-banana { display: inline-block; animation: splashBounce 1.2s ease-in-out infinite; }
+    .splash-chip-stage { perspective: 600px; filter: drop-shadow(0 8px 10px rgba(0,0,0,0.45)); }
+    .splash-chip { animation: splashSpin 2.2s linear infinite; transform-style: preserve-3d; }
     .splash-bar { animation: splashSlide 1.3s ease-in-out infinite; }
     @keyframes splashPop { from { opacity: 0; transform: scale(0.9) translateY(12px); } to { opacity: 1; transform: none; } }
-    @keyframes splashBounce { 0%, 100% { transform: translateY(0) rotate(-6deg); } 50% { transform: translateY(-8px) rotate(6deg); } }
+    @keyframes splashSpin { from { transform: rotateY(0deg); } to { transform: rotateY(360deg); } }
     @keyframes splashSlide { 0% { transform: translateX(-100%); } 100% { transform: translateX(260%); } }
     .fade-in { animation: fadeIn 0.3s ease-in-out; }
     @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
@@ -69,14 +70,29 @@
 <body class="bg-banana-bg text-gray-800 font-sans antialiased m-0 p-0 pb-28 min-h-screen flex flex-col selection:bg-banana-green selection:text-white">
 
   <!-- 🎬 SPLASH / LOADING SCREEN (random background video on every open) -->
-  <div id="splash-screen" class="fixed inset-0 bg-banana-darkgreen overflow-hidden" style="z-index: 3000;">
+  <div id="splash-screen" class="fixed inset-0 overflow-hidden" style="z-index: 3000; background: #0d0d0d;">
     <video id="splash-video" class="absolute inset-0 w-full h-full object-cover" autoplay muted loop playsinline preload="auto"></video>
-    <div class="absolute inset-0 bg-gradient-to-b from-black/55 via-black/30 to-black/75"></div>
+    <!-- very light vignette: only enough to keep the text readable, the video stays bright -->
+    <div class="absolute inset-0 bg-gradient-to-b from-black/25 via-transparent to-black/50"></div>
 
     <div class="relative h-full flex flex-col items-center justify-center text-center px-6">
       <div class="splash-logo">
-        <div class="text-6xl mb-3"><span class="splash-banana">🍌</span></div>
-        <h1 class="m-0 text-3xl font-bold tracking-wide text-white drop-shadow-lg">ម៉ូម័រ MoMore</h1>
+        <!-- Spinning chip: uses chip.png if it exists next to this file, otherwise the drawn chip below -->
+        <div class="splash-chip-stage mx-auto mb-4 w-24 h-24">
+          <img id="splash-chip-img" src="chipssss.jpg" alt="MoMore chip" class="splash-chip w-full h-full object-contain" style="opacity:0"
+               onload="this.style.opacity=1"
+               onerror="this.style.display='none'; document.getElementById('splash-chip-svg').style.display='block'">
+          <svg id="splash-chip-svg" class="splash-chip w-full h-full" viewBox="0 0 100 100" style="display:none" aria-hidden="true">
+            <defs><radialGradient id="chipGrad" cx="38%" cy="32%" r="75%"><stop offset="0" stop-color="#FFE9A0"/><stop offset="0.55" stop-color="#F4C243"/><stop offset="1" stop-color="#D38E1B"/></radialGradient></defs>
+            <path d="M94.7 50.0 L95.7 53.2 L96.1 56.5 L95.4 59.7 L93.8 62.6 L91.6 65.2 L89.3 67.5 L87.1 69.7 L85.5 72.2 L84.2 74.8 L83.1 77.8 L81.8 80.7 L80.1 83.4 L77.8 85.6 L75.0 87.1 L72.0 88.1 L68.9 88.8 L66.0 89.7 L63.3 90.9 L60.6 92.4 L57.8 94.1 L54.8 95.5 L51.6 96.2 L48.4 96.0 L45.3 94.8 L42.4 93.1 L39.7 91.2 L37.1 89.6 L34.5 88.5 L31.5 87.9 L28.4 87.5 L25.1 86.9 L22.0 85.8 L19.4 83.9 L17.4 81.5 L15.9 78.6 L14.7 75.6 L13.5 72.8 L12.0 70.2 L10.1 67.8 L8.1 65.2 L6.4 62.5 L5.3 59.5 L5.0 56.3 L5.5 53.1 L6.7 50.0 L7.9 47.1 L8.9 44.2 L9.3 41.4 L9.2 38.3 L8.9 35.1 L8.9 31.7 L9.4 28.4 L10.8 25.5 L13.0 23.1 L15.7 21.2 L18.5 19.6 L21.2 18.0 L23.6 16.2 L25.8 14.1 L28.0 11.9 L30.4 9.7 L33.1 8.1 L36.1 7.2 L39.3 7.0 L42.5 7.4 L45.6 8.0 L48.5 8.3 L51.5 8.0 L54.5 7.3 L57.7 6.4 L61.0 5.8 L64.3 5.9 L67.4 6.9 L70.1 8.8 L72.4 11.3 L74.3 13.9 L76.2 16.4 L78.3 18.5 L80.7 20.3 L83.3 22.0 L85.9 23.9 L88.1 26.2 L89.7 28.9 L90.5 32.0 L90.8 35.1 L91.0 38.2 L91.3 41.2 L92.1 44.1 L93.3 47.0 Z" fill="url(#chipGrad)" stroke="#B87412" stroke-width="1.6" stroke-linejoin="round"/>
+            <circle cx="50" cy="50" r="30" fill="none" stroke="#E0A02A" stroke-width="1.4" opacity=".7"/>
+            <circle cx="50" cy="50" r="20" fill="none" stroke="#E8B340" stroke-width="1" opacity=".6"/>
+            <circle cx="50" cy="50" r="5" fill="#9A6016" opacity=".8"/>
+            <ellipse cx="59.0" cy="50.0" rx="1.7" ry="2.3" transform="rotate(90 59.0 50.0)" fill="#7A4A12" opacity=".85"/><ellipse cx="55.6" cy="57.0" rx="1.7" ry="2.3" transform="rotate(141 55.6 57.0)" fill="#7A4A12" opacity=".85"/><ellipse cx="48.0" cy="58.8" rx="1.7" ry="2.3" transform="rotate(193 48.0 58.8)" fill="#7A4A12" opacity=".85"/><ellipse cx="41.9" cy="53.9" rx="1.7" ry="2.3" transform="rotate(244 41.9 53.9)" fill="#7A4A12" opacity=".85"/><ellipse cx="41.9" cy="46.1" rx="1.7" ry="2.3" transform="rotate(296 41.9 46.1)" fill="#7A4A12" opacity=".85"/><ellipse cx="48.0" cy="41.2" rx="1.7" ry="2.3" transform="rotate(347 48.0 41.2)" fill="#7A4A12" opacity=".85"/><ellipse cx="55.6" cy="43.0" rx="1.7" ry="2.3" transform="rotate(399 55.6 43.0)" fill="#7A4A12" opacity=".85"/>
+            <path d="M24 38 A30 30 0 0 1 44 21" fill="none" stroke="#FFF6CC" stroke-width="3" stroke-linecap="round" opacity=".7"/>
+          </svg>
+        </div>
+        <h1 class="m-0 text-3xl font-bold tracking-wide text-white drop-shadow-lg" style="text-shadow: 0 2px 8px rgba(0,0,0,.6);">ម៉ូម័រ MoMore</h1>
         <p class="m-0 mt-1.5 text-[11px] text-banana-gold font-bold tracking-wider uppercase drop-shadow">The Snacks Store • ចេកស្អិតដំណាប់ចេកខ្មែរ</p>
       </div>
 
@@ -111,11 +127,16 @@
       try { localStorage.setItem('momore_last_splash', choice); } catch (e) {}
 
       const vid = document.getElementById('splash-video');
-      // If the video file is missing/can't play, just show the green background
+      // If the video file is missing/can't play, the dark background is shown instead
       vid.addEventListener('error', () => { vid.style.display = 'none'; });
+      vid.muted = true;                       // required for autoplay on phones
+      vid.defaultMuted = true;
+      vid.setAttribute('playsinline', '');
       vid.src = choice;
-      const tryPlay = vid.play();
-      if (tryPlay && tryPlay.catch) tryPlay.catch(() => {});
+      const play = () => { const p = vid.play(); if (p && p.catch) p.catch(() => {}); };
+      play();
+      vid.addEventListener('loadeddata', play);                         // retry once data is ready
+      document.addEventListener('touchstart', play, { once: true });    // some phones need a first touch
     })();
 
     function hideSplash() {
