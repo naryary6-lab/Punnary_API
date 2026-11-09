@@ -61,7 +61,7 @@
     .splash-chip { animation: splashSpin 2.2s linear infinite; transform-style: preserve-3d; }
     .splash-bar { animation: splashSlide 1.3s ease-in-out infinite; }
     @keyframes splashPop { from { opacity: 0; transform: scale(0.9) translateY(12px); } to { opacity: 1; transform: none; } }
-    @keyframes splashSpin { from { transform: rotateY(0deg); } to { transform: rotateY(360deg); } }
+    @keyframes splashSpin { from { transform: rotate(0deg); } to { transform: rotateY(360deg); } }
     @keyframes splashSlide { 0% { transform: translateX(-100%); } 100% { transform: translateX(260%); } }
     .fade-in { animation: fadeIn 0.3s ease-in-out; }
     @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
@@ -79,7 +79,7 @@
       <div class="splash-logo">
         <!-- Spinning chip: uses chip.png if it exists next to this file, otherwise the drawn chip below -->
         <div class="splash-chip-stage mx-auto mb-4 w-24 h-24">
-          <img id="splash-chip-img" src="chipssss.jpg" alt="MoMore chip" class="splash-chip w-full h-full object-contain" style="opacity:0"
+          <img id="splash-chip-img" src="1794262116951.png" alt="MoMore chip" class="splash-chip w-full h-full object-contain" style="opacity:0"
                onload="this.style.opacity=1"
                onerror="this.style.display='none'; document.getElementById('splash-chip-svg').style.display='block'">
           <svg id="splash-chip-svg" class="splash-chip w-full h-full" viewBox="0 0 100 100" style="display:none" aria-hidden="true">
@@ -101,7 +101,7 @@
           <div class="splash-bar h-full w-2/5 bg-banana-yellow rounded-full"></div>
         </div>
         <p class="m-0 mt-2.5 text-xs text-white/90 font-bold drop-shadow">កំពុងផ្ទុក...</p>
-        <button onclick="hideSplash()" class="mt-4 text-[11px] text-white/80 border border-white/40 rounded-full px-3.5 py-1 bg-black/20 active:scale-95">រំលង ⏭</button>
+        <button onclick="hideSplash()" class="mt-4 text-[11px] text-white/80 border border-white/40 rounded-full px-3.5 py-1 bg-black/20 active:scale-95">រំលង skip ⏭</button>
       </div>
     </div>
   </div>
