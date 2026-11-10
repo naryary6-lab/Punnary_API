@@ -51,6 +51,27 @@
       padding: 7px;
       box-shadow: 0 12px 24px rgba(30,45,25,0.35), inset 0 0 0 2px rgba(255,255,255,0.07);
     }
+    /* ===== Depth photo (no plate): stacked card + layered shadows ===== */
+    .depth-photo {
+      box-shadow: 0 22px 32px -10px rgba(15,35,12,0.55), 0 10px 16px -6px rgba(15,35,12,0.3), 0 0 0 1px rgba(255,255,255,0.5);
+    }
+    .depth-back {
+      background: linear-gradient(135deg, #E6F1DA, #BFD8AC);
+      box-shadow: 0 10px 18px -8px rgba(15,35,12,0.35);
+    }
+    /* ===== Chip showcase (ចេកបំពងស្រួយ) ===== */
+    #chip-hit { -webkit-tap-highlight-color: transparent; }
+    #chip-spin { filter: drop-shadow(0 14px 16px rgba(40,30,10,0.35)); }
+    .chip-spinning { animation: chipSpinOnce 0.95s cubic-bezier(.45,.05,.25,1); }
+    @keyframes chipSpinOnce {
+      0%   { transform: rotate(0deg) scale(1); }
+      50%  { transform: rotate(180deg) scale(0.9); }
+      100% { transform: rotate(360deg) scale(1); }
+    }
+    .chip-dyn { transition: opacity 0.25s ease, transform 0.25s ease; }
+    .chip-dyn.chip-out { opacity: 0; transform: translateY(6px); }
+    .chip-hint { animation: chipHint 1.6s ease-in-out infinite; }
+    @keyframes chipHint { 0%,100% { transform: translateX(0); opacity: .9; } 50% { transform: translateX(-4px); opacity: 1; } }
     .z-modal { z-index: 1000; }
     .z-alert { z-index: 2000; }
     /* ===== Splash / Loading screen ===== */
@@ -291,7 +312,7 @@
     </div>
 
     <!-- Feature strip -->
-    <div class="grid grid-cols-4 gap-2 px-4 pt-4 pb-1">
+    <div id="menu-features" class="grid grid-cols-4 gap-2 px-4 pt-4 pb-1">
         <div class="flex flex-col items-center text-center gap-1">
           <svg class="w-7 h-7 text-banana-green" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 19c0-8 5-14 15-14 0 9-5 15-13 15"/><path d="M5 19c3-4 6-7 10-9"/></svg>
           <span class="text-[10px] leading-tight text-banana-darkgreen font-bold">គ្រឿងផ្សំធម្មជាតិ</span>
@@ -627,6 +648,16 @@
     // Render Product Cards: round "plate" photo on cream, details on the olive wave
     function renderProducts(catId) {
       const listEl = document.getElementById('product-list');
+      const featuresEl = document.getElementById('menu-features');
+
+      // ចេកបំពងស្រួយ uses the big spinning-chip showcase instead of the plate list
+      if (catId === 'cat2') {
+        if (featuresEl) featuresEl.classList.add('hidden');
+        renderChipShowcase();
+        return;
+      }
+      if (featuresEl) featuresEl.classList.remove('hidden');
+      listEl.className = 'menu-wave px-4 pt-4 pb-8 space-y-6';
       listEl.innerHTML = "";
 
       let groupedProducts = {};
@@ -641,6 +672,7 @@
         }
       }
 
+      let photoCount = 0;
       for (let groupName in groupedProducts) {
         listEl.innerHTML += `
           <div class="flex justify-center pt-2">
@@ -658,16 +690,34 @@
             </button>
           ` : '';
 
+          // ដំណាប់ចេក សម្ងួត: full photo with depth (no plate, nothing cropped away)
+          // other sections: round photo on a dark plate
+          let photoHtml;
+          if (catId === 'cat1') {
+            const tilt = (photoCount++ % 2 === 0) ? -2 : 2;
+            photoHtml = `
+              <div class="relative" style="transform: rotate(${tilt}deg);">
+                <div class="depth-back absolute inset-0 rounded-[1.9rem]" style="transform: rotate(${-tilt * 2.5}deg) translate(${tilt * 3}px, 6px);"></div>
+                <div class="depth-photo relative aspect-square rounded-[1.9rem] overflow-hidden bg-gray-300">
+                  <img src="${p.image}" alt="${p.name}" class="w-full h-full object-cover" style="transform: scale(1.04);">
+                  <div class="absolute inset-0 pointer-events-none rounded-[1.9rem]" style="background: linear-gradient(160deg, rgba(255,255,255,0.28) 0%, rgba(255,255,255,0) 35%, rgba(0,0,0,0.22) 100%);"></div>
+                </div>
+              </div>`;
+          } else {
+            photoHtml = `
+              <div class="plate rounded-full">
+                <div class="aspect-square rounded-full overflow-hidden bg-gray-300">
+                  <img src="${p.image}" alt="${p.name}" class="w-full h-full object-cover">
+                </div>
+              </div>`;
+          }
+
           listEl.innerHTML += `
             <div class="flex items-center gap-[4%]">
 
               <!-- Round plate photo (tap for details) -->
               <div class="w-1/2 shrink-0 cursor-pointer active:scale-95 transition-transform" onclick="openProductModal('${p.key}')">
-                <div class="plate rounded-full">
-                  <div class="aspect-square rounded-full overflow-hidden bg-gray-300">
-                    <img src="${p.image}" alt="${p.name}" class="w-full h-full object-cover">
-                  </div>
-                </div>
+                ${photoHtml}
               </div>
 
               <!-- Details on the olive wave -->
@@ -929,6 +979,261 @@
           </div>
         `;
       });
+    }
+
+    // =====================================================================
+    //  CHIP SHOWCASE  (ចេកបំពងស្រួយ): tap the big chip -> it spins once and changes flavor
+    // =====================================================================
+    // EDIT HERE: one entry per flavor.
+    //   ids        -> product ids for each size, e.g. ['p16' (100g), 'p15' (200g)]
+    //   chipImage  -> optional photo of the chip (file name or URL). "" = use the drawn chip
+    //   ing        -> two ingredient pictures. img: "" = use the drawn icon, or put your own photo
+    const chipFlavors = [
+      { title: 'សូកូឡាទឹកដោះគោ', ids: ['p16', 'p15'], desc: 'ចេកបំពងស្រួយរសជាតិសូកូឡាទឹកដោះគោ។',
+        chipImage: '', accent: '#8B5A2B',
+        pal: { base: ['#7A4A28', '#4A2814'], edge: '#2E170B', flecks: ['#2E170B', '#A26B3F', '#D9B48A'], drizzle: '#E9D2B0' },
+        ing: [ { icon: 'cacaoPowder', label: 'ម្សៅកាកាវ', en: 'cacao powder', img: '' },
+               { icon: 'cacaoPod',    label: 'កាកាវ',      en: 'cacao',        img: '' } ] },
+      { title: 'ឈីស ទឹកដោះគោ', ids: ['p18', 'p17'], desc: 'រសជាតិឈីសទឹកដោះគោ ឈ្ងុយឆ្ងាញ់កប់។',
+        chipImage: '', accent: '#F2A93B',
+        pal: { base: ['#FFDE7A', '#E9A423'], edge: '#B87412', flecks: ['#F59A12', '#FFF1B8', '#FFC24A'] },
+        ing: [ { icon: 'cheese', label: 'ឈីស',        en: 'cheese', img: '' },
+               { icon: 'milk',   label: 'ទឹកដោះគោ',   en: 'milk',   img: '' } ] },
+      { title: 'បាប៊ីឃ្យូ BBQ', ids: ['p20', 'p19'], desc: 'រសជាតិសាច់អាំងបាប៊ីឃ្យូ ជក់មាត់។',
+        chipImage: '', accent: '#C0562B',
+        pal: { base: ['#E8A957', '#B5601F'], edge: '#7B3A10', flecks: ['#7B2A12', '#F0C27A', '#A33B17'] },
+        ing: [ { icon: 'bbqSauce', label: 'ទឹកជ្រលក់បាប៊ីឃ្យូ', en: 'bbq sauce', img: '' },
+               { icon: 'flame',    label: 'ផ្សែងអាំង',          en: 'smoky',     img: '' } ] },
+      { title: 'ម្ទេស ខ្ទឹម', ids: ['p22', 'p21'], desc: 'ហឹរតិចៗ ឈ្ងុយខ្ទឹមស ត្រូវមាត់ម៉ាច់។',
+        chipImage: '', accent: '#D8402A',
+        pal: { base: ['#F8D062', '#DA9423'], edge: '#B87412', flecks: ['#D12B1F', '#FFF6E0', '#E5522F'] },
+        ing: [ { icon: 'garlic', label: 'ខ្ទឹមស', en: 'garlic', img: '' },
+               { icon: 'chili',  label: 'ម្ទេស',   en: 'chili',  img: '' } ] },
+      { title: 'រសជាតិដើម - សាបស្រួយ', ids: ['p23', 'p24'], desc: 'រសជាតិដើម សាបស្រួយឆ្ងាញ់។',
+        chipImage: '', accent: '#E0B13C',
+        pal: { base: ['#FFE590', '#EDB83E'], edge: '#B87412', flecks: ['#C98E1E', '#FFF3C4'] },
+        ing: [ { icon: 'banana', label: 'ចេក',    en: 'banana', img: '' },
+               { icon: 'salt',   label: 'អំបិល',   en: 'salt',   img: '' } ] }
+    ];
+
+    // Drawn ingredient icons (used when you don't give a photo)
+    const CHIP_ICONS = {
+      cacaoPowder: '<svg viewBox="0 0 64 64"><ellipse cx="32" cy="52" rx="26" ry="5" fill="#000" opacity=".12"/><path d="M6 50 Q9 28 32 25 Q55 28 58 50 Z" fill="#7A4A26"/><path d="M14 44 Q20 32 32 31" fill="none" stroke="#A9764A" stroke-width="2.5" stroke-linecap="round" opacity=".8"/><circle cx="24" cy="40" r="1.6" fill="#4A2814"/><circle cx="38" cy="36" r="1.8" fill="#4A2814"/><circle cx="45" cy="44" r="1.5" fill="#4A2814"/><circle cx="30" cy="46" r="1.4" fill="#A9764A"/></svg>',
+      cacaoPod: '<svg viewBox="0 0 64 64"><path d="M8 40 C5 22 24 8 44 11 C58 14 60 32 51 44 C41 57 12 58 8 40 Z" fill="#9A4F1E"/><path d="M14 38 C16 26 28 18 42 18" fill="none" stroke="#C98550" stroke-width="2.5" stroke-linecap="round"/><path d="M20 46 C26 36 36 30 48 30" fill="none" stroke="#C98550" stroke-width="2.5" stroke-linecap="round"/><path d="M44 11 C47 6 52 5 55 7" fill="none" stroke="#3E7B2E" stroke-width="3.5" stroke-linecap="round"/></svg>',
+      cheese: '<svg viewBox="0 0 64 64"><path d="M6 42 L50 16 L58 38 L58 52 L6 52 Z" fill="#F2B632"/><path d="M6 42 L50 16 L58 38 Z" fill="#FFD866"/><circle cx="22" cy="47" r="3.2" fill="#E49C1F"/><circle cx="40" cy="46" r="3.6" fill="#E49C1F"/><circle cx="31" cy="33" r="2.6" fill="#EBA826"/><circle cx="46" cy="31" r="2.2" fill="#EBA826"/></svg>',
+      milk: '<svg viewBox="0 0 64 64"><path d="M32 7 C32 7 15 28 15 40 A17 17 0 0 0 49 40 C49 28 32 7 32 7Z" fill="#FFFFFF" stroke="#B9C7D6" stroke-width="2"/><path d="M23 40 C23 33 27 27 31 22" fill="none" stroke="#DCE6F0" stroke-width="3" stroke-linecap="round"/></svg>',
+      bbqSauce: '<svg viewBox="0 0 64 64"><path d="M32 7 C32 7 15 28 15 40 A17 17 0 0 0 49 40 C49 28 32 7 32 7Z" fill="#8E2A15"/><path d="M23 40 C23 33 27 27 31 22" fill="none" stroke="#C4553A" stroke-width="3" stroke-linecap="round"/></svg>',
+      flame: '<svg viewBox="0 0 64 64"><path d="M32 5 C34 16 47 22 47 37 C47 49 40 57 32 57 C24 57 17 49 17 38 C17 30 24 26 26 19 C28 26 32 24 32 5Z" fill="#F26A2E"/><path d="M32 30 C34 36 41 38 39 46 C38 53 28 53 27 46 C26 40 30 38 32 30Z" fill="#FFC94D"/></svg>',
+      garlic: '<svg viewBox="0 0 64 64"><path d="M32 7 C34 17 47 21 49 36 C51 49 42 57 32 57 C22 57 13 49 15 36 C17 21 30 17 32 7Z" fill="#FFF4E0" stroke="#D7C6A3" stroke-width="2"/><path d="M32 12 C26 26 24 42 28 56 M32 12 C38 26 40 42 36 56" fill="none" stroke="#E4D3AE" stroke-width="2"/><path d="M28 57 L26 62 M32 57 L32 62 M36 57 L38 62" stroke="#BFA880" stroke-width="2" stroke-linecap="round"/></svg>',
+      chili: '<svg viewBox="0 0 64 64"><path d="M20 15 C32 12 47 21 48 36 C49 48 41 55 29 57 C37 49 34 40 27 34 C20 28 13 23 20 15 Z" fill="#D62B1F"/><path d="M26 22 C34 22 41 28 42 36" fill="none" stroke="#F0675A" stroke-width="2.5" stroke-linecap="round" opacity=".8"/><path d="M19 15 C16 8 22 5 27 8" fill="none" stroke="#3E7B2E" stroke-width="4" stroke-linecap="round"/></svg>',
+      banana: '<svg viewBox="0 0 64 64"><path d="M10 18 C16 44 38 54 57 40 C50 56 22 63 8 41 C5 34 7 25 10 18 Z" fill="#F6D04D" stroke="#C79A1E" stroke-width="2" stroke-linejoin="round"/><path d="M10 18 C8 14 10 10 13 9" fill="none" stroke="#5B4A1F" stroke-width="3.5" stroke-linecap="round"/><path d="M57 40 L60 38" stroke="#5B4A1F" stroke-width="3.5" stroke-linecap="round"/></svg>',
+      salt: '<svg viewBox="0 0 64 64"><polygon points="32,14 52,25 32,36 12,25" fill="#FFFFFF" stroke="#C9D3DA" stroke-width="1.5"/><polygon points="12,25 32,36 32,57 12,45" fill="#E9EEF2" stroke="#C9D3DA" stroke-width="1.5"/><polygon points="52,25 32,36 32,57 52,45" fill="#D5DDE3" stroke="#C9D3DA" stroke-width="1.5"/></svg>'
+    };
+
+    let chipIndex = 0;                                  // current flavor
+    let chipSel = chipFlavors.map(() => 0);             // chosen size (index into ids) per flavor
+    let chipBusy = false;
+
+    function chipRng(seed) {
+      return function () {
+        seed |= 0; seed = seed + 0x6D2B79F5 | 0;
+        let t = Math.imul(seed ^ seed >>> 15, 1 | seed);
+        t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t;
+        return ((t ^ t >>> 14) >>> 0) / 4294967296;
+      };
+    }
+    function chipSizeLabel(p) {
+      const m = p.name.match(/\(([^)]+)\)\s*$/);
+      return m ? m[1] : '';
+    }
+
+    // Draw the big banana chip with the flavor's colors and seasoning flecks
+    function chipSVG(f, idx) {
+      const pal = f.pal, rnd = chipRng(idx * 977 + 13);
+      let d = '';
+      for (let i = 0; i < 96; i++) {
+        const t = i / 96 * Math.PI * 2;
+        const r = 47 + 1.8 * Math.sin(9 * t) + 0.8 * Math.sin(5 * t + 1);
+        d += (i ? 'L' : 'M') + (50 + r * Math.cos(t)).toFixed(1) + ' ' + (50 + r * Math.sin(t)).toFixed(1);
+      }
+      d += 'Z';
+      let flecks = '';
+      for (let i = 0; i < 38; i++) {
+        const a = rnd() * Math.PI * 2, rr = 9 + rnd() * 31;
+        const x = (50 + rr * Math.cos(a)).toFixed(1), y = (50 + rr * Math.sin(a)).toFixed(1);
+        const rot = Math.floor(rnd() * 180), len = (1.8 + rnd() * 2.8).toFixed(1), w = (0.8 + rnd() * 1.0).toFixed(1);
+        const col = pal.flecks[Math.floor(rnd() * pal.flecks.length)];
+        flecks += `<ellipse cx="${x}" cy="${y}" rx="${len}" ry="${w}" transform="rotate(${rot} ${x} ${y})" fill="${col}" opacity=".9"/>`;
+      }
+      let seeds = '';
+      for (let k = 0; k < 7; k++) {
+        const a = k * 2 * Math.PI / 7, x = (50 + 8 * Math.cos(a)).toFixed(1), y = (50 + 8 * Math.sin(a)).toFixed(1);
+        seeds += `<ellipse cx="${x}" cy="${y}" rx="1.4" ry="2" transform="rotate(${(a * 180 / Math.PI + 90).toFixed(0)} ${x} ${y})" fill="#5A3410" opacity=".7"/>`;
+      }
+      const drizzle = pal.drizzle
+        ? `<path d="M22 34 C34 26 44 40 58 30 S74 36 80 44" fill="none" stroke="${pal.drizzle}" stroke-width="2.2" stroke-linecap="round" opacity=".85"/><path d="M20 58 C32 50 44 64 58 54 S72 60 78 66" fill="none" stroke="${pal.drizzle}" stroke-width="2.2" stroke-linecap="round" opacity=".85"/>` : '';
+      return `<svg viewBox="0 0 100 100" class="w-full h-full">
+        <defs><radialGradient id="cg${idx}" cx="38%" cy="32%" r="78%"><stop offset="0" stop-color="${pal.base[0]}"/><stop offset="1" stop-color="${pal.base[1]}"/></radialGradient></defs>
+        <path d="${d}" fill="url(#cg${idx})" stroke="${pal.edge}" stroke-width="1.4" stroke-linejoin="round"/>
+        <circle cx="50" cy="50" r="33" fill="none" stroke="${pal.edge}" stroke-width="1" opacity=".25"/>
+        <circle cx="50" cy="50" r="21" fill="none" stroke="${pal.edge}" stroke-width="0.8" opacity=".2"/>
+        ${drizzle}${flecks}${seeds}
+        <path d="M20 36 A32 32 0 0 1 42 17" fill="none" stroke="#FFFFFF" stroke-width="3" stroke-linecap="round" opacity=".45"/>
+      </svg>`;
+    }
+
+    function chipIngHTML(ing) {
+      const icon = ing.img ? `<img src="${ing.img}" alt="${ing.en}" class="w-full h-full object-contain">` : CHIP_ICONS[ing.icon];
+      return `<div class="flex flex-col items-center text-center">
+        <div class="w-[19%] min-w-[64px] max-w-[84px] aspect-square drop-shadow-md" style="width:72px;height:72px;">${icon}</div>
+        <div class="mt-1 text-[11px] font-bold leading-tight text-banana-darkgreen">${ing.label}</div>
+        <div class="font-display italic text-[12px] leading-none text-banana-green">${ing.en}</div>
+      </div>`;
+    }
+
+    function chipControlsHTML(f) {
+      const sel = chipSel[chipIndex], key = f.ids[sel], qty = cart[key] || 0;
+      const pills = f.ids.map((id, i) => {
+        const p = products[id], on = i === sel, q = cart[id] || 0;
+        return `<button onclick="chipPickSize(${i})" class="px-2.5 py-1 rounded-full text-[11px] font-bold border transition-colors ${on ? 'bg-banana-darkgreen text-white border-banana-darkgreen shadow' : 'bg-white text-banana-darkgreen border-banana-green/40'}">${chipSizeLabel(p)} · ${p.price.toLocaleString()}៛${q ? ` <span class="${on ? 'text-banana-gold' : 'text-banana-green'}">×${q}</span>` : ''}</button>`;
+      }).join('');
+      return `<div class="flex gap-1.5 justify-end">${pills}</div>
+        <div class="mt-2.5 flex items-center gap-2.5">
+          <button onclick="chipQty(-1)" class="w-9 h-9 rounded-full bg-white border-2 border-red-400 text-red-500 flex items-center justify-center text-2xl font-bold leading-none active:scale-90 transition-transform">−</button>
+          <span id="qty-${key}" class="font-display text-2xl font-bold min-w-[26px] text-center text-banana-darkgreen">${qty}</span>
+          <button onclick="chipQty(1)" class="w-9 h-9 rounded-full bg-banana-darkgreen border-2 border-banana-darkgreen text-white flex items-center justify-center text-2xl font-bold leading-none active:scale-90 transition-transform">+</button>
+        </div>`;
+    }
+
+    function chipTextHTML(f) {
+      const p = products[f.ids[chipSel[chipIndex]]];
+      const vid = p.video ? `<button onclick="openVideoModal('${p.video}', '${f.title}')" class="mt-1.5 text-[10px] font-bold text-banana-darkgreen border border-banana-green/40 bg-white rounded-full px-2.5 py-0.5 active:scale-95">▶ មើលវីដេអូ</button>` : '';
+      return `<h3 class="font-display m-0 text-[25px] font-bold leading-tight text-banana-darkgreen">${f.title}</h3>
+        <div class="flex gap-1.5 mt-1.5">
+          <svg class="w-2.5 flex-shrink-0 text-banana-green" viewBox="0 0 10 60" preserveAspectRatio="none" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" style="height:auto;align-self:stretch;"><path d="M9 1 C3 1 6 14 1 30 C6 46 3 59 9 59"/></svg>
+          <p class="m-0 text-[12px] leading-snug text-gray-700">${f.desc}</p>
+        </div>
+        <div class="font-display mt-2 text-[26px] font-bold leading-none text-banana-darkgreen">${p.price.toLocaleString()} ៛</div>
+        ${vid}`;
+    }
+
+    // (Re)fill everything that changes with the flavor
+    function chipPaint() {
+      const f = chipFlavors[chipIndex];
+      document.getElementById('chip-disc').innerHTML = f.chipImage
+        ? `<img src="${f.chipImage}" alt="${f.title}" class="w-full h-full object-cover rounded-full">`
+        : chipSVG(f, chipIndex);
+      document.getElementById('chip-glow').style.background = `radial-gradient(circle, ${f.accent}55 0%, ${f.accent}00 68%)`;
+      document.getElementById('chip-text').innerHTML = chipTextHTML(f);
+      document.getElementById('chip-ing1').innerHTML = chipIngHTML(f.ing[0]);
+      document.getElementById('chip-ing2').innerHTML = chipIngHTML(f.ing[1]);
+      document.getElementById('chip-controls').innerHTML = chipControlsHTML(f);
+      document.getElementById('chip-dots').innerHTML = chipFlavors.map((_, i) =>
+        `<button onclick="chipGo(${i})" aria-label="flavor ${i + 1}" class="h-2 rounded-full transition-all ${i === chipIndex ? 'w-5' : 'w-2 bg-banana-green/30'}" style="${i === chipIndex ? 'background:' + f.accent : ''}"></button>`).join('');
+    }
+
+    // Spin once, swap the flavor half-way through
+    function chipGo(target) {
+      if (chipBusy) return;
+      const n = chipFlavors.length;
+      target = ((target % n) + n) % n;
+      if (target === chipIndex) return;
+      chipBusy = true;
+      const spin = document.getElementById('chip-spin');
+      const dyn = document.querySelectorAll('.chip-dyn');
+      const hint = document.getElementById('chip-hint');
+      if (hint) hint.style.opacity = 0;
+      spin.classList.add('chip-spinning');
+      dyn.forEach(el => el.classList.add('chip-out'));
+      setTimeout(() => {
+        chipIndex = target;
+        chipPaint();
+        dyn.forEach(el => el.classList.remove('chip-out'));
+      }, 450);
+      setTimeout(() => {
+        spin.classList.remove('chip-spinning');
+        chipBusy = false;
+      }, 960);
+    }
+    function chipNext() { chipGo(chipIndex + 1); }
+
+    function chipPickSize(i) {
+      chipSel[chipIndex] = i;
+      const f = chipFlavors[chipIndex];
+      document.getElementById('chip-text').innerHTML = chipTextHTML(f);
+      document.getElementById('chip-controls').innerHTML = chipControlsHTML(f);
+    }
+    function chipQty(delta) {
+      const f = chipFlavors[chipIndex];
+      changeQty(f.ids[chipSel[chipIndex]], delta);
+      document.getElementById('chip-controls').innerHTML = chipControlsHTML(f);
+    }
+
+    function renderChipShowcase() {
+      const listEl = document.getElementById('product-list');
+      listEl.className = 'px-3 pt-4 pb-28';
+      listEl.innerHTML = `
+        <div id="chip-stage" class="relative mx-auto w-full max-w-[420px] rounded-3xl bg-banana-bg border border-banana-green/15 shadow-md select-none" style="aspect-ratio: 9 / 15.5; overflow: hidden; overflow: clip;">
+
+          <!-- soft glow behind the chip (changes color per flavor) -->
+          <div id="chip-glow" class="absolute rounded-full pointer-events-none" style="left:29%; top:24%; width:104%; aspect-ratio:1/1;"></div>
+
+          <!-- banana leaf (left) with a few chips on it -->
+          <div class="absolute pointer-events-none" style="left:-10%; top:41%; width:48%; transform: rotate(-10deg);">
+            <svg viewBox="0 0 200 300" class="w-full">
+              <defs><linearGradient id="leafG" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#8CC06A"/><stop offset="1" stop-color="#427B38"/></linearGradient></defs>
+              <path d="M100 6 C176 62 192 176 100 294 C8 176 24 62 100 6 Z" fill="url(#leafG)"/>
+              <path d="M100 14 L100 288" stroke="#BFE2A8" stroke-width="3" stroke-linecap="round" opacity=".85"/>
+              <g stroke="#BFE2A8" stroke-width="2" stroke-linecap="round" opacity=".6" fill="none">
+                <path d="M100 70 L146 100"/><path d="M100 70 L54 100"/><path d="M100 120 L156 156"/><path d="M100 120 L44 156"/><path d="M100 176 L150 210"/><path d="M100 176 L50 210"/>
+              </g>
+              <g stroke="#B87412" stroke-width="2" fill="#F4C243">
+                <circle cx="84" cy="112" r="17"/><circle cx="120" cy="150" r="15"/><circle cx="82" cy="190" r="16"/>
+              </g>
+              <g fill="none" stroke="#B87412" stroke-width="1.2" opacity=".5"><circle cx="84" cy="112" r="9"/><circle cx="120" cy="150" r="8"/><circle cx="82" cy="190" r="9"/></g>
+            </svg>
+          </div>
+
+          <!-- ingredient 1 (top-left) with a little curved arrow -->
+          <div id="chip-ing1" class="chip-dyn absolute" style="left:3%; top:5%; width:36%;"></div>
+          <svg class="absolute pointer-events-none text-banana-green" style="left:28%; top:9%; width:12%;" viewBox="0 0 50 30" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 26 C8 8 26 2 44 12"/><path d="M36 6 L44 12 L34 16"/></svg>
+
+          <!-- title / description / price (center-top) -->
+          <div id="chip-text" class="chip-dyn absolute" style="left:44%; right:5%; top:5%;"></div>
+
+          <!-- THE BIG CHIP: tap to spin + change flavor -->
+          <div id="chip-hit" class="absolute cursor-pointer" style="left:47%; top:33%; width:84%; aspect-ratio:1/1;" onclick="chipNext()" role="button" aria-label="Change flavor">
+            <div id="chip-spin" class="w-full h-full"><div id="chip-disc" class="w-full h-full"></div></div>
+          </div>
+
+          <!-- hint -->
+          <div id="chip-hint" class="chip-hint absolute flex items-center gap-1 text-banana-darkgreen transition-opacity" style="left:34%; top:79.5%;">
+            <svg class="w-6 h-5" viewBox="0 0 40 30" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 26 C10 12 22 6 36 6"/><path d="M28 1 L36 6 L28 12"/></svg>
+            <span class="text-[11px] font-bold">ចុចដើម្បីបង្វិល</span>
+          </div>
+
+          <!-- ingredient 2 (bottom-left) -->
+          <div id="chip-ing2" class="chip-dyn absolute" style="left:4%; top:76%; width:30%;"></div>
+
+          <!-- size + quantity (bottom-right) -->
+          <div id="chip-controls" class="absolute flex flex-col items-end" style="right:5%; bottom:3.2%;"></div>
+
+          <!-- flavor dots (bottom-left) -->
+          <div id="chip-dots" class="absolute flex items-center gap-1.5" style="left:6%; bottom:4.5%;"></div>
+        </div>`;
+
+      // swipe left/right on the card also changes flavor
+      const stage = document.getElementById('chip-stage');
+      let sx = null, sy = null;
+      stage.addEventListener('touchstart', e => { sx = e.touches[0].clientX; sy = e.touches[0].clientY; }, { passive: true });
+      stage.addEventListener('touchend', e => {
+        if (sx === null) return;
+        const dx = e.changedTouches[0].clientX - sx, dy = e.changedTouches[0].clientY - sy;
+        if (Math.abs(dx) > 60 && Math.abs(dx) > 2 * Math.abs(dy)) chipGo(chipIndex + (dx < 0 ? 1 : -1));
+        sx = sy = null;
+      });
+
+      chipPaint();
     }
 
     // Initialize Banner + Video Reviews + Feedback on load
