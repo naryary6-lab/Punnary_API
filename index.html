@@ -184,93 +184,187 @@
   </script>
 
   <!-- Header Section -->
-  <header class="bg-banana-bg/95 text-banana-darkgreen text-center h-[72px] px-3 border-b-2 border-banana-yellow sticky top-0 z-40 shadow-sm backdrop-blur-md flex items-center justify-center">
-    <div class="max-w-xl mx-auto flex flex-col items-center">
-      <div class="flex items-center gap-2.5 mb-0.5">
-        <svg class="w-6 h-6 text-banana-green" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 19c0-8 5-14 15-14 0 9-5 15-13 15"/><path d="M5 19c3-4 6-7 10-9"/></svg>
-        <h1 class="font-display m-0 text-2xl font-bold tracking-wide">ម៉ូម័រ MoMore</h1>
-        <svg class="w-6 h-6 -scale-x-100 text-banana-green" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 19c0-8 5-14 15-14 0 9-5 15-13 15"/><path d="M5 19c3-4 6-7 10-9"/></svg>
+  <header class="bg-banana-bg/95 h-[72px] border-b border-banana-green/15 sticky top-0 z-40 backdrop-blur-md">
+    <div class="max-w-[736px] mx-auto w-full h-full flex items-center justify-between px-4 sm:px-6">
+
+      <!-- logo -->
+      <a href="#" onclick="navGo('top'); return false;" class="flex flex-col leading-none no-underline">
+        <span class="relative font-display text-[25px] sm:text-[25px] font-bold tracking-[0.045em] text-banana-darkgreen">MOMORE
+          <svg class="absolute -top-1.5 -right-3.5 w-3.5 h-3.5 text-banana-darkgreen" viewBox="0 0 24 24" fill="currentColor"><path d="M4 20C4 9 10 3 21 3c0 11-6 17-14 17z"/></svg>
+        </span>
+        <span class="mt-1 text-[6.5px] sm:text-[7px] font-bold tracking-[0.26em] text-banana-darkgreen uppercase">The Snacks Store</span>
+      </a>
+
+      <!-- links (wide screens) -->
+      <nav class="hidden sm:flex flex-1 justify-center items-center gap-5 text-[10px] font-bold tracking-[0.16em] text-[#2c3a22] uppercase">
+        <a href="#" onclick="navGo('top'); return false;" class="no-underline text-inherit pb-1 border-b-[1.5px] border-banana-darkgreen">Home</a>
+        <a href="#" onclick="navGo('category-section'); return false;" class="no-underline text-inherit pb-1 border-b-[1.5px] border-transparent">Menu</a>
+        <a href="#" onclick="navGo('video-section'); return false;" class="no-underline text-inherit pb-1 border-b-[1.5px] border-transparent">Reviews</a>
+        <a href="https://share.google/rn7niJmoNQbh83nGI" target="_blank" class="no-underline text-inherit pb-1 border-b-[1.5px] border-transparent">Locations</a>
+        <a href="#" onclick="navGo('contact'); return false;" class="no-underline text-inherit pb-1 border-b-[1.5px] border-transparent">Contact</a>
+      </nav>
+
+      <!-- order + menu button -->
+      <div class="flex items-center gap-2.5">
+        <button onclick="navGo('category-section')" class="inline-flex items-center gap-1.5 bg-banana-darkgreen text-white rounded-full px-3.5 sm:px-4 py-2 text-[9.5px] sm:text-[10px] font-bold tracking-[0.14em] uppercase shadow-sm active:scale-95 transition-transform">
+          Order Now <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 8h14l-1.2 11H6.2z"/><path d="M9 8V6.5a3 3 0 0 1 6 0V8"/></svg>
+        </button>
+        <button onclick="toggleNav()" aria-label="Menu" class="w-[34px] h-[34px] rounded-full border border-[#2c3a22]/45 bg-transparent text-[#2c3a22] flex items-center justify-center active:scale-95 transition-transform">
+          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M5 8h14M5 12h14M5 16h14"/></svg>
+        </button>
       </div>
-      <p class="m-0 text-[11px] text-banana-green font-bold tracking-wider uppercase">The Snacks Store • ចេកស្អិតដំណាប់ចេកខ្មែរ</p>
     </div>
   </header>
 
-  <!-- VIEW 1: HOME (Brand Header, Social Links, Video Reviews & Categories) -->
-  <main id="home-view" class="max-w-xl mx-auto w-full px-4 pt-3 flex-grow fade-in overflow-x-hidden">
+  <!-- dropdown menu (hamburger) -->
+  <div id="nav-drawer" class="hidden fixed left-0 right-0 top-[72px] z-[39] bg-banana-bg border-b border-banana-green/20 shadow-lg">
+    <div class="max-w-[736px] mx-auto px-4 sm:px-6 py-2 flex flex-col text-[11px] font-bold tracking-[0.18em] text-[#2c3a22] uppercase">
+      <a href="#" onclick="navGo('top'); return false;" class="no-underline text-inherit py-3 border-b border-black/5">Home</a>
+      <a href="#" onclick="navGo('category-section'); return false;" class="no-underline text-inherit py-3 border-b border-black/5">Menu</a>
+      <a href="#" onclick="navGo('best-sellers'); return false;" class="no-underline text-inherit py-3 border-b border-black/5">Best Sellers</a>
+      <a href="#" onclick="navGo('video-section'); return false;" class="no-underline text-inherit py-3 border-b border-black/5">Reviews</a>
+      <a href="https://share.google/rn7niJmoNQbh83nGI" target="_blank" class="no-underline text-inherit py-3 border-b border-black/5">Locations</a>
+      <a href="#" onclick="navGo('contact'); return false;" class="no-underline text-inherit py-3">Contact</a>
+    </div>
+  </div>
 
-    <!-- ================= HERO (photo banner, text on the left) ================= -->
-    <section id="hero-section" class="relative -mx-4 -mt-3 overflow-hidden" style="min-height: 560px;">
-      <!-- the photo slideshow is the hero background (auto slides every 4s) -->
+  <!-- VIEW 1: HOME (Brand Header, Social Links, Video Reviews & Categories) -->
+  <main id="home-view" class="max-w-[736px] mx-auto w-full px-4 sm:px-6 pt-3 flex-grow fade-in overflow-x-hidden">
+
+    <!-- ================= HERO ================= -->
+    <section id="hero-section" class="relative -mx-4 sm:-mx-6 -mt-3 overflow-hidden min-h-[520px] sm:min-h-[440px]">
+      <!-- photo slideshow = hero background (auto slides every 4s) -->
       <div id="banner-slider" class="absolute inset-0">
         <!-- Slides track -->
       <div id="banner-track" class="flex h-full transition-transform duration-700 ease-in-out">
         <div class="banner-slide w-full flex-shrink-0 h-full relative">
-          <img src="photo_6307320673348557702_w.jpg" alt="MoMore Banner 1" class="w-full h-full object-cover object-[68%_50%]">
+          <img src="photo_6307320673348557702_w.jpg" alt="MoMore Banner 1" class="w-full h-full object-cover object-[72%_50%]">
         </div>
         <div class="banner-slide w-full flex-shrink-0 h-full relative">
-          <img src="photo_6307320673348557703_w.jpg" alt="MoMore Banner 2" class="w-full h-full object-cover object-[68%_50%]">
+          <img src="photo_6307320673348557703_w.jpg" alt="MoMore Banner 2" class="w-full h-full object-cover object-[72%_50%]">
         </div>
         <div class="banner-slide w-full flex-shrink-0 h-full relative">
-          <img src="photo_6307320673348557704_w.jpg" alt="MoMore Banner 3" class="w-full h-full object-cover object-[68%_50%]">
+          <img src="photo_6307320673348557704_w.jpg" alt="MoMore Banner 3" class="w-full h-full object-cover object-[72%_50%]">
         </div>
         <div class="banner-slide w-full flex-shrink-0 h-full relative">
-          <img src="photo_6307320673348557706_w.jpg" alt="MoMore Banner 4" class="w-full h-full object-cover object-[68%_50%]" onerror="this.parentElement.remove()">
+          <img src="photo_6307320673348557706_w.jpg" alt="MoMore Banner 4" class="w-full h-full object-cover object-[72%_50%]" onerror="this.parentElement.remove()">
         </div>
         <div class="banner-slide w-full flex-shrink-0 h-full relative">
-          <img src="photo_6307320673348557705_w.jpg" alt="MoMore Banner 5" class="w-full h-full object-cover object-[68%_50%]" onerror="this.parentElement.remove()">
+          <img src="photo_6307320673348557705_w.jpg" alt="MoMore Banner 5" class="w-full h-full object-cover object-[72%_50%]" onerror="this.parentElement.remove()">
         </div>
       </div>
       </div>
 
       <!-- faint leaf shadows -->
       <img src="1794417274539.jpg" alt="" class="absolute -top-4 -right-8 w-44 opacity-30 pointer-events-none rotate-[24deg]">
-      <svg class="absolute top-24 -left-10 w-32 text-banana-green opacity-[0.07] pointer-events-none -rotate-[28deg]" viewBox="0 0 120 160" fill="currentColor"><path d="M60 4C104 40 112 110 60 156 8 110 16 40 60 4Z"/></svg>
 
-      <!-- cream fade: keeps the text readable and blends the photo into the page -->
+      <!-- cream fade so the text is readable and the photo melts into the page -->
       <div class="absolute inset-0 pointer-events-none" style="background:
-        linear-gradient(90deg, rgba(247,250,240,0.97) 0%, rgba(247,250,240,0.9) 40%, rgba(247,250,240,0.35) 70%, rgba(247,250,240,0) 100%),
-        linear-gradient(0deg, rgb(247,250,240) 0%, rgba(247,250,240,0.85) 14%, rgba(247,250,240,0) 30%),
-        linear-gradient(180deg, rgba(247,250,240,0.9) 0%, rgba(247,250,240,0) 10%);"></div>
+        linear-gradient(90deg, rgba(247,250,240,0.97) 0%, rgba(247,250,240,0.88) 38%, rgba(247,250,240,0.25) 66%, rgba(247,250,240,0) 100%),
+        linear-gradient(0deg, rgb(247,250,240) 0%, rgba(247,250,240,0.8) 12%, rgba(247,250,240,0) 30%),
+        linear-gradient(180deg, rgba(247,250,240,0.85) 0%, rgba(247,250,240,0) 14%);"></div>
 
-      <div class="absolute top-4 right-4 z-20 w-[84px] h-[84px] rounded-full bg-banana-bg border border-banana-green/35 shadow-md flex flex-col items-center justify-center text-center">
-          <span class="font-display text-[15px] font-bold leading-none text-banana-darkgreen">100%</span>
-          <span class="font-display text-[11px] font-bold tracking-wider leading-tight text-banana-darkgreen">REAL</span>
-          <span class="font-display text-[11px] font-bold tracking-wider leading-tight text-banana-darkgreen">BANANA</span>
+      <!-- 100% badge -->
+      <div class="absolute top-4 right-4 sm:top-12 sm:right-8 z-20 w-[78px] h-[78px] sm:w-[84px] sm:h-[84px] rounded-full bg-banana-bg/90 border border-banana-darkgreen/60 flex flex-col items-center justify-center text-center">
+        <span class="font-display text-[12px] font-bold leading-none text-banana-darkgreen tracking-wide">100%</span>
+        <span class="font-display text-[15px] font-bold leading-tight text-banana-darkgreen tracking-[0.08em]">REAL</span>
+        <span class="font-display text-[11px] font-bold leading-none text-banana-darkgreen tracking-[0.1em]">BANANA</span>
+      </div>
+
+      <div class="relative z-10 px-4 sm:px-6 pt-8 sm:pt-9 pb-6 flex flex-col min-h-[520px] sm:min-h-[440px]">
+        <div class="max-w-[70%] sm:max-w-[58%]">
+          <h2 class="font-display m-0 font-medium text-[37px] sm:text-[54px] leading-[0.98] sm:leading-[0.95] tracking-[0.005em] text-[#1d1d1a] uppercase">
+            Banana.<br>Crispy.<br>
+            <span class="text-banana-darkgreen whitespace-nowrap">Good Vibes.<svg class="inline-block w-4 h-4 sm:w-5 sm:h-5 ml-0.5 -mt-4 sm:-mt-6 text-banana-darkgreen" viewBox="0 0 24 24" fill="currentColor"><path d="M4 20C4 9 10 3 21 3c0 11-6 17-14 17z"/></svg></span>
+          </h2>
+          <svg class="mt-2 mb-3 w-20 h-2 text-banana-darkgreen" viewBox="0 0 80 8" fill="none"><path d="M1 5C20 2 50 2 79 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+          <p class="m-0 text-[13px] sm:text-[13.5px] leading-[1.55] text-[#2a2a26]">Premium snacks. Real ingredients.<br>Made for your moment.</p>
+          <p class="m-0 mt-1 text-[11px] leading-snug text-gray-500">ចំណីពិតៗ គ្រឿងផ្សំធម្មជាតិ សម្រាប់ពេលវេលាល្អរបស់អ្នក។</p>
+
+          <div class="flex flex-wrap gap-2 sm:gap-2.5 mt-4">
+            <button onclick="scrollToId('best-sellers')" class="inline-flex items-center gap-1.5 sm:gap-2 bg-banana-darkgreen text-white rounded-full px-3.5 sm:px-5 py-2.5 text-[9.5px] sm:text-[10.5px] font-bold tracking-[0.14em] uppercase shadow-sm active:scale-95 transition-transform">Order Now <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 8h14l-1.2 11H6.2z"/><path d="M9 8V6.5a3 3 0 0 1 6 0V8"/></svg></button>
+            <button onclick="scrollToId('category-section')" class="inline-flex items-center gap-1.5 sm:gap-2 border border-[#2c3a22]/55 bg-transparent text-[#1d1d1a] rounded-full px-3.5 sm:px-5 py-2.5 text-[9.5px] sm:text-[10.5px] font-bold tracking-[0.14em] uppercase active:scale-95 transition-transform">View Menu <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 19c0-8 5-14 15-14 0 9-5 15-13 15"/><path d="M5 19c3-4 6-7 10-9"/></svg></button>
+          </div>
         </div>
 
-      <div class="relative z-10 px-4 pt-7 pb-6 flex flex-col" style="min-height: 560px;">
-        <div class="max-w-[66%]">
-                  <h2 class="font-display m-0 font-bold text-[33px] leading-[1.5] text-[#1F2A17]">
-          ចេកស្រួយ។<br>ដំណាប់ចេក។<br>
-          <span class="text-banana-darkgreen">រសជាតិខ្មែរ។<svg class="inline-block w-5 h-5 ml-1 -mt-3 text-banana-darkgreen" viewBox="0 0 24 24" fill="currentColor"><path d="M5 19c0-8 5-14 15-14 0 9-5 15-13 15z"/></svg></span>
-        </h2>
-        <div class="w-16 h-[3px] rounded-full bg-banana-green/70 mt-1 mb-3"></div>
-        <p class="m-0 text-[13px] leading-relaxed text-gray-700 max-w-[19rem]">ចំណីពិតៗ គ្រឿងផ្សំធម្មជាតិ។<br>ធ្វើឡើងសម្រាប់ពេលវេលាល្អរបស់អ្នក។</p>
-
-        <div class="flex flex-wrap gap-2.5 mt-4">
-          <button onclick="scrollToId('best-sellers')" class="inline-flex items-center gap-2 bg-banana-darkgreen text-white rounded-full px-5 py-2.5 text-[12px] font-bold shadow-md active:scale-95 transition-transform">
-            កុម្ម៉ង់ឥឡូវ
-            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 8h14l-1.2 11H6.2z"/><path d="M9 8V6.5a3 3 0 0 1 6 0V8"/></svg>
-          </button>
-          <button onclick="scrollToId('category-section')" class="inline-flex items-center gap-2 border border-banana-green/50 bg-white/60 text-banana-darkgreen rounded-full px-5 py-2.5 text-[12px] font-bold active:scale-95 transition-transform">
-            មើលម៉ឺនុយ
-            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 19c0-8 5-14 15-14 0 9-5 15-13 15"/><path d="M5 19c3-4 6-7 10-9"/></svg>
-          </button>
-        </div>
-        </div>
-        <div class="mt-auto pt-6">
-          <div class="grid grid-cols-3 divide-x divide-banana-green/25 text-center">
-          <div class="px-1.5 flex flex-col items-center gap-1"><svg class="w-6 h-6 text-banana-green" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 19c0-8 5-14 15-14 0 9-5 15-13 15"/><path d="M5 19c3-4 6-7 10-9"/></svg><span class="text-[10px] font-bold leading-tight text-banana-darkgreen">គ្រឿងផ្សំល្អ<br>ធម្មជាតិ</span></div>
-          <div class="px-1.5 flex flex-col items-center gap-1"><svg class="w-6 h-6 text-banana-green" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 3v2M12 19v2M3 12h2M19 12h2M5.6 5.6L7 7M17 17l1.4 1.4M5.6 18.4L7 17M17 7l1.4-1.4"/></svg><span class="text-[10px] font-bold leading-tight text-banana-darkgreen">ស្រស់ថ្មី<br>រាល់ថ្ងៃ</span></div>
-          <div class="px-1.5 flex flex-col items-center gap-1"><svg class="w-6 h-6 text-banana-green" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20s-7-4.5-7-10a4 4 0 0 1 7-2.5A4 4 0 0 1 19 10c0 5.5-7 10-7 10z"/></svg><span class="text-[10px] font-bold leading-tight text-banana-darkgreen">ធ្វើដោយ<br>ក្តីស្រលាញ់</span></div>
-        </div>
+        <div class="mt-auto pt-6 sm:max-w-[430px]">
+          <div class="grid grid-cols-3 divide-x divide-black/15 text-center text-[#2c3a22]">
+            <div class="px-2 flex flex-col items-center gap-1.5"><svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 19c0-8 5-14 15-14 0 9-5 15-13 15"/><path d="M5 19c3-4 6-7 10-9"/></svg><span class="text-[7.5px] font-bold tracking-[0.12em] leading-tight uppercase">Premium<br>Ingredients</span></div>
+            <div class="px-2 flex flex-col items-center gap-1.5"><svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M7.5 3.5h9l-.8 3 1 12.2a1 1 0 0 1-1 1.1H8.3a1 1 0 0 1-1-1.1l1-12.2z"/><path d="M8.6 7.5h6.8"/><circle cx="12" cy="13" r="2.2"/></svg><span class="text-[7.5px] font-bold tracking-[0.12em] leading-tight uppercase">Freshly<br>Made</span></div>
+            <div class="px-2 flex flex-col items-center gap-1.5"><svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20s-7.5-4.6-7.5-10.2A4.3 4.3 0 0 1 12 7.4a4.3 4.3 0 0 1 7.5 2.4C19.5 15.4 12 20 12 20z"/></svg><span class="text-[7.5px] font-bold tracking-[0.12em] leading-tight uppercase">Made with<br>Love</span></div>
+          </div>
         </div>
       </div>
 
-      <div id="banner-dots" class="absolute bottom-24 right-4 z-20 flex gap-1.5"></div>
+      <div id="banner-dots" class="absolute bottom-3 right-4 sm:right-6 z-20 flex gap-1.5"></div>
     </section>
-<!-- Quick Action Contact Buttons -->
-    <div class="grid grid-cols-5 gap-2 mt-6 mb-2 text-center">
+
+    <!-- ================= BEST SELLERS ================= -->
+    <section id="best-sellers" class="mt-8 sm:mt-9">
+      <div class="flex items-end justify-between mb-4">
+        <div>
+          <div class="flex items-center gap-1.5 text-[9px] sm:text-[9.5px] font-bold tracking-[0.2em] text-[#2c3a22] uppercase"><span class="text-banana-darkgreen"><svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 19c0-8 5-14 15-14 0 9-5 15-13 15"/><path d="M5 19c3-4 6-7 10-9"/></svg></span>Best Sellers</div>
+          <h2 class="font-display m-0 mt-2 font-medium text-[30px] sm:text-[34px] leading-[1.05] text-[#1d1d1a]">Your Favorites<br>Right Here</h2>
+        </div>
+        <button onclick="scrollToId('category-section')" class="inline-flex items-center gap-2 border border-[#2c3a22]/45 text-[#1d1d1a] rounded-full px-4 py-2 text-[10px] font-bold tracking-[0.14em] uppercase active:scale-95 transition-transform mb-1">
+          View All <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        </button>
+      </div>
+      <div id="best-sellers-grid" class="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-3.5"></div>
+    </section>
+
+    <!-- ================= OUR MENU (categories) ================= -->
+    <section id="category-section" class="mt-10">
+      <div class="mb-4">
+        <div class="flex items-center gap-1.5 text-[9px] sm:text-[9.5px] font-bold tracking-[0.2em] text-[#2c3a22] uppercase"><span class="text-banana-darkgreen"><svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 19c0-8 5-14 15-14 0 9-5 15-13 15"/><path d="M5 19c3-4 6-7 10-9"/></svg></span>Our Menu</div>
+        <h2 class="font-display m-0 mt-2 font-medium text-[30px] sm:text-[34px] leading-[1.05] text-[#1d1d1a]">Explore<br>Our Menu</h2>
+      </div>
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <button onclick="openCategory('cat1')" class="w-full relative rounded-2xl overflow-hidden shadow-md active:scale-[0.98] transition-all border-2 border-banana-green/20 hover:border-banana-yellow block group">
+        <img src="https://github.com/user-attachments/assets/1dab8bf9-34c5-49ff-a6b6-7cb9f87bf931" alt="ដំណាប់ចេក សម្ងួត" class="w-full aspect-[16/9] object-cover group-hover:scale-105 transition-transform duration-500">
+      </button>
+        <button onclick="openCategory('cat2')" class="w-full relative rounded-2xl overflow-hidden shadow-md active:scale-[0.98] transition-all border-2 border-banana-green/20 hover:border-banana-yellow block group">
+        <img src="https://github.com/user-attachments/assets/7dec8dd3-f4dd-4482-a6f6-96936a59c2a8" alt="ចេកបំពងស្រួយ" class="w-full aspect-[16/9] object-cover group-hover:scale-105 transition-transform duration-500">
+      </button>
+        <button onclick="openCategory('cat3')" class="w-full relative rounded-2xl overflow-hidden shadow-md active:scale-[0.98] transition-all border-2 border-banana-green/20 hover:border-banana-yellow block group">
+        <img src="https://github.com/user-attachments/assets/cd6d0de2-aa25-4364-b618-65bcfb6295cf" alt="នំកន្ត្រំខ្មែរ ស្រួយ" class="w-full aspect-[16/9] object-cover group-hover:scale-105 transition-transform duration-500">
+      </button>
+      </div>
+    </section>
+
+    <!-- ================= VIDEO REVIEWS ================= -->
+    <section id="video-section" class="mt-10 bg-white p-4 rounded-2xl border border-black/5 shadow-[0_2px_8px_rgba(60,50,30,0.06)]">
+      <div class="flex items-end justify-between mb-3">
+        <div>
+          <div class="flex items-center gap-1.5 text-[9px] sm:text-[9.5px] font-bold tracking-[0.2em] text-[#2c3a22] uppercase"><span class="text-banana-darkgreen"><svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 19c0-8 5-14 15-14 0 9-5 15-13 15"/><path d="M5 19c3-4 6-7 10-9"/></svg></span>Real Reviews</div>
+          <h3 class="font-display m-0 mt-1.5 font-medium text-[26px] leading-[1.1] text-[#1d1d1a]">Video Reviews</h3>
+        </div>
+        <span class="text-[10px] text-banana-darkgreen font-bold tracking-[0.1em] uppercase mb-1">Swipe →</span>
+      </div>
+      <div id="video-reviews-slider" class="flex gap-3 overflow-x-auto pb-2 scrollbar-thin">
+        <!-- Injected via JS -->
+      </div>
+    </section>
+
+    <!-- ================= CUSTOMER FEEDBACK ================= -->
+    <section id="feedback-section" class="mt-5 bg-white p-4 rounded-2xl border border-black/5 shadow-[0_2px_8px_rgba(60,50,30,0.06)]">
+      <div class="flex items-end justify-between mb-1">
+        <div>
+          <div class="flex items-center gap-1.5 text-[9px] sm:text-[9.5px] font-bold tracking-[0.2em] text-[#2c3a22] uppercase"><span class="text-banana-darkgreen"><svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 19c0-8 5-14 15-14 0 9-5 15-13 15"/><path d="M5 19c3-4 6-7 10-9"/></svg></span>Customer Love</div>
+          <h3 class="font-display m-0 mt-1.5 font-medium text-[26px] leading-[1.1] text-[#1d1d1a]">Happy Customers</h3>
+        </div>
+        <span class="text-[10px] text-banana-darkgreen font-bold tracking-[0.1em] uppercase mb-1">Swipe →</span>
+      </div>
+      <p class="text-[11px] text-gray-500 mb-3 mt-1">សម្លេងពិតពីអតិថិជនដែលបានទិញ និងបរិភោគ ម៉ូម័រ MoMore</p>
+      <div id="feedback-slider" class="flex gap-3 overflow-x-auto pb-2 scrollbar-thin">
+        <!-- Injected via JS -->
+      </div>
+    </section>
+
+    <!-- ================= CONTACT ================= -->
+    <section id="contact" class="mt-10">
+      <div class="mb-3"><div class="flex items-center gap-1.5 text-[9px] sm:text-[9.5px] font-bold tracking-[0.2em] text-[#2c3a22] uppercase"><span class="text-banana-darkgreen"><svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 19c0-8 5-14 15-14 0 9-5 15-13 15"/><path d="M5 19c3-4 6-7 10-9"/></svg></span>Get In Touch</div></div>
+      <div class="grid grid-cols-5 gap-2 text-center">
       <a href="https://t.me/MoMore_collection" target="_blank" class="bg-white p-2 rounded-xl shadow-sm border border-gray-100 flex flex-col items-center justify-center hover:bg-banana-sage/40 transition-colors active:scale-95">
         <svg class="w-8 h-8" viewBox="0 0 32 32" aria-hidden="true"><circle cx="16" cy="16" r="16" fill="#229ED9"/><path fill="#fff" d="M7.2 15.5l15.6-6.1c.8-.3 1.5.2 1.2 1.4l-2.7 12.6c-.2.9-.8 1.1-1.5.7l-4.1-3-2 1.9c-.2.2-.4.4-.8.4l.3-4.2 7.6-6.9c.3-.3-.1-.5-.5-.2l-9.4 5.9-4-1.3c-.9-.3-.9-.9.1-1.2z"/></svg>
         <span class="text-[10px] font-bold text-banana-darkgreen mt-1">Telegram</span>
@@ -292,99 +386,35 @@
         <span class="text-[10px] font-bold text-banana-darkgreen mt-1">KHQR</span>
       </button>
     </div>
-
-    
-    <!-- ================= OUR MENU (categories) ================= -->
-    <section id="category-section" class="mt-9">
-      <div class="mb-4">
-        <div class="flex items-center gap-1.5 text-[10px] font-bold tracking-[0.2em] text-banana-darkgreen uppercase"><svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 19c0-8 5-14 15-14 0 9-5 15-13 15"/><path d="M5 19c3-4 6-7 10-9"/></svg>Our Menu</div>
-        <h2 class="font-display m-0 mt-1 text-[26px] font-bold leading-[1.5] text-[#1F2A17]">ជ្រើសរើស<br>ប្រភេទមុខទំនិញ</h2>
-      </div>
-      <div class="space-y-4">
-      <button onclick="openCategory('cat1')" class="w-full relative rounded-3xl overflow-hidden shadow-md active:scale-[0.98] transition-all border-2 border-banana-green/20 hover:border-banana-yellow block group">
-        <img src="https://github.com/user-attachments/assets/1dab8bf9-34c5-49ff-a6b6-7cb9f87bf931" alt="ដំណាប់ចេក សម្ងួត" class="w-full aspect-[16/9] object-cover group-hover:scale-105 transition-transform duration-500">
-      </button>
-
-      <button onclick="openCategory('cat2')" class="w-full relative rounded-3xl overflow-hidden shadow-md active:scale-[0.98] transition-all border-2 border-banana-green/20 hover:border-banana-yellow block group">
-        <img src="https://github.com/user-attachments/assets/7dec8dd3-f4dd-4482-a6f6-96936a59c2a8" alt="ចេកបំពងស្រួយ" class="w-full aspect-[16/9] object-cover group-hover:scale-105 transition-transform duration-500">
-      </button>
-
-      <button onclick="openCategory('cat3')" class="w-full relative rounded-3xl overflow-hidden shadow-md active:scale-[0.98] transition-all border-2 border-banana-green/20 hover:border-banana-yellow block group">
-        <img src="https://github.com/user-attachments/assets/cd6d0de2-aa25-4364-b618-65bcfb6295cf" alt="នំកន្ត្រំខ្មែរ ស្រួយ" class="w-full aspect-[16/9] object-cover group-hover:scale-105 transition-transform duration-500">
-      </button>
-    </div>
-
-    
-    </section>
-
-    <!-- ================= BEST SELLERS ================= -->
-    <section id="best-sellers" class="mt-10">
-      <div class="flex items-end justify-between mb-4">
-        <div>
-          <div class="flex items-center gap-1.5 text-[10px] font-bold tracking-[0.2em] text-banana-darkgreen uppercase"><svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 19c0-8 5-14 15-14 0 9-5 15-13 15"/><path d="M5 19c3-4 6-7 10-9"/></svg>Best Sellers</div>
-          <h2 class="font-display m-0 mt-1 text-[26px] font-bold leading-[1.5] text-[#1F2A17]">ជម្រើសដែល<br>គេស្រលាញ់</h2>
-        </div>
-        <button onclick="scrollToId('category-section')" class="flex items-center gap-1.5 border border-banana-green/50 text-banana-darkgreen rounded-full px-3.5 py-1.5 text-[11px] font-bold active:scale-95 transition-transform mb-1.5">
-          មើលទាំងអស់
-          <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
-        </button>
-      </div>
-      <div id="best-sellers-grid" class="grid grid-cols-2 gap-3.5"></div>
-    </section>
-
-    <!-- ================= VIDEO REVIEWS (moved down) ================= -->
-    <section class="mt-10 bg-white p-4 rounded-3xl shadow-sm border border-banana-green/10">
-      <div class="flex items-end justify-between mb-3">
-        <div>
-          <div class="flex items-center gap-1.5 text-[10px] font-bold tracking-[0.2em] text-banana-darkgreen uppercase"><svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 19c0-8 5-14 15-14 0 9-5 15-13 15"/><path d="M5 19c3-4 6-7 10-9"/></svg>Real Reviews</div>
-          <h3 class="font-display m-0 mt-1 text-[22px] font-bold leading-[1.5] text-[#1F2A17]">វីដេអូរីវីយូ</h3>
-        </div>
-        <span class="text-[10px] bg-banana-yellow/20 text-banana-darkgreen font-bold px-2.5 py-1 rounded-full mb-1">អូសដើម្បីមើល →</span>
-      </div>
-      <div id="video-reviews-slider" class="flex gap-3 overflow-x-auto pb-2 scrollbar-thin">
-        <!-- Injected via JS -->
-      </div>
-    </section>
-
-    <!-- ================= CUSTOMER FEEDBACK ================= -->
-    <section id="feedback-section" class="mt-6 bg-white p-4 rounded-3xl shadow-sm border border-banana-green/10">
-      <div class="flex items-end justify-between mb-1">
-        <div>
-          <div class="flex items-center gap-1.5 text-[10px] font-bold tracking-[0.2em] text-banana-darkgreen uppercase"><svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 19c0-8 5-14 15-14 0 9-5 15-13 15"/><path d="M5 19c3-4 6-7 10-9"/></svg>Customer Love</div>
-          <h3 class="font-display m-0 mt-1 text-[22px] font-bold leading-[1.5] text-[#1F2A17]">មតិយោបល់អតិថិជន</h3>
-        </div>
-        <span class="text-[10px] bg-banana-yellow/20 text-banana-darkgreen font-bold px-2.5 py-1 rounded-full mb-1">អូសដើម្បីមើល →</span>
-      </div>
-      <p class="text-[11px] text-gray-500 mb-3 mt-0">សម្លេងពិតពីអតិថិជនដែលបានទិញ និងបរិភោគ ម៉ូម័រ MoMore</p>
-      <div id="feedback-slider" class="flex gap-3 overflow-x-auto pb-2 scrollbar-thin">
-        <!-- Injected via JS -->
-      </div>
     </section>
 
     <!-- ================= DAILY CRUNCH BANNER ================= -->
-    <section class="mt-6 rounded-3xl overflow-hidden flex bg-banana-darkgreen shadow-lg" style="min-height:158px;">
-      <div class="w-[40%] relative flex-shrink-0">
+    <section class="mt-8 rounded-2xl overflow-hidden flex bg-banana-darkgreen min-h-[160px] sm:min-h-[146px]">
+      <div class="w-[36%] relative flex-shrink-0">
         <img src="photo_6307320673348557703_w.jpg" alt="MoMore" class="absolute inset-0 w-full h-full object-cover" onerror="this.style.display='none'">
-        <div class="absolute inset-y-0 right-0 w-12 bg-gradient-to-r from-transparent to-banana-darkgreen"></div>
+        <div class="absolute inset-y-0 right-0 w-14 bg-gradient-to-r from-transparent to-banana-darkgreen"></div>
       </div>
-      <div class="flex-1 relative p-4 pl-3 text-white flex flex-col justify-center">
-        <p class="m-0 text-[8.5px] font-bold tracking-[0.22em] text-banana-gold">RELAX. SNACK. ENJOY.</p>
-        <h3 class="font-display m-0 mt-1 text-[24px] font-bold leading-tight">Your Daily Crunch</h3>
-        <div class="w-10 h-px bg-white/60 my-2"></div>
-        <p class="m-0 text-[11px] leading-snug text-white/85 max-w-[10rem]">ចេកស្រួយៗ គ្រឿងផ្សំពិតៗ សម្រាប់ពេលវេលាល្អរបស់អ្នក។</p>
-        <svg class="absolute right-3 top-3 w-11 h-11 text-white/60" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M8 22C14 46 36 56 56 42 50 58 22 64 7 42 5 35 6 28 8 22Z"/><path d="M8 22C6 18 8 14 11 13"/><path d="M40 14c6 0 11 4 12 10-6 0-11-4-12-10z"/><circle cx="22" cy="30" r="2.2"/><circle cx="32" cy="38" r="2"/></svg>
+      <div class="flex-1 relative px-4 sm:px-6 py-4 text-white flex flex-col justify-center">
+        <p class="m-0 text-[8px] sm:text-[8.5px] font-bold tracking-[0.26em] text-white/75">RELAX. SNACK. ENJOY.</p>
+        <h3 class="font-display m-0 mt-1.5 font-medium text-[24px] sm:text-[30px] leading-[1.1]">Your Daily Crunch</h3>
+        <div class="w-14 h-px bg-white/55 my-2.5"></div>
+        <p class="m-0 text-[11.5px] sm:text-[13px] leading-[1.5] text-white/90">Cozy vibes, great snacks,<br>better moments.</p>
+        <!-- line-art pouch -->
+        <svg class="absolute right-3 bottom-3 sm:bottom-auto sm:right-10 sm:top-1/2 sm:-translate-y-1/2 w-10 sm:w-[84px] h-auto text-white/80" viewBox="0 0 90 110" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M22 12h46l-4 14 5 66a5 5 0 0 1-5 5.4H26a5 5 0 0 1-5-5.4l5-66z"/><path d="M26 26h38"/>
+          <path d="M45 44c9 2 14 9 14 18-9 0-15-6-14-18z"/><path d="M45 44c-1 8 2 14 8 18"/>
+          <circle cx="36" cy="76" r="4"/><circle cx="52" cy="80" r="3.4"/><circle cx="44" cy="90" r="3"/>
+          <path d="M70 94c8-2 14 2 16 10-8 1-14-3-16-10z"/>
+        </svg>
       </div>
     </section>
 
     <!-- ================= FOOTER STRIP ================= -->
-    <section class="mt-6 mb-28 grid grid-cols-4 divide-x divide-banana-green/20 text-center bg-white rounded-3xl py-4 shadow-sm border border-banana-green/10">
-      <div class="px-1.5 flex flex-col items-center gap-1.5"><svg class="w-6 h-6 text-banana-green" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 19c0-8 5-14 15-14 0 9-5 15-13 15"/><path d="M5 19c3-4 6-7 10-9"/></svg><div class="text-[9.5px] leading-tight"><b class="block text-banana-darkgreen uppercase tracking-wide">ធម្មជាតិ</b><span class="text-gray-500">Natural<br>Ingredients</span></div></div>
-      <div class="px-1.5 flex flex-col items-center gap-1.5"><svg class="w-6 h-6 text-banana-green" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20s-7-4.5-7-10a4 4 0 0 1 7-2.5A4 4 0 0 1 19 10c0 5.5-7 10-7 10z"/></svg><div class="text-[9.5px] leading-tight"><b class="block text-banana-darkgreen uppercase tracking-wide">ក្តីស្រលាញ់</b><span class="text-gray-500">Made with<br>Love</span></div></div>
-      <div class="px-1.5 flex flex-col items-center gap-1.5"><svg class="w-6 h-6 text-banana-green" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="9" width="16" height="11" rx="1.5"/><path d="M12 9v11M3 6.5h18V9H3zM12 6.5C10 3 6.5 3.5 7.5 6M12 6.5C14 3 17.5 3.5 16.5 6"/></svg><div class="text-[9.5px] leading-tight"><b class="block text-banana-darkgreen uppercase tracking-wide">ឥតគិតថ្លៃដឹក</b><span class="text-gray-500">Free shipping<br>on bulk orders</span></div></div>
-      <a href="https://www.facebook.com/share/19VEkNGsfB/" target="_blank" class="px-1.5 flex flex-col items-center gap-1.5 active:scale-95 transition-transform">
-        <svg class="w-6 h-6" viewBox="0 0 32 32" aria-hidden="true"><circle cx="16" cy="16" r="16" fill="#1877F2"/><path fill="#fff" d="M17.6 26v-8.6h2.9l.5-3.4h-3.4v-2.1c0-1 .3-1.7 1.7-1.7H21V7.2c-.3 0-1.3-.1-2.5-.1-2.6 0-4.3 1.6-4.3 4.5V14h-2.9v3.4h2.9V26z"/></svg>
-        <div class="text-[9.5px] leading-tight"><b class="block text-banana-darkgreen uppercase tracking-wide">តាមដាន</b><span class="text-gray-500">Follow us<br>MoMore</span></div>
-      </a>
+    <section class="mt-6 mb-28 grid grid-cols-2 sm:grid-cols-4 gap-y-4 sm:divide-x divide-black/15 py-3">
+      <a href="https://share.google/rn7niJmoNQbh83nGI" target="_blank" class="flex items-center gap-2.5 px-3 sm:px-4 text-[#2c3a22] no-underline"><svg class="w-6 h-6 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-6.5-6.2-6.5-11a6.5 6.5 0 0 1 13 0c0 4.8-6.5 11-6.5 11z"/><circle cx="12" cy="10" r="2.4"/></svg><div class="leading-tight"><b class="block text-[8.5px] font-bold tracking-[0.14em] uppercase text-[#1d1d1a]">Find Us</b><span class="block text-[9.5px] text-gray-500 mt-0.5">On Google Maps</span></div></a>
+      <div class="flex items-center gap-2.5 px-3 sm:px-4 text-[#2c3a22] no-underline"><svg class="w-6 h-6 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 19c0-8 5-14 15-14 0 9-5 15-13 15"/><path d="M5 19c3-4 6-7 10-9"/></svg><div class="leading-tight"><b class="block text-[8.5px] font-bold tracking-[0.14em] uppercase text-[#1d1d1a]">Natural</b><span class="block text-[9.5px] text-gray-500 mt-0.5">Real Ingredients</span></div></div>
+      <div class="flex items-center gap-2.5 px-3 sm:px-4 text-[#2c3a22] no-underline"><svg class="w-6 h-6 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="9" width="16" height="11" rx="1.2"/><path d="M12 9v11M3 6.5h18V9H3zM12 6.5C10 3 6.5 3.5 7.5 6M12 6.5C14 3 17.5 3.5 16.5 6"/></svg><div class="leading-tight"><b class="block text-[8.5px] font-bold tracking-[0.14em] uppercase text-[#1d1d1a]">Free Shipping</b><span class="block text-[9.5px] text-gray-500 mt-0.5">On Bulk Orders</span></div></div>
+      <a href="https://www.facebook.com/share/19VEkNGsfB/" target="_blank" class="flex items-center gap-2.5 px-3 sm:px-4 text-[#2c3a22] no-underline"><svg class="w-6 h-6 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="3.5" width="17" height="17" rx="4.5"/><path d="M13.2 20.5v-6h2.1l.4-2.5h-2.5V10.6c0-.8.3-1.3 1.4-1.3h1.2V7.2c-.3 0-1-.1-1.9-.1-1.9 0-3.1 1.1-3.1 3.2V12H8.7v2.5h2.1v6"/></svg><div class="leading-tight"><b class="block text-[8.5px] font-bold tracking-[0.14em] uppercase text-[#1d1d1a]">Follow Us</b><span class="block text-[9.5px] text-gray-500 mt-0.5">MoMore on Facebook</span></div></a>
     </section>
   </main>
 
@@ -1078,6 +1108,16 @@
 
     document.addEventListener('DOMContentLoaded', renderBestSellers);
 
+    // ===== top navigation =====
+    function toggleNav() { document.getElementById('nav-drawer').classList.toggle('hidden'); }
+    function closeNav()  { document.getElementById('nav-drawer').classList.add('hidden'); }
+    function navGo(id) {
+      closeNav();
+      const go = () => { if (id === 'top') window.scrollTo({ top: 0, behavior: 'smooth' }); else scrollToId(id); };
+      if (typeof currentCategory !== 'undefined' && currentCategory) { closeCategory(); setTimeout(go, 80); }
+      else go();
+    }
+
     function scrollToId(id) {
       const el = document.getElementById(id);
       if (!el) return;
@@ -1092,24 +1132,24 @@
         const p = products[b.id];
         if (!p) return '';
         const badge = b.badge === 'top'
-          ? `<span class="absolute top-2 right-2 w-11 h-11 rounded-full bg-banana-darkgreen text-white flex flex-col items-center justify-center leading-none shadow-md"><span class="font-display text-[15px] font-bold">#1</span><span class="text-[6.5px] font-bold tracking-wide mt-0.5">TOP PICK</span></span>`
+          ? `<span class="absolute top-2 right-2 w-[42px] h-[42px] rounded-full bg-banana-darkgreen text-white flex flex-col items-center justify-center leading-none shadow"><span class="font-display text-[15px] font-bold">#1</span><span class="text-[6px] font-bold tracking-wide mt-px">TOP PICK</span></span>`
           : b.badge === 'new'
-          ? `<span class="absolute top-2 right-2 bg-banana-darkgreen text-white text-[9px] font-bold tracking-wider px-2.5 py-0.5 rounded-full shadow">NEW</span>`
+          ? `<span class="absolute top-2.5 right-2.5 bg-banana-darkgreen text-white text-[8.5px] font-bold tracking-[0.12em] px-2.5 py-1 rounded-full">NEW</span>`
           : '';
         const q = cart[b.id] || 0;
         return `
-          <div class="bg-white rounded-2xl shadow-sm border border-banana-green/10 overflow-hidden flex flex-col">
-            <div class="relative aspect-[4/5] bg-banana-sage/50 cursor-pointer overflow-hidden" onclick="openProductModal('${b.id}')">
-              <img src="${p.image}" alt="${p.name}" class="w-full h-full object-cover transition-transform duration-500 hover:scale-105">
+          <div class="bg-white rounded-xl overflow-hidden border border-black/5 shadow-[0_2px_8px_rgba(60,50,30,0.07)] flex flex-col">
+            <div class="relative aspect-[7/8] cursor-pointer overflow-hidden" style="background:linear-gradient(160deg,#F2ECDF,#E6DDCC);" onclick="openProductModal('${b.id}')">
+              <img src="${p.image}" alt="${p.name}" class="w-full h-full object-cover">
               ${badge}
             </div>
-            <div class="p-3 flex-1 flex flex-col justify-between">
-              <h4 class="font-display m-0 text-[14px] font-bold leading-snug text-[#1F2A17] line-clamp-2" style="min-height:2.8em;">${p.name}</h4>
-              <div class="flex items-center justify-between mt-2">
-                <span class="font-display text-[17px] font-bold text-banana-darkgreen">${p.price.toLocaleString()} ៛</span>
-                <button id="bs-add-${b.id}" onclick="bestSellerAdd('${b.id}')" aria-label="Add to cart" class="relative w-9 h-9 rounded-full bg-banana-darkgreen text-white flex items-center justify-center shadow-md active:scale-90 transition-transform">
-                  <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
-                  <span id="bs-count-${b.id}" class="absolute -top-1.5 -right-1.5 min-w-[18px] h-[18px] px-1 rounded-full bg-banana-yellow text-[10px] font-bold text-gray-900 flex items-center justify-center ${q ? '' : 'hidden'}">${q}</span>
+            <div class="px-3 pt-3 pb-3 flex-1 flex flex-col justify-between">
+              <h4 class="m-0 text-[12.5px] font-bold leading-snug text-[#1d1d1a] line-clamp-2" style="min-height:2.6em;">${p.name}</h4>
+              <div class="flex items-center justify-between mt-2.5">
+                <span class="text-[13px] font-bold text-[#1d1d1a]">${p.price.toLocaleString()} ៛</span>
+                <button id="bs-add-${b.id}" onclick="bestSellerAdd('${b.id}')" aria-label="Add to cart" class="relative w-8 h-8 sm:w-7 sm:h-7 rounded-full bg-banana-darkgreen text-white flex items-center justify-center active:scale-90 transition-transform">
+                  <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+                  <span id="bs-count-${b.id}" class="absolute -top-1.5 -right-1.5 min-w-[17px] h-[17px] px-1 rounded-full bg-banana-yellow text-[9.5px] font-bold text-gray-900 flex items-center justify-center ${q ? '' : 'hidden'}">${q}</span>
                 </button>
               </div>
             </div>
