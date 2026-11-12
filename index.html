@@ -196,10 +196,10 @@
   </header>
 
   <!-- VIEW 1: HOME (Brand Header, Social Links, Video Reviews & Categories) -->
-  <main id="home-view" class="max-w-xl mx-auto w-full px-4 pt-3 flex-grow fade-in">
+  <main id="home-view" class="max-w-xl mx-auto w-full px-4 pt-3 flex-grow fade-in overflow-x-hidden">
 
     <!-- ================= HERO ================= -->
-    <section class="relative pt-1 pb-2">
+    <section class="relative pt-1 pb-2 overflow-hidden">
       <!-- faint leaf shadows -->
       <svg class="absolute -top-4 -right-8 w-44 text-banana-green opacity-[0.09] pointer-events-none rotate-[24deg]" viewBox="0 0 120 160" fill="currentColor"><path d="M60 4C104 40 112 110 60 156 8 110 16 40 60 4Z"/></svg>
       <svg class="absolute top-24 -left-10 w-32 text-banana-green opacity-[0.07] pointer-events-none -rotate-[28deg]" viewBox="0 0 120 160" fill="currentColor"><path d="M60 4C104 40 112 110 60 156 8 110 16 40 60 4Z"/></svg>
@@ -364,7 +364,7 @@
         <h3 class="font-display m-0 mt-1 text-[24px] font-bold leading-tight">Your Daily Crunch</h3>
         <div class="w-10 h-px bg-white/60 my-2"></div>
         <p class="m-0 text-[11px] leading-snug text-white/85 max-w-[10rem]">ចេកស្រួយៗ គ្រឿងផ្សំពិតៗ សម្រាប់ពេលវេលាល្អរបស់អ្នក។</p>
-        <svg class="absolute right-2 bottom-2 w-14 h-14 text-white/70" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M8 22C14 46 36 56 56 42 50 58 22 64 7 42 5 35 6 28 8 22Z"/><path d="M8 22C6 18 8 14 11 13"/><path d="M40 14c6 0 11 4 12 10-6 0-11-4-12-10z"/><circle cx="22" cy="30" r="2.2"/><circle cx="32" cy="38" r="2"/></svg>
+        <svg class="absolute right-3 top-3 w-11 h-11 text-white/60" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M8 22C14 46 36 56 56 42 50 58 22 64 7 42 5 35 6 28 8 22Z"/><path d="M8 22C6 18 8 14 11 13"/><path d="M40 14c6 0 11 4 12 10-6 0-11-4-12-10z"/><circle cx="22" cy="30" r="2.2"/><circle cx="32" cy="38" r="2"/></svg>
       </div>
     </section>
 
@@ -1068,6 +1068,8 @@
       { id: 'p26', badge: '' }
     ];
 
+    document.addEventListener('DOMContentLoaded', renderBestSellers);
+
     function scrollToId(id) {
       const el = document.getElementById(id);
       if (!el) return;
@@ -1382,7 +1384,6 @@
 
     // Initialize Banner + Video Reviews + Feedback on load
     window.onload = () => {
-      renderBestSellers();
       initBannerSlider();
       renderVideoReviews();
       renderFeedbacks();
